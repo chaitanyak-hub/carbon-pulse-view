@@ -15,9 +15,9 @@ export interface SiteData {
   onboard_date: string;
   consent: 'YES' | 'NO' | 'PENDING';
   consent_type: 'VERBAL' | 'DIGITAL' | null;
-  is_shared: boolean;
+  is_shared: boolean | string | number;
   site_status: 'active' | 'inactive';
-  has_appointment: boolean;
+  has_appointment: boolean | string | number;
   appointment_date: string | null;
   appointment_time_from: string | null;
   appointment_time_to: string | null;
@@ -68,6 +68,10 @@ export const fetchSiteActivity = async (filters: SiteActivityFilters): Promise<S
 
 // Helper functions for data analysis
 export const calculateKPIs = (sites: SiteData[]) => {
+  console.log('=== KPI CALCULATION DEBUG ===');
+  console.log('Total sites:', sites.length);
+  console.log('Sample site data:', sites[0]);
+  
   const totalSites = sites.length;
   const activeSites = sites.filter(site => site.site_status === 'active').length;
   const inactiveSites = totalSites - activeSites;
@@ -76,22 +80,35 @@ export const calculateKPIs = (sites: SiteData[]) => {
   const consentPending = sites.filter(site => site.consent === 'NO').length;
   const consentRate = totalSites > 0 ? (consentGranted / totalSites) * 100 : 0;
   
-  const sharedSites = sites.filter(site => site.is_shared === true).length;
+  // Debug the is_shared field
+  console.log('is_shared values:', sites.slice(0, 5).map(s => ({ id: s.siteId, is_shared: s.is_shared, type: typeof s.is_shared })));
+  
+  const sharedSites = sites.filter(site => 
+    site.is_shared === true || site.is_shared === 'true' || site.is_shared === 'YES' || site.is_shared === 1
+  ).length;
   const shareRate = totalSites > 0 ? (sharedSites / totalSites) * 100 : 0;
   
-  const sitesWithAppointments = sites.filter(site => site.has_appointment === true).length;
+  // Debug the has_appointment field  
+  console.log('has_appointment values:', sites.slice(0, 5).map(s => ({ id: s.siteId, has_appointment: s.has_appointment, type: typeof s.has_appointment })));
+  
+  const sitesWithAppointments = sites.filter(site => 
+    site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1
+  ).length;
   const appointmentRate = totalSites > 0 ? (sitesWithAppointments / totalSites) * 100 : 0;
   
-  return {
-    totalSites,
-    activeSites,
-    inactiveSites,
-    consentGranted,
-    consentPending,
-    consentRate,
-    sharedSites,
-    shareRate,
-    sitesWithAppointments,
-    appointmentRate
+  const result = {
+    totalSites: totalSites || 0,
+    activeSites: activeSites || 0,
+    inactiveSites: inactiveSites || 0,
+    consentGranted: consentGranted || 0,
+    consentPending: consentPending || 0,
+    consentRate: isNaN(consentRate) ? 0 : consentRate,
+    sharedSites: sharedSites || 0,
+    shareRate: isNaN(shareRate) ? 0 : shareRate,
+    sitesWithAppointments: sitesWithAppointments || 0,
+    appointmentRate: isNaN(appointmentRate) ? 0 : appointmentRate
   };
+  
+  console.log('KPI Results:', result);
+  return result;
 };

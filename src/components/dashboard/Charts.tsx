@@ -32,16 +32,24 @@ interface ChartsProps {
 const Charts = ({ sites, isLoading = false }: ChartsProps) => {
   // 1. Customer Journey Funnel Analysis
   const calculateFunnelMetrics = () => {
-    const totalSites = sites.length;
-    const consentsObtained = sites.filter(site => site.consent === 'YES').length;
-    const sitesShared = sites.filter(site => site.is_shared === true).length;
-    const appointmentsBooked = sites.filter(site => site.has_appointment === true).length;
+    const totalSites = sites.length || 0;
+    const consentsObtained = sites.filter(site => site.consent === 'YES').length || 0;
+    const sitesShared = sites.filter(site => 
+      site.is_shared === true || site.is_shared === 'true' || site.is_shared === 'YES' || site.is_shared === 1
+    ).length || 0;
+    const appointmentsBooked = sites.filter(site => 
+      site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1
+    ).length || 0;
+    
+    const consentRate = totalSites > 0 ? (consentsObtained / totalSites) * 100 : 0;
+    const shareRate = consentsObtained > 0 ? (sitesShared / consentsObtained) * 100 : 0;
+    const appointmentRate = sitesShared > 0 ? (appointmentsBooked / sitesShared) * 100 : 0;
     
     return [
       { stage: 'Sites Onboarded', count: totalSites, rate: 100, color: '#3b82f6', dropOff: 0 },
-      { stage: 'Consents Obtained', count: consentsObtained, rate: totalSites > 0 ? (consentsObtained / totalSites) * 100 : 0, color: '#10b981', dropOff: totalSites - consentsObtained },
-      { stage: 'Sites Shared', count: sitesShared, rate: consentsObtained > 0 ? (sitesShared / consentsObtained) * 100 : 0, color: '#8b5cf6', dropOff: consentsObtained - sitesShared },
-      { stage: 'Appointments Booked', count: appointmentsBooked, rate: sitesShared > 0 ? (appointmentsBooked / sitesShared) * 100 : 0, color: '#f59e0b', dropOff: sitesShared - appointmentsBooked }
+      { stage: 'Consents Obtained', count: consentsObtained, rate: isNaN(consentRate) ? 0 : consentRate, color: '#10b981', dropOff: Math.max(0, totalSites - consentsObtained) },
+      { stage: 'Sites Shared', count: sitesShared, rate: isNaN(shareRate) ? 0 : shareRate, color: '#8b5cf6', dropOff: Math.max(0, consentsObtained - sitesShared) },
+      { stage: 'Appointments Booked', count: appointmentsBooked, rate: isNaN(appointmentRate) ? 0 : appointmentRate, color: '#f59e0b', dropOff: Math.max(0, sitesShared - appointmentsBooked) }
     ];
   };
 
@@ -62,26 +70,37 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
       
       acc[agent].sitesOnboarded++;
       if (site.consent === 'YES') acc[agent].consentsObtained++;
-      if (site.is_shared === true) acc[agent].sitesShared++;
-      if (site.has_appointment === true) acc[agent].appointmentsBooked++;
+      if (site.is_shared === true || site.is_shared === 'true' || site.is_shared === 'YES' || site.is_shared === 1) acc[agent].sitesShared++;
+      if (site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1) acc[agent].appointmentsBooked++;
       if (site.site_status === 'active') acc[agent].activeSites++;
       
       return acc;
     }, {} as Record<string, any>);
 
-    return Object.values(agentStats).map((agent: any) => ({
-      ...agent,
-      consentRate: agent.sitesOnboarded > 0 ? Math.round((agent.consentsObtained / agent.sitesOnboarded) * 100) : 0,
-      shareRate: agent.consentsObtained > 0 ? Math.round((agent.sitesShared / agent.consentsObtained) * 100) : 0,
-      appointmentRate: agent.sitesShared > 0 ? Math.round((agent.appointmentsBooked / agent.sitesShared) * 100) : 0,
-      endToEndRate: agent.sitesOnboarded > 0 ? Math.round((agent.appointmentsBooked / agent.sitesOnboarded) * 100) : 0
-    })).sort((a, b) => b.endToEndRate - a.endToEndRate);
+    return Object.values(agentStats).map((agent: any) => {
+      const consentRate = agent.sitesOnboarded > 0 ? (agent.consentsObtained / agent.sitesOnboarded) * 100 : 0;
+      const shareRate = agent.consentsObtained > 0 ? (agent.sitesShared / agent.consentsObtained) * 100 : 0;
+      const appointmentRate = agent.sitesShared > 0 ? (agent.appointmentsBooked / agent.sitesShared) * 100 : 0;
+      const endToEndRate = agent.sitesOnboarded > 0 ? (agent.appointmentsBooked / agent.sitesOnboarded) * 100 : 0;
+      
+      return {
+        ...agent,
+        consentRate: isNaN(consentRate) ? 0 : Math.round(consentRate),
+        shareRate: isNaN(shareRate) ? 0 : Math.round(shareRate),
+        appointmentRate: isNaN(appointmentRate) ? 0 : Math.round(appointmentRate),
+        endToEndRate: isNaN(endToEndRate) ? 0 : Math.round(endToEndRate)
+      };
+    }).sort((a, b) => (b.endToEndRate || 0) - (a.endToEndRate || 0));
   };
 
   // 3. Appointment Analysis & Trends
   const calculateAppointmentMetrics = () => {
-    const appointmentSites = sites.filter(site => site.has_appointment === true);
-    const deletedAppointments = sites.filter(site => site.deleted_date && site.has_appointment === true).length;
+    const appointmentSites = sites.filter(site => 
+      site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1
+    );
+    const deletedAppointments = sites.filter(site => 
+      site.deleted_date && (site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1)
+    ).length;
     
     // Time distribution analysis
     const timeDistribution = appointmentSites.reduce((acc, site) => {
@@ -108,8 +127,13 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
   // 4. Exceptions & Quality Issues
   const calculateExceptions = () => {
     const onboardedNoConsent = sites.filter(site => site.consent === 'NO').length;
-    const consentNoShare = sites.filter(site => site.consent === 'YES' && site.is_shared !== true).length;
-    const sharedNoAppointment = sites.filter(site => site.is_shared === true && site.has_appointment !== true).length;
+    const consentNoShare = sites.filter(site => 
+      site.consent === 'YES' && !(site.is_shared === true || site.is_shared === 'true' || site.is_shared === 'YES' || site.is_shared === 1)
+    ).length;
+    const sharedNoAppointment = sites.filter(site => 
+      (site.is_shared === true || site.is_shared === 'true' || site.is_shared === 'YES' || site.is_shared === 1) && 
+      !(site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1)
+    ).length;
     const inactiveSites = sites.filter(site => site.site_status === 'inactive').length;
     const multipleShares = sites.filter(site => site.share_count > 1).length;
     const deletedSites = sites.filter(site => site.deleted_date).length;
@@ -139,7 +163,7 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
       const daySites = sites.filter(site => site.onboard_date === dateStr);
       const dayAppointments = sites.filter(site => 
         site.appointment_set_date === dateStr || 
-        (site.appointment_date === dateStr && site.has_appointment === true)
+        (site.appointment_date === dateStr && (site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1))
       );
       
       last30Days.push({
