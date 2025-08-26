@@ -63,12 +63,19 @@ const Dashboard = () => {
 
       {/* Main Dashboard Content */}
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <DashboardFilters
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-          onApplyFilters={handleApplyFilters}
-          isLoading={isLoading}
-        />
+        {/* Filters Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center">
+            <div className="w-1 h-6 bg-primary mr-3 rounded"></div>
+            Filter Controls
+          </h2>
+          <DashboardFilters
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            onApplyFilters={handleApplyFilters}
+            isLoading={isLoading}
+          />
+        </div>
 
         {error && (
           <Alert className="mb-6 border-destructive">
@@ -79,29 +86,57 @@ const Dashboard = () => {
           </Alert>
         )}
 
+        {/* Data Summary Section */}
         {summary && (
-          <Card className="dashboard-card mb-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-card-foreground mb-2">Summary</h2>
-                <p className="text-muted-foreground">
-                  Showing {summary.totalSites} sites from {summary.dateRange.from} to {summary.dateRange.to}
-                  {summary.agentFilter && ` for agent: ${summary.agentFilter}`}
-                </p>
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center">
+              <div className="w-1 h-6 bg-primary mr-3 rounded"></div>
+              Data Summary
+            </h2>
+            <Card className="dashboard-card">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-card-foreground mb-2">Current Dataset</h3>
+                  <p className="text-muted-foreground">
+                    Showing {summary.totalSites} sites from {summary.dateRange.from} to {summary.dateRange.to}
+                    {summary.agentFilter && ` for agent: ${summary.agentFilter}`}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-muted-foreground">Last updated</p>
+                  <p className="text-sm font-medium">{new Date().toLocaleString()}</p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-muted-foreground">Last updated</p>
-                <p className="text-sm font-medium">{new Date().toLocaleString()}</p>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
         )}
 
-        <KPICards data={kpiData} isLoading={isLoading} />
+        {/* KPI Overview Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center">
+            <div className="w-1 h-6 bg-primary mr-3 rounded"></div>
+            Key Performance Indicators
+          </h2>
+          <KPICards data={kpiData} isLoading={isLoading} />
+        </div>
 
-        <Charts sites={sites} isLoading={isLoading} />
+        {/* Business Intelligence Charts Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center">
+            <div className="w-1 h-6 bg-primary mr-3 rounded"></div>
+            Business Intelligence Charts
+          </h2>
+          <Charts sites={sites} isLoading={isLoading} />
+        </div>
 
-        <SiteDataTable sites={sites} isLoading={isLoading} />
+        {/* Raw Data Analysis Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center">
+            <div className="w-1 h-6 bg-primary mr-3 rounded"></div>
+            Raw Data Analysis
+          </h2>
+          <SiteDataTable sites={sites} isLoading={isLoading} />
+        </div>
       </div>
     </div>
   );
