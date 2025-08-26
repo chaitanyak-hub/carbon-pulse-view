@@ -76,10 +76,10 @@ export const calculateKPIs = (sites: SiteData[]) => {
   const consentPending = sites.filter(site => site.consent === 'NO').length;
   const consentRate = totalSites > 0 ? (consentGranted / totalSites) * 100 : 0;
   
-  const sharedSites = sites.filter(site => site.is_shared).length;
+  const sharedSites = sites.filter(site => site.is_shared === true).length;
   const shareRate = totalSites > 0 ? (sharedSites / totalSites) * 100 : 0;
   
-  const sitesWithAppointments = sites.filter(site => site.has_appointment).length;
+  const sitesWithAppointments = sites.filter(site => site.has_appointment === true).length;
   const appointmentRate = totalSites > 0 ? (sitesWithAppointments / totalSites) * 100 : 0;
   
   return {

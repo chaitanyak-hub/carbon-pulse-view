@@ -34,8 +34,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
   const calculateFunnelMetrics = () => {
     const totalSites = sites.length;
     const consentsObtained = sites.filter(site => site.consent === 'YES').length;
-    const sitesShared = sites.filter(site => site.is_shared).length;
-    const appointmentsBooked = sites.filter(site => site.has_appointment).length;
+    const sitesShared = sites.filter(site => site.is_shared === true).length;
+    const appointmentsBooked = sites.filter(site => site.has_appointment === true).length;
     
     return [
       { stage: 'Sites Onboarded', count: totalSites, rate: 100, color: '#3b82f6', dropOff: 0 },
@@ -62,8 +62,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
       
       acc[agent].sitesOnboarded++;
       if (site.consent === 'YES') acc[agent].consentsObtained++;
-      if (site.is_shared) acc[agent].sitesShared++;
-      if (site.has_appointment) acc[agent].appointmentsBooked++;
+      if (site.is_shared === true) acc[agent].sitesShared++;
+      if (site.has_appointment === true) acc[agent].appointmentsBooked++;
       if (site.site_status === 'active') acc[agent].activeSites++;
       
       return acc;
@@ -80,8 +80,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
 
   // 3. Appointment Analysis & Trends
   const calculateAppointmentMetrics = () => {
-    const appointmentSites = sites.filter(site => site.has_appointment);
-    const deletedAppointments = sites.filter(site => site.deleted_date && site.has_appointment).length;
+    const appointmentSites = sites.filter(site => site.has_appointment === true);
+    const deletedAppointments = sites.filter(site => site.deleted_date && site.has_appointment === true).length;
     
     // Time distribution analysis
     const timeDistribution = appointmentSites.reduce((acc, site) => {
@@ -108,8 +108,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
   // 4. Exceptions & Quality Issues
   const calculateExceptions = () => {
     const onboardedNoConsent = sites.filter(site => site.consent === 'NO').length;
-    const consentNoShare = sites.filter(site => site.consent === 'YES' && !site.is_shared).length;
-    const sharedNoAppointment = sites.filter(site => site.is_shared && !site.has_appointment).length;
+    const consentNoShare = sites.filter(site => site.consent === 'YES' && site.is_shared !== true).length;
+    const sharedNoAppointment = sites.filter(site => site.is_shared === true && site.has_appointment !== true).length;
     const inactiveSites = sites.filter(site => site.site_status === 'inactive').length;
     const multipleShares = sites.filter(site => site.share_count > 1).length;
     const deletedSites = sites.filter(site => site.deleted_date).length;
@@ -139,7 +139,7 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
       const daySites = sites.filter(site => site.onboard_date === dateStr);
       const dayAppointments = sites.filter(site => 
         site.appointment_set_date === dateStr || 
-        (site.appointment_date === dateStr && site.has_appointment)
+        (site.appointment_date === dateStr && site.has_appointment === true)
       );
       
       last30Days.push({
