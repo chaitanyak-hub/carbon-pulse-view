@@ -80,6 +80,25 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     );
   }
 
+  // Debug: Log the agent data to help identify issues
+  console.log('Agent data for charts:', agentData);
+
+  if (agentData.length === 0) {
+    return (
+      <div className="space-y-8">
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <Users className="h-6 w-6 text-primary" />
+            <h3 className="text-xl font-semibold text-foreground">Agent Performance Metrics</h3>
+          </div>
+          <Card className="p-6">
+            <p className="text-muted-foreground">No agent data available to display charts.</p>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <div className="space-y-6">
@@ -92,109 +111,117 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           {/* Sites Added by Agent */}
           <Card className="p-6">
             <h4 className="text-lg font-medium mb-4">Sites Added by Agent</h4>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={agentData} layout="horizontal">
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
-                <YAxis 
-                  dataKey="name" 
-                  type="category" 
-                  stroke="hsl(var(--muted-foreground))" 
-                  width={120}
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="sitesAdded" fill="#3b82f6" name="Sites Added" radius={[0, 4, 4, 0]}>
-                  <LabelList 
-                    dataKey="sitesAdded" 
-                    position="right" 
-                    className="fill-foreground text-sm font-medium" 
-                    offset={8}
+            <div style={{ width: '100%', height: '400px' }}>
+              <ResponsiveContainer>
+                <BarChart data={agentData} layout="horizontal" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
+                  <YAxis 
+                    dataKey="name" 
+                    type="category" 
+                    stroke="hsl(var(--muted-foreground))" 
+                    width={150}
+                    tick={{ fontSize: 12 }}
                   />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="sitesAdded" fill="hsl(var(--primary))" name="Sites Added" radius={[0, 4, 4, 0]}>
+                    <LabelList 
+                      dataKey="sitesAdded" 
+                      position="right" 
+                      className="fill-foreground text-sm font-medium" 
+                      offset={8}
+                    />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </Card>
 
           {/* Consents by Agent */}
           <Card className="p-6">
             <h4 className="text-lg font-medium mb-4">Consents Obtained by Agent</h4>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={agentData} layout="horizontal">
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
-                <YAxis 
-                  dataKey="name" 
-                  type="category" 
-                  stroke="hsl(var(--muted-foreground))" 
-                  width={120}
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="consentsObtained" fill="#10b981" name="Consents Obtained" radius={[0, 4, 4, 0]}>
-                  <LabelList 
-                    dataKey="consentsObtained" 
-                    position="right" 
-                    className="fill-foreground text-sm font-medium" 
-                    offset={8}
+            <div style={{ width: '100%', height: '400px' }}>
+              <ResponsiveContainer>
+                <BarChart data={agentData} layout="horizontal" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
+                  <YAxis 
+                    dataKey="name" 
+                    type="category" 
+                    stroke="hsl(var(--muted-foreground))" 
+                    width={150}
+                    tick={{ fontSize: 12 }}
                   />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="consentsObtained" fill="hsl(var(--success))" name="Consents Obtained" radius={[0, 4, 4, 0]}>
+                    <LabelList 
+                      dataKey="consentsObtained" 
+                      position="right" 
+                      className="fill-foreground text-sm font-medium" 
+                      offset={8}
+                    />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </Card>
 
           {/* Appointments Booked by Agent */}
           <Card className="p-6">
             <h4 className="text-lg font-medium mb-4">Appointments Booked by Agent</h4>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={agentData} layout="horizontal">
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
-                <YAxis 
-                  dataKey="name" 
-                  type="category" 
-                  stroke="hsl(var(--muted-foreground))" 
-                  width={120}
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="appointmentsBooked" fill="#f59e0b" name="Appointments Booked" radius={[0, 4, 4, 0]}>
-                  <LabelList 
-                    dataKey="appointmentsBooked" 
-                    position="right" 
-                    className="fill-foreground text-sm font-medium" 
-                    offset={8}
+            <div style={{ width: '100%', height: '400px' }}>
+              <ResponsiveContainer>
+                <BarChart data={agentData} layout="horizontal" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
+                  <YAxis 
+                    dataKey="name" 
+                    type="category" 
+                    stroke="hsl(var(--muted-foreground))" 
+                    width={150}
+                    tick={{ fontSize: 12 }}
                   />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="appointmentsBooked" fill="hsl(var(--warning))" name="Appointments Booked" radius={[0, 4, 4, 0]}>
+                    <LabelList 
+                      dataKey="appointmentsBooked" 
+                      position="right" 
+                      className="fill-foreground text-sm font-medium" 
+                      offset={8}
+                    />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </Card>
 
-          {/* Appointments by Agent (Duplicate as requested) */}
+          {/* Appointments by Agent */}
           <Card className="p-6">
             <h4 className="text-lg font-medium mb-4">Appointments by Agent</h4>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={agentData} layout="horizontal">
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
-                <YAxis 
-                  dataKey="name" 
-                  type="category" 
-                  stroke="hsl(var(--muted-foreground))" 
-                  width={120}
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="appointmentsBooked" fill="#8b5cf6" name="Appointments" radius={[0, 4, 4, 0]}>
-                  <LabelList 
-                    dataKey="appointmentsBooked" 
-                    position="right" 
-                    className="fill-foreground text-sm font-medium" 
-                    offset={8}
+            <div style={{ width: '100%', height: '400px' }}>
+              <ResponsiveContainer>
+                <BarChart data={agentData} layout="horizontal" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
+                  <YAxis 
+                    dataKey="name" 
+                    type="category" 
+                    stroke="hsl(var(--muted-foreground))" 
+                    width={150}
+                    tick={{ fontSize: 12 }}
                   />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="appointmentsBooked" fill="hsl(var(--accent))" name="Appointments" radius={[0, 4, 4, 0]}>
+                    <LabelList 
+                      dataKey="appointmentsBooked" 
+                      position="right" 
+                      className="fill-foreground text-sm font-medium" 
+                      offset={8}
+                    />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </Card>
         </div>
       </div>
