@@ -1,4 +1,6 @@
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   BarChart,
   Bar,
@@ -15,9 +17,12 @@ import {
   Legend,
   AreaChart,
   Area,
+  FunnelChart,
+  Funnel,
   LabelList
 } from 'recharts';
 import { SiteData } from '@/services/api';
+import { AlertTriangle, TrendingUp, Users, Clock, Calendar, Target } from 'lucide-react';
 
 interface ChartsProps {
   sites: SiteData[];
@@ -25,153 +30,134 @@ interface ChartsProps {
 }
 
 const Charts = ({ sites, isLoading = false }: ChartsProps) => {
-  // Calculate Core KPIs from real data
-  const calculateBusinessKPIs = () => {
+  // 1. Customer Journey Funnel Analysis
+  const calculateFunnelMetrics = () => {
     const totalSites = sites.length;
     const consentsObtained = sites.filter(site => site.consent === 'YES').length;
     const sitesShared = sites.filter(site => site.is_shared).length;
     const appointmentsBooked = sites.filter(site => site.has_appointment).length;
     
-    // Customer Journey Funnel (assuming total sites represent initial contacts)
-    const consentRate = totalSites > 0 ? (consentsObtained / totalSites) * 100 : 0;
-    const shareRate = consentsObtained > 0 ? (sitesShared / consentsObtained) * 100 : 0;
-    const appointmentRate = sitesShared > 0 ? (appointmentsBooked / sitesShared) * 100 : 0;
-    
-    return {
-      totalSites,
-      consentsObtained,
-      sitesShared,
-      appointmentsBooked,
-      consentRate,
-      shareRate,
-      appointmentRate,
-      consentDeclineRate: 100 - consentRate
-    };
-  };
-
-  // Generate funnel data for visualization
-  const generateFunnelData = () => {
-    const kpis = calculateBusinessKPIs();
     return [
-      { stage: 'Initial Contact', count: kpis.totalSites, percentage: 100, color: 'hsl(var(--chart-1))' },
-      { stage: 'Consent Obtained', count: kpis.consentsObtained, percentage: kpis.consentRate, color: 'hsl(var(--chart-2))' },
-      { stage: 'Sites Shared', count: kpis.sitesShared, percentage: kpis.shareRate, color: 'hsl(var(--chart-3))' },
-      { stage: 'Appointments Booked', count: kpis.appointmentsBooked, percentage: kpis.appointmentRate, color: 'hsl(var(--chart-4))' }
+      { stage: 'Sites Onboarded', count: totalSites, rate: 100, color: '#3b82f6', dropOff: 0 },
+      { stage: 'Consents Obtained', count: consentsObtained, rate: totalSites > 0 ? (consentsObtained / totalSites) * 100 : 0, color: '#10b981', dropOff: totalSites - consentsObtained },
+      { stage: 'Sites Shared', count: sitesShared, rate: consentsObtained > 0 ? (sitesShared / consentsObtained) * 100 : 0, color: '#8b5cf6', dropOff: consentsObtained - sitesShared },
+      { stage: 'Appointments Booked', count: appointmentsBooked, rate: sitesShared > 0 ? (appointmentsBooked / sitesShared) * 100 : 0, color: '#f59e0b', dropOff: sitesShared - appointmentsBooked }
     ];
   };
 
-  // Generate agent performance data
-  const generateAgentPerformance = () => {
+  // 2. Agent Productivity & Leaderboard
+  const calculateAgentMetrics = () => {
     const agentStats = sites.reduce((acc, site) => {
       const agent = site.agent_name;
       if (!acc[agent]) {
         acc[agent] = {
           name: agent,
-          totalSites: 0,
-          consents: 0,
+          sitesOnboarded: 0,
+          consentsObtained: 0,
           sitesShared: 0,
-          appointments: 0
+          appointmentsBooked: 0,
+          activeSites: 0
         };
       }
       
-      acc[agent].totalSites++;
-      if (site.consent === 'YES') acc[agent].consents++;
+      acc[agent].sitesOnboarded++;
+      if (site.consent === 'YES') acc[agent].consentsObtained++;
       if (site.is_shared) acc[agent].sitesShared++;
-      if (site.has_appointment) acc[agent].appointments++;
+      if (site.has_appointment) acc[agent].appointmentsBooked++;
+      if (site.site_status === 'active') acc[agent].activeSites++;
       
       return acc;
     }, {} as Record<string, any>);
 
     return Object.values(agentStats).map((agent: any) => ({
       ...agent,
-      consentRate: agent.totalSites > 0 ? Math.round((agent.consents / agent.totalSites) * 100) : 0,
-      appointmentRate: agent.sitesShared > 0 ? Math.round((agent.appointments / agent.sitesShared) * 100) : 0
-    }));
+      consentRate: agent.sitesOnboarded > 0 ? Math.round((agent.consentsObtained / agent.sitesOnboarded) * 100) : 0,
+      shareRate: agent.consentsObtained > 0 ? Math.round((agent.sitesShared / agent.consentsObtained) * 100) : 0,
+      appointmentRate: agent.sitesShared > 0 ? Math.round((agent.appointmentsBooked / agent.sitesShared) * 100) : 0,
+      endToEndRate: agent.sitesOnboarded > 0 ? Math.round((agent.appointmentsBooked / agent.sitesOnboarded) * 100) : 0
+    })).sort((a, b) => b.endToEndRate - a.endToEndRate);
   };
 
-  // Generate daily activity trends
-  const generateDailyTrends = () => {
+  // 3. Appointment Analysis & Trends
+  const calculateAppointmentMetrics = () => {
+    const appointmentSites = sites.filter(site => site.has_appointment);
+    const deletedAppointments = sites.filter(site => site.deleted_date && site.has_appointment).length;
+    
+    // Time distribution analysis
+    const timeDistribution = appointmentSites.reduce((acc, site) => {
+      if (site.appointment_time_from) {
+        const hour = parseInt(site.appointment_time_from.split(':')[0]);
+        const period = hour < 12 ? 'Morning (6-12)' : hour < 17 ? 'Afternoon (12-17)' : 'Evening (17-21)';
+        acc[period] = (acc[period] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    return {
+      total: appointmentSites.length,
+      cancelled: deletedAppointments,
+      noShowRate: appointmentSites.length > 0 ? (deletedAppointments / appointmentSites.length) * 100 : 0,
+      timeDistribution: Object.entries(timeDistribution).map(([period, count]) => ({
+        period,
+        count,
+        percentage: (count / appointmentSites.length) * 100
+      }))
+    };
+  };
+
+  // 4. Exceptions & Quality Issues
+  const calculateExceptions = () => {
+    const onboardedNoConsent = sites.filter(site => site.consent === 'NO').length;
+    const consentNoShare = sites.filter(site => site.consent === 'YES' && !site.is_shared).length;
+    const sharedNoAppointment = sites.filter(site => site.is_shared && !site.has_appointment).length;
+    const inactiveSites = sites.filter(site => site.site_status === 'inactive').length;
+    const multipleShares = sites.filter(site => site.share_count > 1).length;
+    const deletedSites = sites.filter(site => site.deleted_date).length;
+
+    return {
+      onboardedNoConsent,
+      consentNoShare, 
+      sharedNoAppointment,
+      inactiveSites,
+      multipleShares,
+      deletedSites,
+      total: sites.length
+    };
+  };
+
+  // 5. Daily Activity Trends (Last 30 Days)
+  const calculateDailyTrends = () => {
     const last30Days = [];
-    const now = new Date();
+    const today = new Date();
     
     for (let i = 29; i >= 0; i--) {
-      const date = new Date(now);
-      date.setDate(now.getDate() - i);
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
       const dayLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       
       const daySites = sites.filter(site => site.onboard_date === dateStr);
-      const dayConsents = daySites.filter(site => site.consent === 'YES');
-      const dayShared = daySites.filter(site => site.is_shared);
-      const dayAppointments = daySites.filter(site => site.has_appointment);
+      const dayAppointments = sites.filter(site => 
+        site.appointment_set_date === dateStr || 
+        (site.appointment_date === dateStr && site.has_appointment)
+      );
       
       last30Days.push({
         date: dayLabel,
-        sitesAdded: daySites.length,
-        consentsObtained: dayConsents.length,
-        sitesShared: dayShared.length,
-        appointmentsBooked: dayAppointments.length
+        sitesOnboarded: daySites.length,
+        appointmentsBooked: dayAppointments.length,
+        conversionRate: daySites.length > 0 ? (dayAppointments.length / daySites.length) * 100 : 0
       });
     }
     
     return last30Days;
   };
 
-  // Generate conversion metrics
-  const generateConversionMetrics = () => {
-    const kpis = calculateBusinessKPIs();
-    return [
-      { metric: 'Consent Rate', value: kpis.consentRate, target: 75, color: 'hsl(var(--chart-1))' },
-      { metric: 'Share Rate', value: kpis.shareRate, target: 80, color: 'hsl(var(--chart-2))' },
-      { metric: 'Appointment Rate', value: kpis.appointmentRate, target: 60, color: 'hsl(var(--chart-3))' },
-      { metric: 'End-to-End Rate', value: (kpis.appointmentsBooked / kpis.totalSites) * 100, target: 35, color: 'hsl(var(--chart-4))' }
-    ];
-  };
-
-  const funnelData = generateFunnelData();
-  const agentPerformance = generateAgentPerformance();
-  const dailyTrends = generateDailyTrends();
-  const conversionMetrics = generateConversionMetrics();
-
-  // Process data for charts from real API data
-  const siteStatusData = [
-    {
-      name: 'Active',
-      value: sites.filter(site => site.site_status === 'active').length,
-      color: 'hsl(var(--chart-1))'
-    },
-    {
-      name: 'Inactive',
-      value: sites.filter(site => site.site_status === 'inactive').length,
-      color: 'hsl(var(--chart-2))'
-    }
-  ];
-
-  const consentData = [
-    {
-      name: 'Granted',
-      value: sites.filter(site => site.consent === 'YES').length,
-      color: 'hsl(var(--chart-1))'
-    },
-    {
-      name: 'Pending/Denied',
-      value: sites.filter(site => site.consent === 'NO').length,
-      color: 'hsl(var(--chart-2))'
-    }
-  ];
-
-  const appointmentData = [
-    {
-      name: 'With Appointments',
-      value: sites.filter(site => site.has_appointment).length,
-      color: 'hsl(var(--chart-1))'
-    },
-    {
-      name: 'Without Appointments',
-      value: sites.filter(site => !site.has_appointment).length,
-      color: 'hsl(var(--chart-2))'
-    }
-  ];
+  const funnelData = calculateFunnelMetrics();
+  const agentData = calculateAgentMetrics();
+  const appointmentMetrics = calculateAppointmentMetrics();
+  const exceptions = calculateExceptions();
+  const dailyTrends = calculateDailyTrends();
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -180,7 +166,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           <p className="text-card-foreground font-medium">{label}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
-              {entry.name}: {entry.value}
+              {entry.name}: {typeof entry.value === 'number' && entry.value % 1 !== 0 ? entry.value.toFixed(1) : entry.value}
+              {entry.name.includes('Rate') || entry.name.includes('%') ? '%' : ''}
             </p>
           ))}
         </div>
@@ -193,9 +180,9 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <Card key={index} className="bg-blue-100 border border-blue-200 p-6 rounded-lg animate-pulse">
-              <div className="h-64 bg-blue-200 rounded"></div>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Card key={index} className="p-6 rounded-lg animate-pulse">
+              <div className="h-64 bg-muted rounded"></div>
             </Card>
           ))}
         </div>
@@ -205,13 +192,17 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
 
   return (
     <div className="space-y-8">
-      {/* Customer Journey Funnel */}
+      {/* 1. CUSTOMER JOURNEY FUNNEL */}
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-blue-900">Customer Journey Funnel</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="flex items-center gap-3">
+          <Target className="h-6 w-6 text-primary" />
+          <h3 className="text-xl font-semibold text-foreground">Customer Journey Funnel</h3>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Funnel Visualization */}
-          <Card className="chart-container lg:col-span-2">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4">Conversion Funnel</h3>
+          <Card className="lg:col-span-2 p-6">
+            <h4 className="text-lg font-medium mb-4">Conversion Pipeline</h4>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={funnelData} layout="horizontal">
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -228,201 +219,268 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
             </ResponsiveContainer>
           </Card>
 
-          {/* Conversion Rates */}
-          <Card className="chart-container">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4">Conversion Rates vs Targets</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={conversionMetrics}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="metric" stroke="hsl(var(--muted-foreground))" />
-                <YAxis stroke="hsl(var(--muted-foreground))" domain={[0, 100]} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Bar dataKey="value" fill="hsl(var(--chart-1))" name="Actual %">
-                  <LabelList dataKey="value" position="top" formatter={(value: number) => `${value.toFixed(1)}%`} />
-                </Bar>
-                <Bar dataKey="target" fill="hsl(var(--chart-2))" opacity={0.3} name="Target %">
-                  <LabelList dataKey="target" position="top" formatter={(value: number) => `${value}%`} />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </Card>
-
-          {/* Activity Status Distribution */}
-          <Card className="chart-container">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4">Current Pipeline Status</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={funnelData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  dataKey="count"
-                  label={({ stage, count, percentage }) => `${stage}: ${count} (${percentage.toFixed(1)}%)`}
-                >
-                  {funnelData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-              </PieChart>
-            </ResponsiveContainer>
+          {/* Drop-off Analysis */}
+          <Card className="p-6">
+            <h4 className="text-lg font-medium mb-4">Stage Analysis</h4>
+            <div className="space-y-4">
+              {funnelData.map((stage, index) => (
+                <div key={stage.stage} className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">{stage.stage}</span>
+                    <Badge variant="outline">{stage.rate.toFixed(1)}%</Badge>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div 
+                      className="h-2 rounded-full transition-all duration-300"
+                      style={{ 
+                        width: `${stage.rate}%`,
+                        backgroundColor: stage.color
+                      }}
+                    />
+                  </div>
+                  {stage.dropOff > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      Drop-off: {stage.dropOff} sites ({((stage.dropOff / (stage.count + stage.dropOff)) * 100).toFixed(1)}%)
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
           </Card>
         </div>
       </div>
 
-      {/* Agent Performance Dashboard */}
+      {/* 2. AGENT PERFORMANCE LEADERBOARD */}
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-blue-900">Agent Performance Dashboard</h2>
+        <div className="flex items-center gap-3">
+          <Users className="h-6 w-6 text-primary" />
+          <h3 className="text-xl font-semibold text-foreground">Agent Performance Leaderboard</h3>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Agent Leaderboard - Total Sites */}
-          <Card className="chart-container">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4">Sites Added by Agent</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={agentPerformance} layout="horizontal">
+          {/* Agent Rankings */}
+          <Card className="p-6">
+            <h4 className="text-lg font-medium mb-4">End-to-End Performance</h4>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={agentData.slice(0, 8)} layout="horizontal">
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
+                <XAxis type="number" stroke="hsl(var(--muted-foreground))" domain={[0, 100]} />
                 <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" width={100} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="totalSites" fill="hsl(var(--chart-1))" name="Total Sites">
-                  <LabelList dataKey="totalSites" position="right" />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </Card>
-
-          {/* Agent Conversion Rates */}
-          <Card className="chart-container">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4">Agent Conversion Rates</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={agentPerformance}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
-                <YAxis stroke="hsl(var(--muted-foreground))" domain={[0, 100]} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Bar dataKey="consentRate" fill="hsl(var(--chart-1))" name="Consent Rate %">
-                  <LabelList dataKey="consentRate" position="top" formatter={(value: number) => `${value}%`} />
-                </Bar>
-                <Bar dataKey="appointmentRate" fill="hsl(var(--chart-2))" name="Appointment Rate %">
-                  <LabelList dataKey="appointmentRate" position="top" formatter={(value: number) => `${value}%`} />
+                <Bar dataKey="endToEndRate" fill="hsl(var(--primary))" name="End-to-End Rate">
+                  <LabelList dataKey="endToEndRate" position="right" formatter={(value: number) => `${value}%`} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           </Card>
 
           {/* Agent Activity Breakdown */}
-          <Card className="chart-container lg:col-span-2">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4">Agent Activity Breakdown</h3>
+          <Card className="p-6">
+            <h4 className="text-lg font-medium mb-4">Activity Volume</h4>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={agentPerformance}>
+              <BarChart data={agentData.slice(0, 6)}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
                 <YAxis stroke="hsl(var(--muted-foreground))" />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
-                <Bar dataKey="consents" fill="hsl(var(--chart-1))" name="Consents Obtained" />
-                <Bar dataKey="sitesShared" fill="hsl(var(--chart-2))" name="Sites Shared" />
-                <Bar dataKey="appointments" fill="hsl(var(--chart-3))" name="Appointments Booked" />
+                <Bar dataKey="sitesOnboarded" fill="#3b82f6" name="Sites Onboarded" />
+                <Bar dataKey="consentsObtained" fill="#10b981" name="Consents" />
+                <Bar dataKey="appointmentsBooked" fill="#f59e0b" name="Appointments" />
               </BarChart>
             </ResponsiveContainer>
           </Card>
         </div>
       </div>
 
-      {/* Daily Activity Trends */}
+      {/* 3. APPOINTMENT ANALYTICS */}
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-blue-900">Daily Activity Trends (Last 30 Days)</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Daily Pipeline Activities */}
-          <Card className="chart-container lg:col-span-2">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4">Daily Pipeline Activities</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={dailyTrends}>
+        <div className="flex items-center gap-3">
+          <Calendar className="h-6 w-6 text-primary" />
+          <h3 className="text-xl font-semibold text-foreground">Appointment Analytics</h3>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Appointment Time Distribution */}
+          <Card className="p-6">
+            <h4 className="text-lg font-medium mb-4">Time Slot Distribution</h4>
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={appointmentMetrics.timeDistribution}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  dataKey="count"
+                  label={({ period, percentage }) => `${period}: ${percentage.toFixed(1)}%`}
+                >
+                  {appointmentMetrics.timeDistribution.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={['#3b82f6', '#10b981', '#f59e0b'][index % 3]} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+          </Card>
+
+          {/* Appointment Quality Metrics */}
+          <Card className="p-6">
+            <h4 className="text-lg font-medium mb-4">Quality Metrics</h4>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                <span className="text-sm font-medium">Total Appointments</span>
+                <Badge variant="default">{appointmentMetrics.total}</Badge>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                <span className="text-sm font-medium">Cancelled/No-Shows</span>
+                <Badge variant="destructive">{appointmentMetrics.cancelled}</Badge>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                <span className="text-sm font-medium">No-Show Rate</span>
+                <Badge variant={appointmentMetrics.noShowRate < 10 ? "default" : "destructive"}>
+                  {appointmentMetrics.noShowRate.toFixed(1)}%
+                </Badge>
+              </div>
+            </div>
+          </Card>
+
+          {/* Daily Activity Trends */}
+          <Card className="p-6">
+            <h4 className="text-lg font-medium mb-4">Recent Trends (7 Days)</h4>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={dailyTrends.slice(-7)}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
                 <YAxis stroke="hsl(var(--muted-foreground))" />
                 <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="sitesAdded" 
-                  stroke="hsl(var(--chart-1))" 
-                  strokeWidth={3}
-                  name="Sites Added"
-                  dot={{ r: 4 }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="consentsObtained" 
-                  stroke="hsl(var(--chart-2))" 
-                  strokeWidth={3}
-                  name="Consents Obtained"
-                  dot={{ r: 4 }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="sitesShared" 
-                  stroke="hsl(var(--chart-3))" 
-                  strokeWidth={3}
-                  name="Sites Shared"
-                  dot={{ r: 4 }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="appointmentsBooked" 
-                  stroke="hsl(var(--chart-4))" 
-                  strokeWidth={3}
-                  name="Appointments Booked"
-                  dot={{ r: 4 }}
-                />
+                <Line type="monotone" dataKey="sitesOnboarded" stroke="#3b82f6" strokeWidth={2} name="Sites Onboarded" />
+                <Line type="monotone" dataKey="appointmentsBooked" stroke="#f59e0b" strokeWidth={2} name="Appointments" />
               </LineChart>
             </ResponsiveContainer>
           </Card>
-
-          {/* Daily Sites Added */}
-          <Card className="chart-container">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4">Daily Sites Added</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <AreaChart data={dailyTrends}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
-                <YAxis stroke="hsl(var(--muted-foreground))" />
-                <Tooltip content={<CustomTooltip />} />
-                <Area 
-                  type="monotone" 
-                  dataKey="sitesAdded" 
-                  stroke="hsl(var(--chart-1))" 
-                  fill="hsl(var(--chart-1))"
-                  fillOpacity={0.5}
-                  strokeWidth={3}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </Card>
-
-          {/* Daily Appointments */}
-          <Card className="chart-container">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4">Daily Appointments Booked</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <AreaChart data={dailyTrends}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
-                <YAxis stroke="hsl(var(--muted-foreground))" />
-                <Tooltip content={<CustomTooltip />} />
-                <Area 
-                  type="monotone" 
-                  dataKey="appointmentsBooked" 
-                  stroke="hsl(var(--chart-4))" 
-                  fill="hsl(var(--chart-4))"
-                  fillOpacity={0.5}
-                  strokeWidth={3}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </Card>
         </div>
+      </div>
+
+      {/* 4. EXCEPTIONS & QUALITY PANEL */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <AlertTriangle className="h-6 w-6 text-primary" />
+          <h3 className="text-xl font-semibold text-foreground">Exceptions & Quality Issues</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Alert className={exceptions.onboardedNoConsent > 0 ? "border-amber-200" : "border-green-200"}>
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Onboarded → No Consent:</strong> {exceptions.onboardedNoConsent} sites
+              <br />
+              <span className="text-sm text-muted-foreground">
+                {((exceptions.onboardedNoConsent / exceptions.total) * 100).toFixed(1)}% of total
+              </span>
+            </AlertDescription>
+          </Alert>
+
+          <Alert className={exceptions.consentNoShare > 0 ? "border-amber-200" : "border-green-200"}>
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Consent → Not Shared:</strong> {exceptions.consentNoShare} sites
+              <br />
+              <span className="text-sm text-muted-foreground">
+                Conversion blocker
+              </span>
+            </AlertDescription>
+          </Alert>
+
+          <Alert className={exceptions.sharedNoAppointment > 0 ? "border-amber-200" : "border-green-200"}>
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Shared → No Appointment:</strong> {exceptions.sharedNoAppointment} sites
+              <br />
+              <span className="text-sm text-muted-foreground">
+                Final stage bottleneck
+              </span>
+            </AlertDescription>
+          </Alert>
+
+          <Alert className={exceptions.inactiveSites > 0 ? "border-red-200" : "border-green-200"}>
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Inactive Sites:</strong> {exceptions.inactiveSites} sites
+              <br />
+              <span className="text-sm text-muted-foreground">
+                Requires attention
+              </span>
+            </AlertDescription>
+          </Alert>
+
+          <Alert className={exceptions.multipleShares > 0 ? "border-blue-200" : "border-green-200"}>
+            <TrendingUp className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Multiple Shares:</strong> {exceptions.multipleShares} sites
+              <br />
+              <span className="text-sm text-muted-foreground">
+                High engagement sites
+              </span>
+            </AlertDescription>
+          </Alert>
+
+          <Alert className={exceptions.deletedSites > 0 ? "border-red-200" : "border-green-200"}>
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Deleted Sites:</strong> {exceptions.deletedSites} sites
+              <br />
+              <span className="text-sm text-muted-foreground">
+                Lost opportunities
+              </span>
+            </AlertDescription>
+          </Alert>
+        </div>
+      </div>
+
+      {/* 5. OPERATIONAL EFFICIENCY TRENDS */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <Clock className="h-6 w-6 text-primary" />
+          <h3 className="text-xl font-semibold text-foreground">Operational Efficiency (30-Day Trend)</h3>
+        </div>
+
+        <Card className="p-6">
+          <ResponsiveContainer width="100%" height={400}>
+            <AreaChart data={dailyTrends}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+              <YAxis stroke="hsl(var(--muted-foreground))" />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Area 
+                type="monotone" 
+                dataKey="sitesOnboarded" 
+                stackId="1"
+                stroke="#3b82f6" 
+                fill="#3b82f6"
+                fillOpacity={0.6}
+                name="Sites Onboarded"
+              />
+              <Area 
+                type="monotone" 
+                dataKey="appointmentsBooked" 
+                stackId="2"
+                stroke="#f59e0b" 
+                fill="#f59e0b"
+                fillOpacity={0.6}
+                name="Appointments Booked"
+              />
+              <Line 
+                type="monotone" 
+                dataKey="conversionRate" 
+                stroke="#10b981" 
+                strokeWidth={3}
+                name="Daily Conversion %"
+                dot={{ r: 3 }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </Card>
       </div>
     </div>
   );
