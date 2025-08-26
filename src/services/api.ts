@@ -57,8 +57,10 @@ export const fetchSiteActivity = async (filters: SiteActivityFilters): Promise<S
   }
 
   const url = `${API_BASE_URL}/site-activity?${params}`;
+  console.log('=== API REQUEST DEBUG ===');
   console.log('Fetching from URL:', url);
   console.log('Headers:', { 'Content-Type': 'application/json', 'api_key': API_KEY });
+  console.log('Filters:', filters);
 
   try {
     const response = await fetch(url, {
