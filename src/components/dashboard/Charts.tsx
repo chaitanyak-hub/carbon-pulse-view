@@ -20,8 +20,24 @@ interface ChartsProps {
 const Charts = ({ sites, isLoading = false }: ChartsProps) => {
   // Calculate Agent Metrics
   const calculateAgentMetrics = () => {
+    console.log('Sites data in calculateAgentMetrics:', sites);
+    console.log('Sites length:', sites?.length);
+    console.log('Sample site:', sites?.[0]);
+    
+    if (!sites || sites.length === 0) {
+      console.log('No sites data available');
+      return [];
+    }
+
     const agentStats = sites.reduce((acc, site) => {
       const agent = site.agent_name;
+      console.log('Processing agent:', agent, 'from site:', site.siteId);
+      
+      if (!agent) {
+        console.log('No agent name found for site:', site.siteId);
+        return acc;
+      }
+      
       if (!acc[agent]) {
         acc[agent] = {
           name: agent,
@@ -40,7 +56,9 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
       return acc;
     }, {} as Record<string, any>);
 
-    return Object.values(agentStats).sort((a: any, b: any) => b.sitesAdded - a.sitesAdded);
+    const result = Object.values(agentStats).sort((a: any, b: any) => b.sitesAdded - a.sitesAdded);
+    console.log('Agent stats result:', result);
+    return result;
   };
 
   const agentData = calculateAgentMetrics();
