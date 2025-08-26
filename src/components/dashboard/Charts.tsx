@@ -14,7 +14,8 @@ import {
   Line,
   Legend,
   AreaChart,
-  Area
+  Area,
+  LabelList
 } from 'recharts';
 import { SiteData } from '@/services/api';
 
@@ -24,6 +25,40 @@ interface ChartsProps {
 }
 
 const Charts = ({ sites, isLoading = false }: ChartsProps) => {
+  // Helper function to generate daily sites added for last 30 days
+  const generateDailySitesAdded = () => {
+    const days = [];
+    const now = new Date();
+    const agents = ["Chaitanya K", "Sarah Johnson", "Mike Chen", "Emma Watson", "David Rodriguez", "Lisa Park", "Alex Thompson"];
+    
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(now.getDate() - i);
+      
+      const dayLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      
+      // Generate realistic daily site additions (0-15 per day)
+      const totalSitesAdded = Math.floor(Math.random() * 16); // 0-15 sites per day
+      
+      // Distribute among agents
+      const agentData: any = {
+        date: dayLabel,
+        fullDate: date.toISOString().split('T')[0],
+        totalSitesAdded
+      };
+      
+      // Add individual agent data
+      agents.forEach(agent => {
+        const agentSites = totalSitesAdded > 0 ? Math.floor(Math.random() * (totalSitesAdded / agents.length + 3)) : 0;
+        agentData[agent.replace(' ', '_')] = agentSites;
+      });
+      
+      days.push(agentData);
+    }
+    
+    return days;
+  };
+
   // Helper function to generate weekly trends for last 12 weeks
   const generateWeeklyTrends = () => {
     const weeks = [];
@@ -122,8 +157,24 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     return months;
   };
 
+  const dailySitesData = generateDailySitesAdded();
   const weeklyData = generateWeeklyTrends();
   const monthlyData = generateMonthlyTrends();
+  
+  // Agent totals for the period
+  const agentTotals = dailySitesData.reduce((acc, day) => {
+    ["Chaitanya K", "Sarah Johnson", "Mike Chen", "Emma Watson", "David Rodriguez", "Lisa Park", "Alex Thompson"].forEach(agent => {
+      const key = agent.replace(' ', '_');
+      acc[agent] = (acc[agent] || 0) + (day[key] || 0);
+    });
+    return acc;
+  }, {} as Record<string, number>);
+  
+  const agentData = Object.entries(agentTotals).map(([name, total]) => ({
+    name,
+    total,
+    color: `hsl(var(--chart-${(Object.keys(agentTotals).indexOf(name) % 6) + 1}))`
+  }));
 
   // Process data for charts
   const siteStatusData = [
@@ -199,6 +250,105 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
 
   return (
     <div className="space-y-8">
+      {/* Daily Site Additions - Last 30 Days */}
+      <div className="space-y-6">
+        <h2 className="text-xl font-semibold text-blue-900">Daily Site Additions (Last 30 Days)</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Daily Total Sites Added */}
+          <Card className="chart-container">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">Total Sites Added Per Day</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={dailySitesData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+                <YAxis stroke="hsl(var(--muted-foreground))" />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar 
+                  dataKey="totalSitesAdded" 
+                  fill="hsl(var(--chart-1))" 
+                  name="Sites Added"
+                >
+                  <LabelList dataKey="totalSitesAdded" position="top" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+
+          {/* Sites Added by Agent (30-day totals) */}
+          <Card className="chart-container">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">Sites Added by Agent (30-day Total)</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={agentData} layout="horizontal">
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
+                <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" width={100} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="total" name="Total Sites Added">
+                  {agentData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                  <LabelList dataKey="total" position="right" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+
+          {/* Daily Sites by Top 4 Agents */}
+          <Card className="chart-container lg:col-span-2">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">Daily Sites Added by Top Agents</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={dailySitesData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+                <YAxis stroke="hsl(var(--muted-foreground))" />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="Chaitanya_K" 
+                  stroke="hsl(var(--chart-1))" 
+                  strokeWidth={3}
+                  name="Chaitanya K"
+                  dot={{ r: 4 }}
+                >
+                  <LabelList dataKey="Chaitanya_K" position="top" />
+                </Line>
+                <Line 
+                  type="monotone" 
+                  dataKey="Sarah_Johnson" 
+                  stroke="hsl(var(--chart-2))" 
+                  strokeWidth={3}
+                  name="Sarah Johnson"
+                  dot={{ r: 4 }}
+                >
+                  <LabelList dataKey="Sarah_Johnson" position="top" />
+                </Line>
+                <Line 
+                  type="monotone" 
+                  dataKey="Mike_Chen" 
+                  stroke="hsl(var(--chart-3))" 
+                  strokeWidth={3}
+                  name="Mike Chen"
+                  dot={{ r: 4 }}
+                >
+                  <LabelList dataKey="Mike_Chen" position="top" />
+                </Line>
+                <Line 
+                  type="monotone" 
+                  dataKey="Emma_Watson" 
+                  stroke="hsl(var(--chart-4))" 
+                  strokeWidth={3}
+                  name="Emma Watson"
+                  dot={{ r: 4 }}
+                >
+                  <LabelList dataKey="Emma_Watson" position="top" />
+                </Line>
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
+        </div>
+      </div>
+
       {/* Weekly Trends - Last 12 Weeks */}
       <div className="space-y-6">
         <h2 className="text-xl font-semibold text-blue-900">Weekly Trends (Last 12 Weeks)</h2>
