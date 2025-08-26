@@ -130,12 +130,12 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     {
       name: 'Active',
       value: sites.filter(site => site.site_status === 'active').length,
-      color: 'hsl(var(--primary))'
+      color: 'hsl(var(--chart-2))'
     },
     {
       name: 'Inactive',
       value: sites.filter(site => site.site_status === 'inactive').length,
-      color: 'hsl(var(--muted))'
+      color: 'hsl(var(--chart-3))'
     }
   ];
 
@@ -143,12 +143,12 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     {
       name: 'Granted',
       value: sites.filter(site => site.consent === 'YES').length,
-      color: 'hsl(var(--success))'
+      color: 'hsl(var(--chart-2))'
     },
     {
       name: 'Pending/Denied',
       value: sites.filter(site => site.consent === 'NO').length,
-      color: 'hsl(var(--destructive))'
+      color: 'hsl(var(--chart-3))'
     }
   ];
 
@@ -157,12 +157,12 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     {
       name: 'With Appointments',
       value: sites.filter(site => site.has_appointment).length,
-      color: 'hsl(var(--primary))'
+      color: 'hsl(var(--chart-1))'
     },
     {
       name: 'Without Appointments',
       value: sites.filter(site => !site.has_appointment).length,
-      color: 'hsl(var(--secondary))'
+      color: 'hsl(var(--chart-4))'
     }
   ];
 
@@ -215,8 +215,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <Area 
                   type="monotone" 
                   dataKey="totalSites" 
-                  stroke="hsl(var(--primary))" 
-                  fill="hsl(var(--primary))"
+                  stroke="hsl(var(--chart-1))" 
+                  fill="hsl(var(--chart-1))"
                   fillOpacity={0.3}
                   strokeWidth={2}
                 />
@@ -237,14 +237,14 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <Line 
                   type="monotone" 
                   dataKey="activeSites" 
-                  stroke="hsl(var(--success))" 
-                  strokeWidth={2}
+                  stroke="hsl(var(--chart-2))" 
+                  strokeWidth={3}
                   name="Active Sites"
                 />
                 <Line 
                   type="monotone" 
                   dataKey="totalSites" 
-                  stroke="hsl(var(--muted-foreground))" 
+                  stroke="hsl(var(--chart-1))" 
                   strokeWidth={2}
                   strokeDasharray="5 5"
                   name="Total Sites"
@@ -265,10 +265,10 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <Area 
                   type="monotone" 
                   dataKey="consentRate" 
-                  stroke="hsl(var(--success))" 
-                  fill="hsl(var(--success))"
+                  stroke="hsl(var(--chart-2))" 
+                  fill="hsl(var(--chart-2))"
                   fillOpacity={0.3}
-                  strokeWidth={2}
+                  strokeWidth={3}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -286,10 +286,10 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <Area 
                   type="monotone" 
                   dataKey="appointmentRate" 
-                  stroke="hsl(var(--primary))" 
-                  fill="hsl(var(--primary))"
+                  stroke="hsl(var(--chart-1))" 
+                  fill="hsl(var(--chart-1))"
                   fillOpacity={0.3}
-                  strokeWidth={2}
+                  strokeWidth={3}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -313,10 +313,10 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <Area 
                   type="monotone" 
                   dataKey="totalSites" 
-                  stroke="hsl(var(--primary))" 
-                  fill="hsl(var(--primary))"
+                  stroke="hsl(var(--chart-1))" 
+                  fill="hsl(var(--chart-1))"
                   fillOpacity={0.4}
-                  strokeWidth={3}
+                  strokeWidth={4}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -335,22 +335,22 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <Line 
                   type="monotone" 
                   dataKey="consentRate" 
-                  stroke="hsl(var(--success))" 
-                  strokeWidth={2}
+                  stroke="hsl(var(--chart-2))" 
+                  strokeWidth={3}
                   name="Consent Rate %"
                 />
                 <Line 
                   type="monotone" 
                   dataKey="appointmentRate" 
-                  stroke="hsl(var(--primary))" 
-                  strokeWidth={2}
+                  stroke="hsl(var(--chart-1))" 
+                  strokeWidth={3}
                   name="Appointment Rate %"
                 />
                 <Line 
                   type="monotone" 
                   dataKey="shareRate" 
-                  stroke="hsl(var(--accent))" 
-                  strokeWidth={2}
+                  stroke="hsl(var(--chart-5))" 
+                  strokeWidth={3}
                   name="Share Rate %"
                 />
               </LineChart>
@@ -367,9 +367,9 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <YAxis stroke="hsl(var(--muted-foreground))" />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
-                <Bar dataKey="activeSites" fill="hsl(var(--success))" name="Active Sites" />
-                <Bar dataKey="consentGranted" fill="hsl(var(--primary))" name="Consent Granted" />
-                <Bar dataKey="withAppointments" fill="hsl(var(--accent))" name="With Appointments" />
+                <Bar dataKey="activeSites" fill="hsl(var(--chart-2))" name="Active Sites" />
+                <Bar dataKey="consentGranted" fill="hsl(var(--chart-1))" name="Consent Granted" />
+                <Bar dataKey="withAppointments" fill="hsl(var(--chart-5))" name="With Appointments" />
               </BarChart>
             </ResponsiveContainer>
           </Card>
