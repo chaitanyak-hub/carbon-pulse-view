@@ -1,6 +1,5 @@
-// Site Activity API Service
-const API_BASE_URL = 'https://api.thelabrador.co.uk/carbon/v3';
-const API_KEY = 'b3cd497e-8a28-4148-987d-c3c2157bc740';
+// Site Activity API Service via Supabase Edge Function
+import { supabase } from '@/integrations/supabase/client';
 
 export interface SiteActivityFilters {
   from: string;
@@ -46,43 +45,23 @@ export interface SiteActivityResponse {
 }
 
 export const fetchSiteActivity = async (filters: SiteActivityFilters): Promise<SiteActivityResponse> => {
-  const params = new URLSearchParams({
-    from: filters.from,
-    to: filters.to,
-    format: filters.format || 'json'
-  });
-
-  if (filters.agentEmail) {
-    params.append('agentEmail', filters.agentEmail);
-  }
-
-  const url = `${API_BASE_URL}/site-activity?${params}`;
   console.log('=== API REQUEST DEBUG ===');
-  console.log('Fetching from URL:', url);
-  console.log('Headers:', { 'Content-Type': 'application/json', 'api_key': API_KEY });
-  console.log('Filters:', filters);
+  console.log('Calling Supabase Edge Function with filters:', filters);
 
   try {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'api_key': API_KEY,
-      },
+    const { data, error } = await supabase.functions.invoke('fetch-site-activity', {
+      body: { filters }
     });
 
-    console.log('Response status:', response.status);
-    console.log('Response ok:', response.ok);
-
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    if (error) {
+      console.error('Edge Function error:', error);
+      throw new Error(`Edge Function Error: ${error.message}`);
     }
 
-    const data = await response.json();
-    console.log('API Response:', data);
+    console.log('Edge Function response received, data length:', data?.data?.sites?.length || 0);
     return data;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error('API call error:', error);
     // CORS workaround - return mock data for development
     console.log('Returning mock data due to CORS issue');
     
