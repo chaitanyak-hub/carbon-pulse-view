@@ -76,21 +76,13 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       gradient: 'from-amber-500 to-amber-600',
       status: endToEndRate >= 35 ? 'good' : endToEndRate >= 25 ? 'warning' : 'poor',
       target: 35
-    },
-    {
-      title: 'Active Sites',
-      value: `${data.totalSites > 0 ? ((data.activeSites / data.totalSites) * 100).toFixed(1) : 0}%`,
-      subtitle: `${data.activeSites} of ${data.totalSites} active`,
-      icon: Activity,
-      gradient: 'from-emerald-500 to-emerald-600',
-      status: data.activeSites > data.inactiveSites ? 'good' : 'warning'
     }
   ];
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {Array.from({ length: 6 }).map((_, index) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        {Array.from({ length: 5 }).map((_, index) => (
           <Card key={index} className="bg-blue-600 text-white p-6 rounded-lg animate-pulse">
             <div className="h-24 bg-blue-500 rounded"></div>
           </Card>
@@ -118,7 +110,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
       {kpiCards.map((card, index) => {
         const IconComponent = card.icon;
         return (
