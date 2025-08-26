@@ -188,12 +188,17 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
       return (
         <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
           <p className="text-card-foreground font-medium">{label}</p>
-          {payload.map((entry: any, index: number) => (
-            <p key={index} className="text-sm" style={{ color: entry.color }}>
-              {entry.name}: {typeof entry.value === 'number' && entry.value % 1 !== 0 ? entry.value.toFixed(1) : entry.value}
-              {entry.name.includes('Rate') || entry.name.includes('%') ? '%' : ''}
-            </p>
-          ))}
+          {payload.map((entry: any, index: number) => {
+            const entryName = entry.name || entry.dataKey || 'Value';
+            const entryValue = typeof entry.value === 'number' && entry.value % 1 !== 0 ? entry.value.toFixed(1) : entry.value;
+            const shouldShowPercent = typeof entryName === 'string' && (entryName.toLowerCase().includes('rate') || entryName.toLowerCase().includes('%'));
+            
+            return (
+              <p key={index} className="text-sm" style={{ color: entry.color }}>
+                {entryName}: {entryValue}{shouldShowPercent ? '%' : ''}
+              </p>
+            );
+          })}
         </div>
       );
     }
