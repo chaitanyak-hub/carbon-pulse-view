@@ -29,6 +29,10 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     const weeks = [];
     const now = new Date();
     
+    // Base values for realistic data generation
+    const baseTotal = 450;
+    const growthTrend = 1.02; // 2% weekly growth
+    
     for (let i = 11; i >= 0; i--) {
       const weekStart = new Date(now);
       weekStart.setDate(now.getDate() - (i * 7));
@@ -38,25 +42,33 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
       weekEnd.setDate(weekStart.getDate() + 6);
       weekEnd.setHours(23, 59, 59, 999);
       
-      const weekLabel = `Week ${12 - i}`;
+      const weekLabel = `W${12 - i}`;
       
-      // Generate simulated data based on current site distribution
-      const totalSites = Math.floor(sites.length * (0.3 + Math.random() * 0.4));
-      const activeSites = Math.floor(totalSites * 0.7 + Math.random() * totalSites * 0.2);
-      const consentGranted = Math.floor(totalSites * 0.6 + Math.random() * totalSites * 0.3);
-      const withAppointments = Math.floor(totalSites * 0.4 + Math.random() * totalSites * 0.4);
-      const sharedSites = Math.floor(totalSites * 0.5 + Math.random() * totalSites * 0.3);
+      // Generate realistic trending data with some variability
+      const weekMultiplier = Math.pow(growthTrend, 11 - i);
+      const variance = 0.85 + Math.random() * 0.3; // ±15% variance
+      
+      const totalSites = Math.floor(baseTotal * weekMultiplier * variance);
+      const activeSites = Math.floor(totalSites * (0.72 + Math.random() * 0.16)); // 72-88% active
+      const consentGranted = Math.floor(totalSites * (0.58 + Math.random() * 0.25)); // 58-83% consent
+      const withAppointments = Math.floor(totalSites * (0.35 + Math.random() * 0.30)); // 35-65% appointments
+      const sharedSites = Math.floor(totalSites * (0.42 + Math.random() * 0.28)); // 42-70% shared
       
       weeks.push({
         period: weekLabel,
         totalSites,
         activeSites,
+        inactiveSites: totalSites - activeSites,
         consentGranted,
+        consentPending: totalSites - consentGranted,
         withAppointments,
+        withoutAppointments: totalSites - withAppointments,
         sharedSites,
-        consentRate: totalSites > 0 ? (consentGranted / totalSites) * 100 : 0,
-        appointmentRate: totalSites > 0 ? (withAppointments / totalSites) * 100 : 0,
-        shareRate: totalSites > 0 ? (sharedSites / totalSites) * 100 : 0
+        unsharedSites: totalSites - sharedSites,
+        consentRate: totalSites > 0 ? Math.round((consentGranted / totalSites) * 100) : 0,
+        appointmentRate: totalSites > 0 ? Math.round((withAppointments / totalSites) * 100) : 0,
+        shareRate: totalSites > 0 ? Math.round((sharedSites / totalSites) * 100) : 0,
+        activeRate: totalSites > 0 ? Math.round((activeSites / totalSites) * 100) : 0
       });
     }
     
@@ -68,30 +80,42 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     const months = [];
     const now = new Date();
     
+    // Base values for realistic monthly data
+    const baseTotal = 1200;
+    const growthTrend = 1.08; // 8% monthly growth
+    
     for (let i = 11; i >= 0; i--) {
       const monthDate = new Date(now);
       monthDate.setMonth(now.getMonth() - i);
       
       const monthLabel = monthDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
       
-      // Generate simulated data based on current site distribution with growth trend
-      const growthMultiplier = 0.6 + (11 - i) * 0.04; // Growth over time
-      const totalSites = Math.floor(sites.length * growthMultiplier * (0.8 + Math.random() * 0.4));
-      const activeSites = Math.floor(totalSites * 0.75 + Math.random() * totalSites * 0.15);
-      const consentGranted = Math.floor(totalSites * 0.65 + Math.random() * totalSites * 0.25);
-      const withAppointments = Math.floor(totalSites * 0.45 + Math.random() * totalSites * 0.35);
-      const sharedSites = Math.floor(totalSites * 0.55 + Math.random() * totalSites * 0.25);
+      // Generate realistic trending data with seasonal variations
+      const monthMultiplier = Math.pow(growthTrend, 11 - i);
+      const seasonalBoost = Math.sin(((11 - i) / 12) * 2 * Math.PI) * 0.1 + 1; // Seasonal variation
+      const variance = 0.9 + Math.random() * 0.2; // ±10% variance
+      
+      const totalSites = Math.floor(baseTotal * monthMultiplier * seasonalBoost * variance);
+      const activeSites = Math.floor(totalSites * (0.75 + Math.random() * 0.15)); // 75-90% active
+      const consentGranted = Math.floor(totalSites * (0.62 + Math.random() * 0.25)); // 62-87% consent
+      const withAppointments = Math.floor(totalSites * (0.40 + Math.random() * 0.35)); // 40-75% appointments
+      const sharedSites = Math.floor(totalSites * (0.48 + Math.random() * 0.30)); // 48-78% shared
       
       months.push({
         period: monthLabel,
         totalSites,
         activeSites,
+        inactiveSites: totalSites - activeSites,
         consentGranted,
+        consentPending: totalSites - consentGranted,
         withAppointments,
+        withoutAppointments: totalSites - withAppointments,
         sharedSites,
-        consentRate: totalSites > 0 ? (consentGranted / totalSites) * 100 : 0,
-        appointmentRate: totalSites > 0 ? (withAppointments / totalSites) * 100 : 0,
-        shareRate: totalSites > 0 ? (sharedSites / totalSites) * 100 : 0
+        unsharedSites: totalSites - sharedSites,
+        consentRate: totalSites > 0 ? Math.round((consentGranted / totalSites) * 100) : 0,
+        appointmentRate: totalSites > 0 ? Math.round((withAppointments / totalSites) * 100) : 0,
+        shareRate: totalSites > 0 ? Math.round((sharedSites / totalSites) * 100) : 0,
+        activeRate: totalSites > 0 ? Math.round((activeSites / totalSites) * 100) : 0
       });
     }
     
@@ -119,12 +143,12 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     {
       name: 'Granted',
       value: sites.filter(site => site.consent === 'YES').length,
-      color: 'hsl(142 76 36)'
+      color: 'hsl(var(--success))'
     },
     {
       name: 'Pending/Denied',
       value: sites.filter(site => site.consent === 'NO').length,
-      color: 'hsl(0 84 60)'
+      color: 'hsl(var(--destructive))'
     }
   ];
 
@@ -133,12 +157,12 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     {
       name: 'With Appointments',
       value: sites.filter(site => site.has_appointment).length,
-      color: 'hsl(221 83 53)'
+      color: 'hsl(var(--primary))'
     },
     {
       name: 'Without Appointments',
       value: sites.filter(site => !site.has_appointment).length,
-      color: 'hsl(215 20 65)'
+      color: 'hsl(var(--secondary))'
     }
   ];
 
@@ -213,7 +237,7 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <Line 
                   type="monotone" 
                   dataKey="activeSites" 
-                  stroke="hsl(142 76 36)" 
+                  stroke="hsl(var(--success))" 
                   strokeWidth={2}
                   name="Active Sites"
                 />
@@ -241,8 +265,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <Area 
                   type="monotone" 
                   dataKey="consentRate" 
-                  stroke="hsl(142 76 36)" 
-                  fill="hsl(142 76 36)"
+                  stroke="hsl(var(--success))" 
+                  fill="hsl(var(--success))"
                   fillOpacity={0.3}
                   strokeWidth={2}
                 />
@@ -262,8 +286,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <Area 
                   type="monotone" 
                   dataKey="appointmentRate" 
-                  stroke="hsl(221 83 53)" 
-                  fill="hsl(221 83 53)"
+                  stroke="hsl(var(--primary))" 
+                  fill="hsl(var(--primary))"
                   fillOpacity={0.3}
                   strokeWidth={2}
                 />
@@ -311,21 +335,21 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <Line 
                   type="monotone" 
                   dataKey="consentRate" 
-                  stroke="hsl(142 76 36)" 
+                  stroke="hsl(var(--success))" 
                   strokeWidth={2}
                   name="Consent Rate %"
                 />
                 <Line 
                   type="monotone" 
                   dataKey="appointmentRate" 
-                  stroke="hsl(221 83 53)" 
+                  stroke="hsl(var(--primary))" 
                   strokeWidth={2}
                   name="Appointment Rate %"
                 />
                 <Line 
                   type="monotone" 
                   dataKey="shareRate" 
-                  stroke="hsl(168 76 42)" 
+                  stroke="hsl(var(--accent))" 
                   strokeWidth={2}
                   name="Share Rate %"
                 />
@@ -343,9 +367,9 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <YAxis stroke="hsl(var(--muted-foreground))" />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
-                <Bar dataKey="activeSites" fill="hsl(142 76 36)" name="Active Sites" />
-                <Bar dataKey="consentGranted" fill="hsl(221 83 53)" name="Consent Granted" />
-                <Bar dataKey="withAppointments" fill="hsl(168 76 42)" name="With Appointments" />
+                <Bar dataKey="activeSites" fill="hsl(var(--success))" name="Active Sites" />
+                <Bar dataKey="consentGranted" fill="hsl(var(--primary))" name="Consent Granted" />
+                <Bar dataKey="withAppointments" fill="hsl(var(--accent))" name="With Appointments" />
               </BarChart>
             </ResponsiveContainer>
           </Card>
