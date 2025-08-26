@@ -12,8 +12,8 @@ import dashboardHero from '@/assets/dashboard-hero.jpg';
 
 const Dashboard = () => {
   const [filters, setFilters] = useState<SiteActivityFilters>({
-    from: '2024-08-01',
-    to: '2025-08-01',
+    from: '2025-07-01',
+    to: '2025-09-01',
     agentEmail: 'chaitanya+projectsolar@perse.energy',
     format: 'json'
   });
