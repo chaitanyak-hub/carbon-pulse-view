@@ -130,12 +130,12 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     {
       name: 'Active',
       value: sites.filter(site => site.site_status === 'active').length,
-      color: 'hsl(var(--chart-2))'
+      color: 'hsl(var(--chart-1))'
     },
     {
       name: 'Inactive',
       value: sites.filter(site => site.site_status === 'inactive').length,
-      color: 'hsl(var(--chart-3))'
+      color: 'hsl(var(--chart-2))'
     }
   ];
 
@@ -143,12 +143,12 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     {
       name: 'Granted',
       value: sites.filter(site => site.consent === 'YES').length,
-      color: 'hsl(var(--chart-2))'
+      color: 'hsl(var(--chart-1))'
     },
     {
       name: 'Pending/Denied',
       value: sites.filter(site => site.consent === 'NO').length,
-      color: 'hsl(var(--chart-3))'
+      color: 'hsl(var(--chart-2))'
     }
   ];
 
@@ -162,7 +162,7 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     {
       name: 'Without Appointments',
       value: sites.filter(site => !site.has_appointment).length,
-      color: 'hsl(var(--chart-4))'
+      color: 'hsl(var(--chart-2))'
     }
   ];
 
@@ -217,8 +217,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                   dataKey="totalSites" 
                   stroke="hsl(var(--chart-1))" 
                   fill="hsl(var(--chart-1))"
-                  fillOpacity={0.3}
-                  strokeWidth={2}
+                  fillOpacity={0.5}
+                  strokeWidth={4}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -237,15 +237,15 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <Line 
                   type="monotone" 
                   dataKey="activeSites" 
-                  stroke="hsl(var(--chart-2))" 
-                  strokeWidth={3}
+                  stroke="hsl(var(--chart-1))" 
+                  strokeWidth={4}
                   name="Active Sites"
                 />
                 <Line 
                   type="monotone" 
                   dataKey="totalSites" 
-                  stroke="hsl(var(--chart-1))" 
-                  strokeWidth={2}
+                  stroke="hsl(var(--chart-2))" 
+                  strokeWidth={3}
                   strokeDasharray="5 5"
                   name="Total Sites"
                 />
@@ -265,10 +265,10 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <Area 
                   type="monotone" 
                   dataKey="consentRate" 
-                  stroke="hsl(var(--chart-2))" 
-                  fill="hsl(var(--chart-2))"
-                  fillOpacity={0.3}
-                  strokeWidth={3}
+                  stroke="hsl(var(--chart-1))" 
+                  fill="hsl(var(--chart-1))"
+                  fillOpacity={0.5}
+                  strokeWidth={4}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -288,8 +288,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                   dataKey="appointmentRate" 
                   stroke="hsl(var(--chart-1))" 
                   fill="hsl(var(--chart-1))"
-                  fillOpacity={0.3}
-                  strokeWidth={3}
+                  fillOpacity={0.5}
+                  strokeWidth={4}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -315,8 +315,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                   dataKey="totalSites" 
                   stroke="hsl(var(--chart-1))" 
                   fill="hsl(var(--chart-1))"
-                  fillOpacity={0.4}
-                  strokeWidth={4}
+                  fillOpacity={0.6}
+                  strokeWidth={5}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -335,22 +335,22 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <Line 
                   type="monotone" 
                   dataKey="consentRate" 
-                  stroke="hsl(var(--chart-2))" 
-                  strokeWidth={3}
+                  stroke="hsl(var(--chart-1))" 
+                  strokeWidth={4}
                   name="Consent Rate %"
                 />
                 <Line 
                   type="monotone" 
                   dataKey="appointmentRate" 
-                  stroke="hsl(var(--chart-1))" 
-                  strokeWidth={3}
+                  stroke="hsl(var(--chart-2))" 
+                  strokeWidth={4}
                   name="Appointment Rate %"
                 />
                 <Line 
                   type="monotone" 
                   dataKey="shareRate" 
-                  stroke="hsl(var(--chart-5))" 
-                  strokeWidth={3}
+                  stroke="hsl(var(--chart-3))" 
+                  strokeWidth={4}
                   name="Share Rate %"
                 />
               </LineChart>
@@ -367,9 +367,9 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                 <YAxis stroke="hsl(var(--muted-foreground))" />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
-                <Bar dataKey="activeSites" fill="hsl(var(--chart-2))" name="Active Sites" />
-                <Bar dataKey="consentGranted" fill="hsl(var(--chart-1))" name="Consent Granted" />
-                <Bar dataKey="withAppointments" fill="hsl(var(--chart-5))" name="With Appointments" />
+                <Bar dataKey="activeSites" fill="hsl(var(--chart-1))" name="Active Sites" />
+                <Bar dataKey="consentGranted" fill="hsl(var(--chart-2))" name="Consent Granted" />
+                <Bar dataKey="withAppointments" fill="hsl(var(--chart-3))" name="With Appointments" />
               </BarChart>
             </ResponsiveContainer>
           </Card>
