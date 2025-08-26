@@ -34,7 +34,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       title: 'Total Sites',
       value: data.totalSites,
       icon: Building2,
-      gradient: 'gradient-primary',
+      gradient: 'bg-blue-600',
       textColor: 'text-white'
     },
     {
@@ -42,7 +42,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: data.activeSites,
       percentage: data.totalSites > 0 ? (data.activeSites / data.totalSites) * 100 : 0,
       icon: TrendingUp,
-      gradient: 'gradient-success',
+      gradient: 'bg-blue-700',
       textColor: 'text-white'
     },
     {
@@ -50,7 +50,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: data.inactiveSites,
       percentage: data.totalSites > 0 ? (data.inactiveSites / data.totalSites) * 100 : 0,
       icon: TrendingDown,
-      gradient: 'gradient-warning',
+      gradient: 'bg-blue-500',
       textColor: 'text-white'
     },
     {
@@ -58,7 +58,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: `${data.consentRate.toFixed(1)}%`,
       subtitle: `${data.consentGranted} granted`,
       icon: CheckCircle,
-      gradient: data.consentRate >= 70 ? 'gradient-success' : 'gradient-warning',
+      gradient: 'bg-blue-800',
       textColor: 'text-white'
     },
     {
@@ -66,7 +66,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: `${data.shareRate.toFixed(1)}%`,
       subtitle: `${data.sharedSites} shared`,
       icon: Share2,
-      gradient: 'gradient-primary',
+      gradient: 'bg-blue-600',
       textColor: 'text-white'
     },
     {
@@ -74,7 +74,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: `${data.appointmentRate.toFixed(1)}%`,
       subtitle: `${data.sitesWithAppointments} scheduled`,
       icon: Calendar,
-      gradient: data.appointmentRate >= 50 ? 'gradient-success' : 'gradient-warning',
+      gradient: 'bg-blue-700',
       textColor: 'text-white'
     }
   ];
@@ -83,8 +83,8 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {Array.from({ length: 6 }).map((_, index) => (
-          <Card key={index} className="dashboard-card animate-pulse">
-            <div className="h-24 bg-muted rounded"></div>
+          <Card key={index} className="bg-blue-600 text-white p-6 rounded-lg animate-pulse">
+            <div className="h-24 bg-blue-500 rounded"></div>
           </Card>
         ))}
       </div>
@@ -96,7 +96,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       {kpiCards.map((card, index) => {
         const IconComponent = card.icon;
         return (
-          <Card key={index} className={`dashboard-card ${card.gradient} ${card.textColor} hover:shadow-glow transition-all duration-300`}>
+          <Card key={index} className={`${card.gradient} ${card.textColor} p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300`}>
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-sm font-medium opacity-90 mb-1">

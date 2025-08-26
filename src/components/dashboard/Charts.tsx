@@ -188,9 +188,9 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
         {/* Loading state for new charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {Array.from({ length: 6 }).map((_, index) => (
-            <Card key={index} className="dashboard-card animate-pulse">
-              <div className="h-64 bg-muted rounded"></div>
-            </Card>
+          <Card key={index} className="bg-blue-100 border border-blue-200 p-6 rounded-lg animate-pulse">
+            <div className="h-64 bg-blue-200 rounded"></div>
+          </Card>
           ))}
         </div>
       </div>
@@ -201,11 +201,11 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
     <div className="space-y-8">
       {/* Weekly Trends - Last 12 Weeks */}
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-card-foreground">Weekly Trends (Last 12 Weeks)</h2>
+        <h2 className="text-xl font-semibold text-blue-900">Weekly Trends (Last 12 Weeks)</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Total Sites Week on Week */}
-          <Card className="dashboard-card">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">Total Sites - Weekly</h3>
+          <Card className="chart-container">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">Total Sites - Weekly</h3>
             <ResponsiveContainer width="100%" height={250}>
               <AreaChart data={weeklyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -225,8 +225,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           </Card>
 
           {/* Active Sites Weekly */}
-          <Card className="dashboard-card">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">Active vs Inactive Sites - Weekly</h3>
+          <Card className="chart-container">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">Active vs Inactive Sites - Weekly</h3>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={weeklyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -254,8 +254,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           </Card>
 
           {/* Consent Rate Weekly */}
-          <Card className="dashboard-card">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">Consent Rate - Weekly (%)</h3>
+          <Card className="chart-container">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">Consent Rate - Weekly (%)</h3>
             <ResponsiveContainer width="100%" height={250}>
               <AreaChart data={weeklyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -275,8 +275,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           </Card>
 
           {/* Appointment Rate Weekly */}
-          <Card className="dashboard-card">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">Appointment Rate - Weekly (%)</h3>
+          <Card className="chart-container">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">Appointment Rate - Weekly (%)</h3>
             <ResponsiveContainer width="100%" height={250}>
               <AreaChart data={weeklyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -299,11 +299,11 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
 
       {/* Monthly Trends - Last 12 Months */}
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-card-foreground">Monthly Trends (Last 12 Months)</h2>
+        <h2 className="text-xl font-semibold text-blue-900">Monthly Trends (Last 12 Months)</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Total Sites Month on Month */}
-          <Card className="dashboard-card">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">Total Sites - Monthly Growth</h3>
+          <Card className="chart-container">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">Total Sites - Monthly Growth</h3>
             <ResponsiveContainer width="100%" height={250}>
               <AreaChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -323,8 +323,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           </Card>
 
           {/* KPI Trends Monthly */}
-          <Card className="dashboard-card">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">All KPI Rates - Monthly (%)</h3>
+          <Card className="chart-container">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">All KPI Rates - Monthly (%)</h3>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -358,8 +358,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           </Card>
 
           {/* Monthly Volume Comparison */}
-          <Card className="dashboard-card">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">Monthly Volume Breakdown</h3>
+          <Card className="chart-container">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">Monthly Volume Breakdown</h3>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -375,8 +375,8 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           </Card>
 
           {/* Current Status Distribution */}
-          <Card className="dashboard-card">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">Current Status Overview</h3>
+          <Card className="chart-container">
+            <h3 className="text-lg font-semibold text-blue-900 mb-4">Current Status Overview</h3>
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
