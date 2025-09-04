@@ -37,7 +37,10 @@ const Dashboard = () => {
     refetch();
   }, [refetch]);
 
-  const sites = data?.data?.sites || [];
+  const allSites = data?.data?.sites || [];
+  const sites = filters.activeOnly 
+    ? allSites.filter(site => site.site_status === 'ACTIVE')
+    : allSites;
   const kpiData = calculateKPIs(sites);
   const summary = data?.data?.summary;
 

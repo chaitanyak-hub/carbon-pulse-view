@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { CalendarIcon, FilterIcon } from 'lucide-react';
 import { SiteActivityFilters } from '@/services/api';
 
@@ -21,7 +22,7 @@ const DashboardFilters = ({
 }: DashboardFiltersProps) => {
   const [localFilters, setLocalFilters] = useState<SiteActivityFilters>(filters);
 
-  const handleInputChange = (field: keyof SiteActivityFilters, value: string) => {
+  const handleInputChange = (field: keyof SiteActivityFilters, value: string | boolean) => {
     const updatedFilters = { ...localFilters, [field]: value };
     setLocalFilters(updatedFilters);
     onFiltersChange(updatedFilters);
@@ -84,6 +85,22 @@ const DashboardFilters = ({
               onChange={(e) => handleInputChange('agentEmail', e.target.value)}
             />
           </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="activeOnly"
+            checked={localFilters.activeOnly || false}
+            onCheckedChange={(checked) =>
+              handleInputChange('activeOnly', checked)
+            }
+          />
+          <Label
+            htmlFor="activeOnly"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Active Sites Only
+          </Label>
         </div>
 
         <div className="flex justify-end">

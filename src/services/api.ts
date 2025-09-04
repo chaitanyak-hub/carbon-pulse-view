@@ -6,6 +6,7 @@ export interface SiteActivityFilters {
   to: string;
   agentEmail?: string;
   format?: 'json' | 'csv';
+  activeOnly?: boolean;
 }
 
 export interface SiteData {
@@ -16,7 +17,7 @@ export interface SiteData {
   consent: 'YES' | 'NO' | 'PENDING';
   consent_type: 'VERBAL' | 'DIGITAL' | null;
   is_shared: boolean | string | number;
-  site_status: 'active' | 'inactive';
+  site_status: 'ACTIVE' | 'INACTIVE';
   has_appointment: boolean | string | number;
   appointment_date: string | null;
   appointment_time_from: string | null;
@@ -73,7 +74,7 @@ export const calculateKPIs = (sites: SiteData[]) => {
   console.log('Sample site data:', sites[0]);
   
   const totalSites = sites.length;
-  const activeSites = sites.filter(site => site.site_status === 'active').length;
+  const activeSites = sites.filter(site => site.site_status === 'ACTIVE').length;
   const inactiveSites = totalSites - activeSites;
   
   const consentGranted = sites.filter(site => site.consent === 'YES').length;
