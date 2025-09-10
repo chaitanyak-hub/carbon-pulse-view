@@ -144,10 +144,10 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
         </div>
 
         <div className="space-y-8">
-          {/* Sites Added by Agent */}
+          {/* Combined Agent Performance Metrics */}
           <Card className="p-8">
-            <h4 className="text-xl font-semibold mb-6 text-foreground">Sites Added by Agent</h4>
-            <div className="w-full h-[500px]">
+            <h4 className="text-xl font-semibold mb-6 text-foreground">Agent Performance Overview</h4>
+            <div className="w-full h-[600px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
                   data={agentData.sort((a: any, b: any) => b.sitesAdded - a.sitesAdded)} 
@@ -179,41 +179,10 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                     <LabelList 
                       dataKey="sitesAdded" 
                       position="top" 
-                      className="fill-foreground text-sm font-semibold" 
+                      className="fill-foreground text-xs font-semibold" 
                       offset={8}
                     />
                   </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
-
-          {/* Sites Shared by Agent */}
-          <Card className="p-8">
-            <h4 className="text-xl font-semibold mb-6 text-foreground">Sites Shared by Agent</h4>
-            <div className="w-full h-[500px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart 
-                  data={agentData.sort((a: any, b: any) => b.sitesShared - a.sitesShared)} 
-                  margin={{ top: 30, right: 30, left: 30, bottom: 80 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
-                  <XAxis 
-                    dataKey="name" 
-                    stroke="hsl(var(--foreground))"
-                    tick={{ fontSize: 12, fontWeight: 500 }}
-                    tickLine={{ stroke: "hsl(var(--border))" }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={80}
-                    interval={0}
-                  />
-                  <YAxis 
-                    stroke="hsl(var(--foreground))" 
-                    tick={{ fontSize: 12, fontWeight: 500 }}
-                    tickLine={{ stroke: "hsl(var(--border))" }}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
                   <Bar 
                     dataKey="sitesShared" 
                     fill="hsl(var(--chart-2))" 
@@ -223,41 +192,10 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                     <LabelList 
                       dataKey="sitesShared" 
                       position="top" 
-                      className="fill-foreground text-sm font-semibold" 
+                      className="fill-foreground text-xs font-semibold" 
                       offset={8}
                     />
                   </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
-
-          {/* Appointments Booked by Agent */}
-          <Card className="p-8">
-            <h4 className="text-xl font-semibold mb-6 text-foreground">Appointments Booked by Agent</h4>
-            <div className="w-full h-[500px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart 
-                  data={agentData.sort((a: any, b: any) => b.appointmentsBooked - a.appointmentsBooked)} 
-                  margin={{ top: 30, right: 30, left: 30, bottom: 80 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
-                  <XAxis 
-                    dataKey="name" 
-                    stroke="hsl(var(--foreground))"
-                    tick={{ fontSize: 12, fontWeight: 500 }}
-                    tickLine={{ stroke: "hsl(var(--border))" }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={80}
-                    interval={0}
-                  />
-                  <YAxis 
-                    stroke="hsl(var(--foreground))" 
-                    tick={{ fontSize: 12, fontWeight: 500 }}
-                    tickLine={{ stroke: "hsl(var(--border))" }}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
                   <Bar 
                     dataKey="appointmentsBooked" 
                     fill="hsl(var(--chart-3))" 
@@ -267,7 +205,7 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                     <LabelList 
                       dataKey="appointmentsBooked" 
                       position="top" 
-                      className="fill-foreground text-sm font-semibold" 
+                      className="fill-foreground text-xs font-semibold" 
                       offset={8}
                     />
                   </Bar>
