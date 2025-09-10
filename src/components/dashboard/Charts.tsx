@@ -18,6 +18,16 @@ interface ChartsProps {
 }
 
 const Charts = ({ sites, isLoading = false }: ChartsProps) => {
+  // Function to format agent names
+  const formatAgentName = (email: string) => {
+    if (!email) return '';
+    // Extract the part before @ and replace dots with spaces, then capitalize
+    const namePart = email.split('@')[0];
+    return namePart.split('.').map(part => 
+      part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
+    ).join(' ');
+  };
+
   // Calculate Agent Metrics
   const calculateAgentMetrics = () => {
     console.log('Sites data in calculateAgentMetrics:', sites);
@@ -40,7 +50,7 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
       
       if (!acc[agent]) {
         acc[agent] = {
-          name: agent,
+          name: formatAgentName(agent),
           sitesAdded: 0,
           consentsObtained: 0,
           appointmentsBooked: 0
@@ -129,27 +139,26 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           {/* Sites Added by Agent */}
           <Card className="p-8">
             <h4 className="text-xl font-semibold mb-6 text-foreground">Sites Added by Agent</h4>
-            <div className="w-full h-[600px]">
+            <div className="w-full h-[500px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
                   data={agentData} 
-                  layout="horizontal" 
-                  margin={{ top: 30, right: 80, left: 300, bottom: 30 }}
+                  margin={{ top: 30, right: 30, left: 30, bottom: 80 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
                   <XAxis 
-                    type="number" 
+                    dataKey="name" 
                     stroke="hsl(var(--foreground))"
-                    tick={{ fontSize: 14, fontWeight: 500 }}
+                    tick={{ fontSize: 12, fontWeight: 500 }}
                     tickLine={{ stroke: "hsl(var(--border))" }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                    interval={0}
                   />
                   <YAxis 
-                    dataKey="name" 
-                    type="category" 
                     stroke="hsl(var(--foreground))" 
-                    width={300}
                     tick={{ fontSize: 12, fontWeight: 500 }}
-                    interval={0}
                     tickLine={{ stroke: "hsl(var(--border))" }}
                   />
                   <Tooltip content={<CustomTooltip />} />
@@ -157,13 +166,13 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                     dataKey="sitesAdded" 
                     fill="hsl(var(--primary))" 
                     name="Sites Added" 
-                    radius={[0, 6, 6, 0]}
+                    radius={[4, 4, 0, 0]}
                   >
                     <LabelList 
                       dataKey="sitesAdded" 
-                      position="right" 
+                      position="top" 
                       className="fill-foreground text-sm font-semibold" 
-                      offset={12}
+                      offset={8}
                     />
                   </Bar>
                 </BarChart>
@@ -174,27 +183,26 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           {/* Consents by Agent */}
           <Card className="p-8">
             <h4 className="text-xl font-semibold mb-6 text-foreground">Consents Obtained by Agent</h4>
-            <div className="w-full h-[600px]">
+            <div className="w-full h-[500px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
                   data={agentData} 
-                  layout="horizontal" 
-                  margin={{ top: 30, right: 80, left: 300, bottom: 30 }}
+                  margin={{ top: 30, right: 30, left: 30, bottom: 80 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
                   <XAxis 
-                    type="number" 
+                    dataKey="name" 
                     stroke="hsl(var(--foreground))"
-                    tick={{ fontSize: 14, fontWeight: 500 }}
+                    tick={{ fontSize: 12, fontWeight: 500 }}
                     tickLine={{ stroke: "hsl(var(--border))" }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                    interval={0}
                   />
                   <YAxis 
-                    dataKey="name" 
-                    type="category" 
                     stroke="hsl(var(--foreground))" 
-                    width={300}
                     tick={{ fontSize: 12, fontWeight: 500 }}
-                    interval={0}
                     tickLine={{ stroke: "hsl(var(--border))" }}
                   />
                   <Tooltip content={<CustomTooltip />} />
@@ -202,13 +210,13 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                     dataKey="consentsObtained" 
                     fill="hsl(var(--chart-2))" 
                     name="Consents Obtained" 
-                    radius={[0, 6, 6, 0]}
+                    radius={[4, 4, 0, 0]}
                   >
                     <LabelList 
                       dataKey="consentsObtained" 
-                      position="right" 
+                      position="top" 
                       className="fill-foreground text-sm font-semibold" 
-                      offset={12}
+                      offset={8}
                     />
                   </Bar>
                 </BarChart>
@@ -219,27 +227,26 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           {/* Appointments Booked by Agent */}
           <Card className="p-8">
             <h4 className="text-xl font-semibold mb-6 text-foreground">Appointments Booked by Agent</h4>
-            <div className="w-full h-[600px]">
+            <div className="w-full h-[500px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
                   data={agentData} 
-                  layout="horizontal" 
-                  margin={{ top: 30, right: 80, left: 300, bottom: 30 }}
+                  margin={{ top: 30, right: 30, left: 30, bottom: 80 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
                   <XAxis 
-                    type="number" 
+                    dataKey="name" 
                     stroke="hsl(var(--foreground))"
-                    tick={{ fontSize: 14, fontWeight: 500 }}
+                    tick={{ fontSize: 12, fontWeight: 500 }}
                     tickLine={{ stroke: "hsl(var(--border))" }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                    interval={0}
                   />
                   <YAxis 
-                    dataKey="name" 
-                    type="category" 
                     stroke="hsl(var(--foreground))" 
-                    width={300}
                     tick={{ fontSize: 12, fontWeight: 500 }}
-                    interval={0}
                     tickLine={{ stroke: "hsl(var(--border))" }}
                   />
                   <Tooltip content={<CustomTooltip />} />
@@ -247,13 +254,13 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                     dataKey="appointmentsBooked" 
                     fill="hsl(var(--chart-3))" 
                     name="Appointments Booked" 
-                    radius={[0, 6, 6, 0]}
+                    radius={[4, 4, 0, 0]}
                   >
                     <LabelList 
                       dataKey="appointmentsBooked" 
-                      position="right" 
+                      position="top" 
                       className="fill-foreground text-sm font-semibold" 
-                      offset={12}
+                      offset={8}
                     />
                   </Bar>
                 </BarChart>
