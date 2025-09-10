@@ -125,43 +125,45 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           <h3 className="text-xl font-semibold text-foreground">Agent Performance Metrics</h3>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-8">
           {/* Sites Added by Agent */}
-          <Card className="p-6">
-            <h4 className="text-lg font-medium mb-4">Sites Added by Agent</h4>
-            <div className="w-full h-[400px]">
+          <Card className="p-8">
+            <h4 className="text-xl font-semibold mb-6 text-foreground">Sites Added by Agent</h4>
+            <div className="w-full h-[600px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
                   data={agentData} 
                   layout="horizontal" 
-                  margin={{ top: 20, right: 50, left: 200, bottom: 20 }}
+                  margin={{ top: 30, right: 80, left: 300, bottom: 30 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
                   <XAxis 
                     type="number" 
-                    stroke="hsl(var(--muted-foreground))"
-                    tick={{ fontSize: 12 }}
+                    stroke="hsl(var(--foreground))"
+                    tick={{ fontSize: 14, fontWeight: 500 }}
+                    tickLine={{ stroke: "hsl(var(--border))" }}
                   />
                   <YAxis 
                     dataKey="name" 
                     type="category" 
-                    stroke="hsl(var(--muted-foreground))" 
-                    width={200}
-                    tick={{ fontSize: 10 }}
+                    stroke="hsl(var(--foreground))" 
+                    width={300}
+                    tick={{ fontSize: 12, fontWeight: 500 }}
                     interval={0}
+                    tickLine={{ stroke: "hsl(var(--border))" }}
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Bar 
                     dataKey="sitesAdded" 
                     fill="hsl(var(--primary))" 
                     name="Sites Added" 
-                    radius={[0, 4, 4, 0]}
+                    radius={[0, 6, 6, 0]}
                   >
                     <LabelList 
                       dataKey="sitesAdded" 
                       position="right" 
-                      className="fill-foreground text-xs font-medium" 
-                      offset={8}
+                      className="fill-foreground text-sm font-semibold" 
+                      offset={12}
                     />
                   </Bar>
                 </BarChart>
@@ -170,41 +172,43 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           </Card>
 
           {/* Consents by Agent */}
-          <Card className="p-6">
-            <h4 className="text-lg font-medium mb-4">Consents Obtained by Agent</h4>
-            <div className="w-full h-[400px]">
+          <Card className="p-8">
+            <h4 className="text-xl font-semibold mb-6 text-foreground">Consents Obtained by Agent</h4>
+            <div className="w-full h-[600px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
                   data={agentData} 
                   layout="horizontal" 
-                  margin={{ top: 20, right: 50, left: 200, bottom: 20 }}
+                  margin={{ top: 30, right: 80, left: 300, bottom: 30 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
                   <XAxis 
                     type="number" 
-                    stroke="hsl(var(--muted-foreground))"
-                    tick={{ fontSize: 12 }}
+                    stroke="hsl(var(--foreground))"
+                    tick={{ fontSize: 14, fontWeight: 500 }}
+                    tickLine={{ stroke: "hsl(var(--border))" }}
                   />
                   <YAxis 
                     dataKey="name" 
                     type="category" 
-                    stroke="hsl(var(--muted-foreground))" 
-                    width={200}
-                    tick={{ fontSize: 10 }}
+                    stroke="hsl(var(--foreground))" 
+                    width={300}
+                    tick={{ fontSize: 12, fontWeight: 500 }}
                     interval={0}
+                    tickLine={{ stroke: "hsl(var(--border))" }}
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Bar 
                     dataKey="consentsObtained" 
                     fill="hsl(var(--chart-2))" 
                     name="Consents Obtained" 
-                    radius={[0, 4, 4, 0]}
+                    radius={[0, 6, 6, 0]}
                   >
                     <LabelList 
                       dataKey="consentsObtained" 
                       position="right" 
-                      className="fill-foreground text-xs font-medium" 
-                      offset={8}
+                      className="fill-foreground text-sm font-semibold" 
+                      offset={12}
                     />
                   </Bar>
                 </BarChart>
@@ -213,41 +217,43 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
           </Card>
 
           {/* Appointments Booked by Agent */}
-          <Card className="p-6">
-            <h4 className="text-lg font-medium mb-4">Appointments Booked by Agent</h4>
-            <div className="w-full h-[400px]">
+          <Card className="p-8">
+            <h4 className="text-xl font-semibold mb-6 text-foreground">Appointments Booked by Agent</h4>
+            <div className="w-full h-[600px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
                   data={agentData} 
                   layout="horizontal" 
-                  margin={{ top: 20, right: 50, left: 200, bottom: 20 }}
+                  margin={{ top: 30, right: 80, left: 300, bottom: 30 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
                   <XAxis 
                     type="number" 
-                    stroke="hsl(var(--muted-foreground))"
-                    tick={{ fontSize: 12 }}
+                    stroke="hsl(var(--foreground))"
+                    tick={{ fontSize: 14, fontWeight: 500 }}
+                    tickLine={{ stroke: "hsl(var(--border))" }}
                   />
                   <YAxis 
                     dataKey="name" 
                     type="category" 
-                    stroke="hsl(var(--muted-foreground))" 
-                    width={200}
-                    tick={{ fontSize: 10 }}
+                    stroke="hsl(var(--foreground))" 
+                    width={300}
+                    tick={{ fontSize: 12, fontWeight: 500 }}
                     interval={0}
+                    tickLine={{ stroke: "hsl(var(--border))" }}
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Bar 
                     dataKey="appointmentsBooked" 
                     fill="hsl(var(--chart-3))" 
                     name="Appointments Booked" 
-                    radius={[0, 4, 4, 0]}
+                    radius={[0, 6, 6, 0]}
                   >
                     <LabelList 
                       dataKey="appointmentsBooked" 
                       position="right" 
-                      className="fill-foreground text-xs font-medium" 
-                      offset={8}
+                      className="fill-foreground text-sm font-semibold" 
+                      offset={12}
                     />
                   </Bar>
                 </BarChart>
