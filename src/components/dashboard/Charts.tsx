@@ -52,13 +52,15 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
         acc[agent] = {
           name: formatAgentName(agent),
           sitesAdded: 0,
-          consentsObtained: 0,
+          sitesShared: 0,
           appointmentsBooked: 0
         };
       }
       
       acc[agent].sitesAdded++;
-      if (site.consent === 'YES') acc[agent].consentsObtained++;
+      if (site.is_shared === true || site.is_shared === 'true' || site.is_shared === 'YES' || site.is_shared === 1) {
+        acc[agent].sitesShared++;
+      }
       if (site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1) {
         acc[agent].appointmentsBooked++;
       }
@@ -66,7 +68,7 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
       return acc;
     }, {} as Record<string, any>);
 
-    const result = Object.values(agentStats).sort((a: any, b: any) => b.sitesAdded - a.sitesAdded);
+    const result = Object.values(agentStats);
     console.log('Agent stats result:', result);
     return result;
   };
@@ -142,7 +144,7 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
             <div className="w-full h-[500px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
-                  data={agentData} 
+                  data={agentData.sort((a: any, b: any) => b.sitesAdded - a.sitesAdded)} 
                   margin={{ top: 30, right: 30, left: 30, bottom: 80 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
@@ -180,13 +182,13 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
             </div>
           </Card>
 
-          {/* Consents by Agent */}
+          {/* Sites Shared by Agent */}
           <Card className="p-8">
-            <h4 className="text-xl font-semibold mb-6 text-foreground">Consents Obtained by Agent</h4>
+            <h4 className="text-xl font-semibold mb-6 text-foreground">Sites Shared by Agent</h4>
             <div className="w-full h-[500px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
-                  data={agentData} 
+                  data={agentData.sort((a: any, b: any) => b.sitesShared - a.sitesShared)} 
                   margin={{ top: 30, right: 30, left: 30, bottom: 80 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
@@ -207,13 +209,13 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Bar 
-                    dataKey="consentsObtained" 
+                    dataKey="sitesShared" 
                     fill="hsl(var(--chart-2))" 
-                    name="Consents Obtained" 
+                    name="Sites Shared" 
                     radius={[4, 4, 0, 0]}
                   >
                     <LabelList 
-                      dataKey="consentsObtained" 
+                      dataKey="sitesShared" 
                       position="top" 
                       className="fill-foreground text-sm font-semibold" 
                       offset={8}
@@ -230,7 +232,7 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
             <div className="w-full h-[500px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
-                  data={agentData} 
+                  data={agentData.sort((a: any, b: any) => b.appointmentsBooked - a.appointmentsBooked)} 
                   margin={{ top: 30, right: 30, left: 30, bottom: 80 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
