@@ -48,6 +48,12 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
         return acc;
       }
       
+      // Filter out agents with "+projectsolar" in email or containing "Perse"
+      if (agent.includes('+projectsolar') || agent.toLowerCase().includes('perse')) {
+        console.log('Filtering out agent:', agent);
+        return acc;
+      }
+      
       if (!acc[agent]) {
         acc[agent] = {
           name: formatAgentName(agent),
