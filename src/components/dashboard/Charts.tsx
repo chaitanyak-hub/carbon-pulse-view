@@ -172,7 +172,7 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                   <Tooltip content={<CustomTooltip />} />
                   <Bar 
                     dataKey="sitesAdded" 
-                    fill="hsl(var(--primary))" 
+                    fill="hsl(220, 100%, 60%)" 
                     name="Sites Added" 
                     radius={[4, 4, 0, 0]}
                   >
@@ -185,7 +185,7 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                   </Bar>
                   <Bar 
                     dataKey="sitesShared" 
-                    fill="hsl(var(--chart-2))" 
+                    fill="hsl(220, 100%, 45%)" 
                     name="Sites Shared" 
                     radius={[4, 4, 0, 0]}
                   >
@@ -198,7 +198,7 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
                   </Bar>
                   <Bar 
                     dataKey="appointmentsBooked" 
-                    fill="hsl(var(--chart-3))" 
+                    fill="hsl(220, 100%, 30%)" 
                     name="Appointments Booked" 
                     radius={[4, 4, 0, 0]}
                   >
