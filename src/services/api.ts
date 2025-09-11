@@ -5,6 +5,8 @@ export interface SiteActivityFilters {
   utmSource?: string;
   siteType?: string;
   activeOnly?: boolean;
+  fromDate?: string;
+  toDate?: string;
 }
 
 export interface SiteData {

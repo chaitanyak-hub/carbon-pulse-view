@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { FilterIcon } from 'lucide-react';
 import { SiteActivityFilters } from '@/services/api';
 
@@ -39,23 +40,53 @@ const DashboardFilters = ({
           <h3 className="text-lg font-semibold text-card-foreground">Filters</h3>
         </div>
         
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="activeOnly"
-              checked={localFilters.activeOnly || false}
-              onCheckedChange={(checked) =>
-                handleInputChange('activeOnly', checked)
-              }
-            />
-            <Label
-              htmlFor="activeOnly"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Active Sites Only
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="space-y-2">
+            <Label htmlFor="fromDate" className="text-sm font-medium">
+              From Date
             </Label>
+            <Input
+              id="fromDate"
+              type="date"
+              value={localFilters.fromDate || ''}
+              onChange={(e) => handleInputChange('fromDate', e.target.value)}
+              className="w-full"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="toDate" className="text-sm font-medium">
+              To Date
+            </Label>
+            <Input
+              id="toDate"
+              type="date"
+              value={localFilters.toDate || ''}
+              onChange={(e) => handleInputChange('toDate', e.target.value)}
+              className="w-full"
+            />
           </div>
 
+          <div className="flex items-end">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="activeOnly"
+                checked={localFilters.activeOnly || false}
+                onCheckedChange={(checked) =>
+                  handleInputChange('activeOnly', checked)
+                }
+              />
+              <Label
+                htmlFor="activeOnly"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Active Sites Only
+              </Label>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end">
           <Button 
             onClick={handleApply}
             disabled={isLoading}

@@ -37,9 +37,29 @@ const Dashboard = () => {
   }, [refetch]);
 
   const allSites = data?.data?.sites || [];
-  const sites = filters.activeOnly 
-    ? allSites.filter(site => site.site_status === 'ACTIVE')
-    : allSites;
+  
+  // Apply filters client-side
+  let sites = allSites;
+  
+  if (filters.activeOnly) {
+    sites = sites.filter(site => site.site_status === 'ACTIVE');
+  }
+  
+  if (filters.fromDate) {
+    sites = sites.filter(site => {
+      const siteDate = new Date(site.onboard_date);
+      const fromDate = new Date(filters.fromDate!);
+      return siteDate >= fromDate;
+    });
+  }
+  
+  if (filters.toDate) {
+    sites = sites.filter(site => {
+      const siteDate = new Date(site.onboard_date);
+      const toDate = new Date(filters.toDate!);
+      return siteDate <= toDate;
+    });
+  }
   const kpiData = calculateKPIs(sites);
   const summary = data?.data?.summary;
 
