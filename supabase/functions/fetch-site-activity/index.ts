@@ -6,10 +6,8 @@ const corsHeaders = {
 };
 
 interface SiteActivityFilters {
-  from?: string;
-  to?: string;
-  agentEmail?: string;
-  format?: string;
+  utmSource?: string;
+  siteType?: string;
 }
 
 serve(async (req) => {
@@ -19,27 +17,18 @@ serve(async (req) => {
   }
 
   try {
-    const apiKey = Deno.env.get('LABRADOR_API_KEY');
+    // Use the fixed API key for the new endpoint
+    const apiKey = 'U2FsdGVkX192qixrCGGatPyyOZ5JgJlfXxYWqyouY86AVVRAkktVgOiAwm93hdkGaX/DbFqO5qeqcE9+ael15g==';
     
-    if (!apiKey) {
-      console.error('LABRADOR_API_KEY not found in environment variables');
-      return new Response(JSON.stringify({ error: 'API key not configured' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
     const { filters }: { filters: SiteActivityFilters } = await req.json();
     
     console.log('=== API PROXY REQUEST ===');
     console.log('Filters received:', filters);
 
-    // Build query parameters
+    // Build query parameters with new format
     const params = new URLSearchParams();
-    if (filters.from) params.append('from', filters.from);
-    if (filters.to) params.append('to', filters.to);
-    if (filters.agentEmail) params.append('agentEmail', filters.agentEmail);
-    if (filters.format) params.append('format', filters.format);
+    params.append('utmSource', filters.utmSource || 'PROJECTSOLAR');
+    params.append('siteType', filters.siteType || 'domestic');
 
     const url = `https://api.thelabrador.co.uk/carbon/v3/site-activity?${params.toString()}`;
     
@@ -49,7 +38,7 @@ serve(async (req) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'api_key': apiKey,
+        'e_api_key': apiKey,
       },
     });
 

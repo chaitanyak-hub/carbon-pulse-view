@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { CalendarIcon, FilterIcon } from 'lucide-react';
+import { FilterIcon } from 'lucide-react';
 import { SiteActivityFilters } from '@/services/api';
 
 interface DashboardFiltersProps {
@@ -40,70 +39,23 @@ const DashboardFilters = ({
           <h3 className="text-lg font-semibold text-card-foreground">Filters</h3>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="from-date" className="text-sm font-medium">
-              From Date
-            </Label>
-            <div className="relative">
-              <Input
-                id="from-date"
-                type="date"
-                value={localFilters.from}
-                onChange={(e) => handleInputChange('from', e.target.value)}
-                className="pl-10"
-              />
-              <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="to-date" className="text-sm font-medium">
-              To Date
-            </Label>
-            <div className="relative">
-              <Input
-                id="to-date"
-                type="date"
-                value={localFilters.to}
-                onChange={(e) => handleInputChange('to', e.target.value)}
-                className="pl-10"
-              />
-              <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="agent-email" className="text-sm font-medium">
-              Agent Email (Optional)
-            </Label>
-            <Input
-              id="agent-email"
-              type="email"
-              placeholder="Enter agent email..."
-              value={localFilters.agentEmail || ''}
-              onChange={(e) => handleInputChange('agentEmail', e.target.value)}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="activeOnly"
+              checked={localFilters.activeOnly || false}
+              onCheckedChange={(checked) =>
+                handleInputChange('activeOnly', checked)
+              }
             />
+            <Label
+              htmlFor="activeOnly"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Active Sites Only
+            </Label>
           </div>
-        </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="activeOnly"
-            checked={localFilters.activeOnly || false}
-            onCheckedChange={(checked) =>
-              handleInputChange('activeOnly', checked)
-            }
-          />
-          <Label
-            htmlFor="activeOnly"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Active Sites Only
-          </Label>
-        </div>
-
-        <div className="flex justify-end">
           <Button 
             onClick={handleApply}
             disabled={isLoading}

@@ -2,10 +2,8 @@
 import { supabase } from '@/integrations/supabase/client';
 
 export interface SiteActivityFilters {
-  from: string;
-  to: string;
-  agentEmail?: string;
-  format?: 'json' | 'csv';
+  utmSource?: string;
+  siteType?: string;
   activeOnly?: boolean;
 }
 
@@ -35,11 +33,6 @@ export interface SiteActivityResponse {
   data: {
     summary: {
       totalSites: number;
-      dateRange: {
-        from: string;
-        to: string;
-      };
-      agentFilter?: string;
     };
     sites: SiteData[];
   };

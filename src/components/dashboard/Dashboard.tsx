@@ -12,10 +12,9 @@ import dashboardHero from '@/assets/dashboard-hero.jpg';
 
 const Dashboard = () => {
   const [filters, setFilters] = useState<SiteActivityFilters>({
-    from: '2024-01-01',
-    to: '2025-12-31',
-    agentEmail: '',
-    format: 'json'
+    utmSource: 'PROJECTSOLAR',
+    siteType: 'domestic',
+    activeOnly: false
   });
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -101,8 +100,7 @@ const Dashboard = () => {
                 <div>
                   <h3 className="text-lg font-semibold text-card-foreground mb-2">Current Dataset</h3>
                   <p className="text-muted-foreground">
-                    Showing {summary.totalSites} sites from {summary.dateRange.from} to {summary.dateRange.to}
-                    {summary.agentFilter && ` for agent: ${summary.agentFilter}`}
+                    Showing {summary.totalSites} sites from Project Solar domestic properties
                   </p>
                 </div>
                 <div className="text-right">
