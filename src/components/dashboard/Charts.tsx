@@ -48,15 +48,7 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
         return acc;
       }
       
-      // Filter out agents with "+projectsolar" in email or containing "Perse"
-      // Also filter out specific agents: Matt Ralston and Jake Grocott
-      if (agent.includes('+projectsolar') || 
-          agent.toLowerCase().includes('perse') ||
-          agent.toLowerCase().includes('matt.ralston') ||
-          agent.toLowerCase().includes('jake.grocott')) {
-        console.log('Filtering out agent:', agent);
-        return acc;
-      }
+      // All agents are now included in the metrics
       
       if (!acc[agent]) {
         acc[agent] = {
