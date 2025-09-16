@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FilterIcon } from 'lucide-react';
 import { SiteActivityFilters } from '@/services/api';
 
@@ -40,7 +41,25 @@ const DashboardFilters = ({
           <h3 className="text-lg font-semibold text-card-foreground">Filters</h3>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">UTM Source</Label>
+            <RadioGroup
+              value={localFilters.utmSource}
+              onValueChange={(value) => handleInputChange('utmSource', value)}
+              className="flex flex-col space-y-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="PROJECTSOLAR" id="projectsolar" />
+                <Label htmlFor="projectsolar" className="text-sm">PROJECTSOLAR</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="EDF" id="edf" />
+                <Label htmlFor="edf" className="text-sm">EDF</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="fromDate" className="text-sm font-medium">
               From Date

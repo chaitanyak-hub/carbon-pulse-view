@@ -2,7 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 
 export interface SiteActivityFilters {
-  utmSource?: string;
+  utmSource: string;
   siteType?: string;
   activeOnly?: boolean;
   fromDate?: string;

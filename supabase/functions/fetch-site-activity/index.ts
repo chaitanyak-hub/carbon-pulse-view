@@ -27,7 +27,7 @@ serve(async (req) => {
 
     // Build query parameters with new format
     const params = new URLSearchParams();
-    params.append('utmSource', filters.utmSource || 'PROJECTSOLAR');
+    params.append('utmSource', filters.utmSource);
     params.append('siteType', filters.siteType || 'domestic');
 
     const url = `https://api.thelabrador.co.uk/carbon/v3/site-activity?${params.toString()}`;
