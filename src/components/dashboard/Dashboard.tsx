@@ -60,6 +60,12 @@ const Dashboard = () => {
       return siteDate <= toDate;
     });
   }
+
+  // Filter out sites from agents with perse or digitalapi in their email
+  sites = sites.filter(site => {
+    const agentEmail = site.agent_name?.toLowerCase() || '';
+    return !agentEmail.includes('perse') && !agentEmail.includes('digitalapi');
+  });
   const kpiData = calculateKPIs(sites);
   const summary = data?.data?.summary;
 
