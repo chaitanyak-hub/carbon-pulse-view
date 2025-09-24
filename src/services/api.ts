@@ -92,7 +92,7 @@ export const calculateKPIs = (sites: SiteData[]) => {
   ).length;
   const appointmentRate = totalSites > 0 ? (sitesWithAppointments / totalSites) * 100 : 0;
   
-  // Split appointment rates by consent status
+  // Split metrics by consent status
   const sitesWithConsent = sites.filter(site => site.consent === 'YES');
   const sitesWithoutConsent = sites.filter(site => site.consent !== 'YES');
   
@@ -102,6 +102,14 @@ export const calculateKPIs = (sites: SiteData[]) => {
   
   const appointmentsWithoutConsent = sitesWithoutConsent.filter(site => 
     site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1
+  ).length;
+  
+  const sharedSitesWithConsent = sitesWithConsent.filter(site => 
+    site.is_shared === true || site.is_shared === 'true' || site.is_shared === 'YES' || site.is_shared === 1
+  ).length;
+  
+  const sharedSitesWithoutConsent = sitesWithoutConsent.filter(site => 
+    site.is_shared === true || site.is_shared === 'true' || site.is_shared === 'YES' || site.is_shared === 1
   ).length;
   
   const appointmentRateWithConsent = sitesWithConsent.length > 0 ? (appointmentsWithConsent / sitesWithConsent.length) * 100 : 0;
@@ -123,7 +131,9 @@ export const calculateKPIs = (sites: SiteData[]) => {
     appointmentsWithConsent: appointmentsWithConsent || 0,
     appointmentsWithoutConsent: appointmentsWithoutConsent || 0,
     sitesWithConsentCount: sitesWithConsent.length || 0,
-    sitesWithoutConsentCount: sitesWithoutConsent.length || 0
+    sitesWithoutConsentCount: sitesWithoutConsent.length || 0,
+    sharedSitesWithConsent: sharedSitesWithConsent || 0,
+    sharedSitesWithoutConsent: sharedSitesWithoutConsent || 0
   };
   
   console.log('KPI Results:', result);

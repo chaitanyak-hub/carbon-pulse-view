@@ -27,6 +27,8 @@ interface KPIData {
   appointmentsWithoutConsent: number;
   sitesWithConsentCount: number;
   sitesWithoutConsentCount: number;
+  sharedSitesWithConsent: number;
+  sharedSitesWithoutConsent: number;
 }
 
 interface KPICardsProps {
@@ -35,12 +37,10 @@ interface KPICardsProps {
 }
 
 const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
-  // Calculate end-to-end conversion rate
-  const endToEndRate = data.totalSites > 0 ? (data.sitesWithAppointments / data.totalSites) * 100 : 0;
-  
-  const kpiCards = [
+  // Row 1: Total metrics
+  const row1Cards = [
     {
-      title: 'Sites Onboarded',
+      title: 'Total Sites Onboarded',
       value: data.totalSites,
       subtitle: 'Total pipeline entries',
       icon: Building2,
@@ -48,60 +48,106 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       status: 'neutral'
     },
     {
-      title: 'Consent Rate',
-      value: `${data.consentRate.toFixed(1)}%`,
-      subtitle: `${data.consentGranted} of ${data.totalSites} granted`,
-      icon: CheckCircle,
-      gradient: 'from-green-500 to-green-600',
-      status: data.consentRate >= 75 ? 'good' : data.consentRate >= 60 ? 'warning' : 'poor',
-      target: 75
-    },
-    {
-      title: 'Sites Shared',
-      value: `${data.shareRate.toFixed(1)}%`,
-      subtitle: `${data.sharedSites} sites shared`,
+      title: 'Total Sites Shared',
+      value: data.sharedSites,
+      subtitle: `${data.shareRate.toFixed(1)}% share rate`,
       icon: Share2,
       gradient: 'from-blue-500 to-blue-600',
-      status: data.shareRate >= 80 ? 'good' : data.shareRate >= 65 ? 'warning' : 'poor',
-      target: 80
+      status: data.shareRate >= 80 ? 'good' : data.shareRate >= 65 ? 'warning' : 'poor'
+    },
+    {
+      title: 'Total Appointments',
+      value: data.sitesWithAppointments,
+      subtitle: `${data.appointmentRate.toFixed(1)}% appointment rate`,
+      icon: Calendar,
+      gradient: 'from-purple-500 to-purple-600',
+      status: data.appointmentRate >= 60 ? 'good' : data.appointmentRate >= 45 ? 'warning' : 'poor'
+    }
+  ];
+
+  // Row 2: With consent metrics
+  const row2Cards = [
+    {
+      title: 'Sites Onboarded (With Consent)',
+      value: data.sitesWithConsentCount,
+      subtitle: `${data.consentRate.toFixed(1)}% consent rate`,
+      icon: CheckCircle,
+      gradient: 'from-green-500 to-green-600',
+      status: data.consentRate >= 75 ? 'good' : data.consentRate >= 60 ? 'warning' : 'poor'
+    },
+    {
+      title: 'Sites Shared (With Consent)',
+      value: data.sharedSitesWithConsent,
+      subtitle: `${data.sitesWithConsentCount > 0 ? ((data.sharedSitesWithConsent / data.sitesWithConsentCount) * 100).toFixed(1) : 0}% of consented`,
+      icon: Share2,
+      gradient: 'from-emerald-500 to-emerald-600',
+      status: 'good'
     },
     {
       title: 'Appointments (With Consent)',
-      value: `${data.appointmentRateWithConsent.toFixed(1)}%`,
-      subtitle: `${data.appointmentsWithConsent} of ${data.sitesWithConsentCount} consented`,
+      value: data.appointmentsWithConsent,
+      subtitle: `${data.appointmentRateWithConsent.toFixed(1)}% of consented`,
       icon: Calendar,
-      gradient: 'from-green-500 to-green-600',
-      status: data.appointmentRateWithConsent >= 60 ? 'good' : data.appointmentRateWithConsent >= 45 ? 'warning' : 'poor',
-      target: 60
-    },
+      gradient: 'from-teal-500 to-teal-600',
+      status: data.appointmentRateWithConsent >= 60 ? 'good' : data.appointmentRateWithConsent >= 45 ? 'warning' : 'poor'
+    }
+  ];
+
+  // Row 3: Without consent metrics
+  const row3Cards = [
     {
-      title: 'Appointments (No Consent)',
-      value: `${data.appointmentRateWithoutConsent.toFixed(1)}%`,
-      subtitle: `${data.appointmentsWithoutConsent} of ${data.sitesWithoutConsentCount} non-consented`,
-      icon: Calendar,
+      title: 'Sites Onboarded (Without Consent)',
+      value: data.sitesWithoutConsentCount,
+      subtitle: `${(100 - data.consentRate).toFixed(1)}% no consent`,
+      icon: XCircle,
       gradient: 'from-red-500 to-red-600',
-      status: data.appointmentRateWithoutConsent >= 30 ? 'good' : data.appointmentRateWithoutConsent >= 15 ? 'warning' : 'poor',
-      target: 30
+      status: 'poor'
     },
     {
-      title: 'End-to-End Rate',
-      value: `${endToEndRate.toFixed(1)}%`,
-      subtitle: 'Onboard → Appointment',
-      icon: TrendingUp,
-      gradient: 'from-amber-500 to-amber-600',
-      status: endToEndRate >= 35 ? 'good' : endToEndRate >= 25 ? 'warning' : 'poor',
-      target: 35
+      title: 'Sites Shared (Without Consent)',
+      value: data.sharedSitesWithoutConsent,
+      subtitle: `${data.sitesWithoutConsentCount > 0 ? ((data.sharedSitesWithoutConsent / data.sitesWithoutConsentCount) * 100).toFixed(1) : 0}% of non-consented`,
+      icon: Share2,
+      gradient: 'from-orange-500 to-orange-600',
+      status: 'warning'
+    },
+    {
+      title: 'Appointments (Without Consent)',
+      value: data.appointmentsWithoutConsent,
+      subtitle: `${data.appointmentRateWithoutConsent.toFixed(1)}% of non-consented`,
+      icon: Calendar,
+      gradient: 'from-rose-500 to-rose-600',
+      status: data.appointmentRateWithoutConsent >= 30 ? 'good' : data.appointmentRateWithoutConsent >= 15 ? 'warning' : 'poor'
     }
   ];
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <Card key={index} className="bg-blue-600 text-white p-6 rounded-lg animate-pulse">
-            <div className="h-24 bg-blue-500 rounded"></div>
-          </Card>
-        ))}
+      <div className="space-y-6 mb-8">
+        {/* Row 1 Loading */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Card key={`row1-${index}`} className="bg-blue-600 text-white p-6 rounded-lg animate-pulse">
+              <div className="h-24 bg-blue-500 rounded"></div>
+            </Card>
+          ))}
+        </div>
+        {/* Row 2 Loading */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Card key={`row2-${index}`} className="bg-green-600 text-white p-6 rounded-lg animate-pulse">
+              <div className="h-24 bg-green-500 rounded"></div>
+            </Card>
+          ))}
+        </div>
+        {/* Row 3 Loading */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Card key={`row3-${index}`} className="bg-red-600 text-white p-6 rounded-lg animate-pulse">
+              <div className="h-24 bg-red-500 rounded"></div>
+            </Card>
+          ))}
+        </div>
       </div>
     );
   }
@@ -124,44 +170,55 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
     }
   };
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
-      {kpiCards.map((card, index) => {
-        const IconComponent = card.icon;
-        return (
-          <Card key={index} className={`relative overflow-hidden border-2 ${getStatusColor(card.status)} bg-gradient-to-br ${card.gradient} text-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
-            <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
-              <IconComponent className="w-full h-full" />
-            </div>
-            
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <IconComponent className="h-6 w-6" />
-                  <span className="text-sm font-medium opacity-90">{card.title}</span>
-                </div>
-                {getStatusIndicator(card.status)}
+  const renderCardRow = (cards: any[], rowTitle: string) => (
+    <div className="space-y-3">
+      <h3 className="text-lg font-semibold text-foreground">{rowTitle}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {cards.map((card, index) => {
+          const IconComponent = card.icon;
+          return (
+            <Card key={index} className={`relative overflow-hidden border-2 ${getStatusColor(card.status)} bg-gradient-to-br ${card.gradient} text-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
+              <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
+                <IconComponent className="w-full h-full" />
               </div>
               
-              <div className="space-y-2">
-                <div className="text-3xl font-bold tracking-tight">
-                  {card.value}
-                </div>
-                
-                <div className="text-sm opacity-80">
-                  {card.subtitle}
-                </div>
-                
-                {card.target && (
-                  <div className="text-xs opacity-70 mt-2">
-                    Target: {card.target}%
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <IconComponent className="h-6 w-6" />
+                    <span className="text-sm font-medium opacity-90">{card.title}</span>
                   </div>
-                )}
+                  {getStatusIndicator(card.status)}
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold tracking-tight">
+                    {card.value}
+                  </div>
+                  
+                  <div className="text-sm opacity-80">
+                    {card.subtitle}
+                  </div>
+                  
+                  {card.target && (
+                    <div className="text-xs opacity-70 mt-2">
+                      Target: {card.target}%
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </Card>
-        );
-      })}
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-8 mb-8">
+      {renderCardRow(row1Cards, "Total Metrics")}
+      {renderCardRow(row2Cards, "With Consent Metrics")}
+      {renderCardRow(row3Cards, "Without Consent Metrics")}
     </div>
   );
 };
