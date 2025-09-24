@@ -40,7 +40,7 @@ const DashboardFilters = ({
           <h3 className="text-lg font-semibold text-card-foreground">Filters</h3>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
           <div className="space-y-3">
             <Label className="text-sm font-medium">UTM Source</Label>
             <div className="flex items-center space-x-2">
@@ -75,23 +75,6 @@ const DashboardFilters = ({
             />
           </div>
 
-          <div className="flex items-end">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="activeOnly"
-                checked={localFilters.activeOnly || false}
-                onCheckedChange={(checked) =>
-                  handleInputChange('activeOnly', checked)
-                }
-              />
-              <Label
-                htmlFor="activeOnly"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Active Sites Only
-              </Label>
-            </div>
-          </div>
         </div>
 
         <div className="flex justify-end">

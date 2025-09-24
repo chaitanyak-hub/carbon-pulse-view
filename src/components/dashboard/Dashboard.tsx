@@ -15,7 +15,7 @@ const Dashboard = () => {
   const [filters, setFilters] = useState<SiteActivityFilters>({
     utmSource: 'PROJECTSOLAR',
     siteType: 'domestic',
-    activeOnly: false
+    activeOnly: true
   });
 
   const { data, isLoading, error, refetch } = useQuery({
