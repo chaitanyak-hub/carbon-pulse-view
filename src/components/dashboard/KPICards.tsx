@@ -44,7 +44,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: data.totalSites,
       subtitle: 'Total pipeline entries',
       icon: Building2,
-      gradient: 'from-primary to-primary/80',
+      gradient: 'bg-white border-2 border-gray-200',
       status: 'neutral'
     },
     {
@@ -52,7 +52,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: data.sharedSites,
       subtitle: `${data.shareRate.toFixed(1)}% share rate`,
       icon: Share2,
-      gradient: 'from-blue-500 to-blue-600',
+      gradient: 'bg-white border-2 border-blue-200',
       status: data.shareRate >= 80 ? 'good' : data.shareRate >= 65 ? 'warning' : 'poor'
     },
     {
@@ -60,7 +60,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: data.sitesWithAppointments,
       subtitle: `${data.appointmentRate.toFixed(1)}% appointment rate`,
       icon: Calendar,
-      gradient: 'from-purple-500 to-purple-600',
+      gradient: 'bg-white border-2 border-purple-200',
       status: data.appointmentRate >= 60 ? 'good' : data.appointmentRate >= 45 ? 'warning' : 'poor'
     }
   ];
@@ -72,7 +72,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: data.sitesWithConsentCount,
       subtitle: `${data.consentRate.toFixed(1)}% consent rate`,
       icon: CheckCircle,
-      gradient: 'from-green-500 to-green-600',
+      gradient: 'bg-white border-2 border-green-200',
       status: data.consentRate >= 75 ? 'good' : data.consentRate >= 60 ? 'warning' : 'poor'
     },
     {
@@ -80,7 +80,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: data.sharedSitesWithConsent,
       subtitle: `${data.sitesWithConsentCount > 0 ? ((data.sharedSitesWithConsent / data.sitesWithConsentCount) * 100).toFixed(1) : 0}% of consented`,
       icon: Share2,
-      gradient: 'from-emerald-500 to-emerald-600',
+      gradient: 'bg-white border-2 border-emerald-200',
       status: 'good'
     },
     {
@@ -88,7 +88,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: data.appointmentsWithConsent,
       subtitle: `${data.appointmentRateWithConsent.toFixed(1)}% of consented`,
       icon: Calendar,
-      gradient: 'from-teal-500 to-teal-600',
+      gradient: 'bg-white border-2 border-teal-200',
       status: data.appointmentRateWithConsent >= 60 ? 'good' : data.appointmentRateWithConsent >= 45 ? 'warning' : 'poor'
     }
   ];
@@ -100,7 +100,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: data.sitesWithoutConsentCount,
       subtitle: `${(100 - data.consentRate).toFixed(1)}% no consent`,
       icon: XCircle,
-      gradient: 'from-red-500 to-red-600',
+      gradient: 'bg-white border-2 border-red-200',
       status: 'poor'
     },
     {
@@ -108,7 +108,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: data.sharedSitesWithoutConsent,
       subtitle: `${data.sitesWithoutConsentCount > 0 ? ((data.sharedSitesWithoutConsent / data.sitesWithoutConsentCount) * 100).toFixed(1) : 0}% of non-consented`,
       icon: Share2,
-      gradient: 'from-orange-500 to-orange-600',
+      gradient: 'bg-white border-2 border-gray-300',
       status: 'warning'
     },
     {
@@ -116,7 +116,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       value: data.appointmentsWithoutConsent,
       subtitle: `${data.appointmentRateWithoutConsent.toFixed(1)}% of non-consented`,
       icon: Calendar,
-      gradient: 'from-rose-500 to-rose-600',
+      gradient: 'bg-white border-2 border-rose-200',
       status: data.appointmentRateWithoutConsent >= 30 ? 'good' : data.appointmentRateWithoutConsent >= 15 ? 'warning' : 'poor'
     }
   ];
@@ -127,24 +127,24 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
         {/* Row 1 Loading */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {Array.from({ length: 3 }).map((_, index) => (
-            <Card key={`row1-${index}`} className="bg-blue-600 text-white p-6 rounded-lg animate-pulse">
-              <div className="h-24 bg-blue-500 rounded"></div>
+            <Card key={`row1-${index}`} className="bg-white border-2 border-gray-200 p-6 rounded-lg animate-pulse">
+              <div className="h-24 bg-gray-100 rounded"></div>
             </Card>
           ))}
         </div>
         {/* Row 2 Loading */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {Array.from({ length: 3 }).map((_, index) => (
-            <Card key={`row2-${index}`} className="bg-green-600 text-white p-6 rounded-lg animate-pulse">
-              <div className="h-24 bg-green-500 rounded"></div>
+            <Card key={`row2-${index}`} className="bg-white border-2 border-gray-200 p-6 rounded-lg animate-pulse">
+              <div className="h-24 bg-gray-100 rounded"></div>
             </Card>
           ))}
         </div>
         {/* Row 3 Loading */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {Array.from({ length: 3 }).map((_, index) => (
-            <Card key={`row3-${index}`} className="bg-red-600 text-white p-6 rounded-lg animate-pulse">
-              <div className="h-24 bg-red-500 rounded"></div>
+            <Card key={`row3-${index}`} className="bg-white border-2 border-gray-200 p-6 rounded-lg animate-pulse">
+              <div className="h-24 bg-gray-100 rounded"></div>
             </Card>
           ))}
         </div>
@@ -154,19 +154,19 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'good': return 'border-green-200 shadow-green-100';
-      case 'warning': return 'border-amber-200 shadow-amber-100';
-      case 'poor': return 'border-red-200 shadow-red-100';
-      default: return 'border-primary/20 shadow-primary/10';
+      case 'good': return 'border-green-300 shadow-sm';
+      case 'warning': return 'border-gray-300 shadow-sm';
+      case 'poor': return 'border-gray-300 shadow-sm';
+      default: return 'border-gray-200 shadow-sm';
     }
   };
 
   const getStatusIndicator = (status: string) => {
     switch (status) {
-      case 'good': return <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>;
-      case 'warning': return <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>;
-      case 'poor': return <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>;
-      default: return <div className="w-2 h-2 rounded-full bg-primary/50"></div>;
+      case 'good': return <div className="w-2 h-2 rounded-full bg-green-500"></div>;
+      case 'warning': return <div className="w-2 h-2 rounded-full bg-gray-400"></div>;
+      case 'poor': return <div className="w-2 h-2 rounded-full bg-red-500"></div>;
+      default: return <div className="w-2 h-2 rounded-full bg-gray-300"></div>;
     }
   };
 
@@ -177,31 +177,31 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
         {cards.map((card, index) => {
           const IconComponent = card.icon;
           return (
-            <Card key={index} className={`relative overflow-hidden border-2 ${getStatusColor(card.status)} bg-gradient-to-br ${card.gradient} text-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
-              <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
-                <IconComponent className="w-full h-full" />
+            <Card key={index} className={`relative overflow-hidden ${getStatusColor(card.status)} ${card.gradient} text-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
+              <div className="absolute top-0 right-0 w-32 h-32 opacity-5">
+                <IconComponent className="w-full h-full text-gray-400" />
               </div>
               
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <IconComponent className="h-6 w-6" />
-                    <span className="text-sm font-medium opacity-90">{card.title}</span>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <IconComponent className="h-6 w-6 text-gray-600" />
+                  <span className="text-sm font-medium text-gray-600">{card.title}</span>
+                </div>
                   {getStatusIndicator(card.status)}
                 </div>
                 
                 <div className="space-y-2">
-                  <div className="text-3xl font-bold tracking-tight">
+                  <div className="text-3xl font-bold tracking-tight text-gray-800">
                     {card.value}
                   </div>
                   
-                  <div className="text-sm opacity-80">
+                  <div className="text-sm text-gray-600">
                     {card.subtitle}
                   </div>
                   
                   {card.target && (
-                    <div className="text-xs opacity-70 mt-2">
+                    <div className="text-xs text-gray-500 mt-2">
                       Target: {card.target}%
                     </div>
                   )}
