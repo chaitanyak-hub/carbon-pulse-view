@@ -112,13 +112,13 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-white text-foreground font-sans;
   }
 }
 
 @layer components {
   .dashboard-card {
-    @apply bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300;
+    @apply bg-white border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300;
   }
 
   .gradient-primary {

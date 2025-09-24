@@ -72,7 +72,7 @@ const Dashboard = () => {
   const summary = data?.data?.summary;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="relative h-48 overflow-hidden">
         <img 
