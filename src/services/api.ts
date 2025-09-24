@@ -92,6 +92,21 @@ export const calculateKPIs = (sites: SiteData[]) => {
   ).length;
   const appointmentRate = totalSites > 0 ? (sitesWithAppointments / totalSites) * 100 : 0;
   
+  // Split appointment rates by consent status
+  const sitesWithConsent = sites.filter(site => site.consent === 'YES');
+  const sitesWithoutConsent = sites.filter(site => site.consent !== 'YES');
+  
+  const appointmentsWithConsent = sitesWithConsent.filter(site => 
+    site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1
+  ).length;
+  
+  const appointmentsWithoutConsent = sitesWithoutConsent.filter(site => 
+    site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1
+  ).length;
+  
+  const appointmentRateWithConsent = sitesWithConsent.length > 0 ? (appointmentsWithConsent / sitesWithConsent.length) * 100 : 0;
+  const appointmentRateWithoutConsent = sitesWithoutConsent.length > 0 ? (appointmentsWithoutConsent / sitesWithoutConsent.length) * 100 : 0;
+  
   const result = {
     totalSites: totalSites || 0,
     activeSites: activeSites || 0,
@@ -102,7 +117,13 @@ export const calculateKPIs = (sites: SiteData[]) => {
     sharedSites: sharedSites || 0,
     shareRate: isNaN(shareRate) ? 0 : shareRate,
     sitesWithAppointments: sitesWithAppointments || 0,
-    appointmentRate: isNaN(appointmentRate) ? 0 : appointmentRate
+    appointmentRate: isNaN(appointmentRate) ? 0 : appointmentRate,
+    appointmentRateWithConsent: isNaN(appointmentRateWithConsent) ? 0 : appointmentRateWithConsent,
+    appointmentRateWithoutConsent: isNaN(appointmentRateWithoutConsent) ? 0 : appointmentRateWithoutConsent,
+    appointmentsWithConsent: appointmentsWithConsent || 0,
+    appointmentsWithoutConsent: appointmentsWithoutConsent || 0,
+    sitesWithConsentCount: sitesWithConsent.length || 0,
+    sitesWithoutConsentCount: sitesWithoutConsent.length || 0
   };
   
   console.log('KPI Results:', result);

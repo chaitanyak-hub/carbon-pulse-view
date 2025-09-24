@@ -21,6 +21,12 @@ interface KPIData {
   shareRate: number;
   sitesWithAppointments: number;
   appointmentRate: number;
+  appointmentRateWithConsent: number;
+  appointmentRateWithoutConsent: number;
+  appointmentsWithConsent: number;
+  appointmentsWithoutConsent: number;
+  sitesWithConsentCount: number;
+  sitesWithoutConsentCount: number;
 }
 
 interface KPICardsProps {
@@ -60,13 +66,22 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       target: 80
     },
     {
-      title: 'Appointments Booked',
-      value: `${data.appointmentRate.toFixed(1)}%`,
-      subtitle: `${data.sitesWithAppointments} scheduled`,
+      title: 'Appointments (With Consent)',
+      value: `${data.appointmentRateWithConsent.toFixed(1)}%`,
+      subtitle: `${data.appointmentsWithConsent} of ${data.sitesWithConsentCount} consented`,
       icon: Calendar,
-      gradient: 'from-purple-500 to-purple-600',
-      status: data.appointmentRate >= 60 ? 'good' : data.appointmentRate >= 45 ? 'warning' : 'poor',
+      gradient: 'from-green-500 to-green-600',
+      status: data.appointmentRateWithConsent >= 60 ? 'good' : data.appointmentRateWithConsent >= 45 ? 'warning' : 'poor',
       target: 60
+    },
+    {
+      title: 'Appointments (No Consent)',
+      value: `${data.appointmentRateWithoutConsent.toFixed(1)}%`,
+      subtitle: `${data.appointmentsWithoutConsent} of ${data.sitesWithoutConsentCount} non-consented`,
+      icon: Calendar,
+      gradient: 'from-red-500 to-red-600',
+      status: data.appointmentRateWithoutConsent >= 30 ? 'good' : data.appointmentRateWithoutConsent >= 15 ? 'warning' : 'poor',
+      target: 30
     },
     {
       title: 'End-to-End Rate',
@@ -81,8 +96,8 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        {Array.from({ length: 5 }).map((_, index) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
+        {Array.from({ length: 6 }).map((_, index) => (
           <Card key={index} className="bg-blue-600 text-white p-6 rounded-lg animate-pulse">
             <div className="h-24 bg-blue-500 rounded"></div>
           </Card>
@@ -110,7 +125,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
       {kpiCards.map((card, index) => {
         const IconComponent = card.icon;
         return (
