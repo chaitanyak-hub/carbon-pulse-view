@@ -7,6 +7,7 @@ import DashboardFilters from './DashboardFilters';
 import KPICards from './KPICards';
 import Charts from './Charts';
 import SiteDataTable from './SiteDataTable';
+import DataExport from './DataExport';
 import { fetchSiteActivity, calculateKPIs, SiteActivityFilters } from '@/services/api';
 import dashboardHero from '@/assets/dashboard-hero.jpg';
 
@@ -164,6 +165,12 @@ const Dashboard = () => {
             <div className="w-1 h-6 bg-primary mr-3 rounded"></div>
             Raw Data Analysis
           </h2>
+          
+          {/* Data Export Section */}
+          <div className="mb-6">
+            <DataExport sites={sites} isLoading={isLoading} />
+          </div>
+
           <SiteDataTable sites={sites} isLoading={isLoading} />
         </div>
       </div>
