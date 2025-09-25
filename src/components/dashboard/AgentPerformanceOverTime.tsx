@@ -164,8 +164,8 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
   const { weeklyData, agents } = Array.isArray(performanceData) ? { weeklyData: [], agents: [] } : performanceData;
 
   return (
-    <Card className="p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <TrendingUp className="h-6 w-6 text-primary" />
           <h4 className="text-xl font-semibold text-foreground">Agent Performance Over Time</h4>
@@ -183,38 +183,41 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
         </div>
       </div>
 
-      <div className="w-full h-[500px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart 
-            data={weeklyData} 
-            margin={{ top: 20, right: 120, left: 20, bottom: 60 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
-            <XAxis 
-              dataKey="week" 
-              stroke="hsl(var(--foreground))"
-              tick={{ fontSize: 11, fontWeight: 500 }}
-              tickLine={{ stroke: "hsl(var(--border))" }}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              interval={0}
-            />
-            <YAxis 
-              stroke="hsl(var(--foreground))" 
-              tick={{ fontSize: 12, fontWeight: 500 }}
-              tickLine={{ stroke: "hsl(var(--border))" }}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend 
-              verticalAlign="top" 
-              height={36}
-              wrapperStyle={{ paddingBottom: '20px' }}
-            />
-            
-            {agents.map((agent, index) => (
-              <React.Fragment key={agent}>
+      {/* Sites Added Chart */}
+      <Card className="p-6">
+        <h5 className="text-lg font-semibold text-foreground mb-4">Sites Added</h5>
+        <div className="w-full h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart 
+              data={weeklyData} 
+              margin={{ top: 20, right: 120, left: 20, bottom: 60 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
+              <XAxis 
+                dataKey="week" 
+                stroke="hsl(var(--foreground))"
+                tick={{ fontSize: 11, fontWeight: 500 }}
+                tickLine={{ stroke: "hsl(var(--border))" }}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                interval={0}
+              />
+              <YAxis 
+                stroke="hsl(var(--foreground))" 
+                tick={{ fontSize: 12, fontWeight: 500 }}
+                tickLine={{ stroke: "hsl(var(--border))" }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend 
+                verticalAlign="top" 
+                height={36}
+                wrapperStyle={{ paddingBottom: '20px' }}
+              />
+              
+              {agents.map((agent, index) => (
                 <Line
+                  key={`${agent}_sites`}
                   type="monotone"
                   dataKey={`${agent}_sites`}
                   stroke={generateAgentColor(index, 'sites')}
@@ -223,29 +226,66 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
                   name={`${agent} Sites Added`}
                   connectNulls={false}
                 />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
+      {/* Appointments Booked Chart */}
+      <Card className="p-6">
+        <h5 className="text-lg font-semibold text-foreground mb-4">Appointments Booked</h5>
+        <div className="w-full h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart 
+              data={weeklyData} 
+              margin={{ top: 20, right: 120, left: 20, bottom: 60 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
+              <XAxis 
+                dataKey="week" 
+                stroke="hsl(var(--foreground))"
+                tick={{ fontSize: 11, fontWeight: 500 }}
+                tickLine={{ stroke: "hsl(var(--border))" }}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                interval={0}
+              />
+              <YAxis 
+                stroke="hsl(var(--foreground))" 
+                tick={{ fontSize: 12, fontWeight: 500 }}
+                tickLine={{ stroke: "hsl(var(--border))" }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend 
+                verticalAlign="top" 
+                height={36}
+                wrapperStyle={{ paddingBottom: '20px' }}
+              />
+              
+              {agents.map((agent, index) => (
                 <Line
+                  key={`${agent}_appointments`}
                   type="monotone"
                   dataKey={`${agent}_appointments`}
                   stroke={generateAgentColor(index, 'appointments')}
                   strokeWidth={3}
-                  strokeDasharray="5 5"
                   dot={{ fill: generateAgentColor(index, 'appointments'), strokeWidth: 2, r: 4 }}
                   name={`${agent} App Booked`}
                   connectNulls={false}
                 />
-              </React.Fragment>
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
       
-      <div className="mt-4 text-sm text-muted-foreground">
-        <p>• Solid lines represent Sites Added</p>
-        <p>• Dashed lines represent Appointments Booked</p>
+      <div className="text-sm text-muted-foreground">
         <p>• Weekly data shown from Monday to Sunday</p>
         {showConsentOnly && <p>• Filtered to show only sites with consent (YES)</p>}
       </div>
-    </Card>
+    </div>
   );
 };
 
