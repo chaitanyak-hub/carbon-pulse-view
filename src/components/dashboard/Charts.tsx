@@ -9,15 +9,17 @@ import {
   ResponsiveContainer,
   LabelList
 } from 'recharts';
-import { SiteData } from '@/services/api';
+import { SiteData, SiteActivityFilters } from '@/services/api';
+import AgentPerformanceOverTime from './AgentPerformanceOverTime';
 import { Users } from 'lucide-react';
 
 interface ChartsProps {
   sites: SiteData[];
+  filters: SiteActivityFilters;
   isLoading?: boolean;
 }
 
-const Charts = ({ sites, isLoading = false }: ChartsProps) => {
+const Charts = ({ sites, filters, isLoading = false }: ChartsProps) => {
   // Function to format agent names
   const formatAgentName = (email: string) => {
     if (!email) return '';
@@ -196,6 +198,13 @@ const Charts = ({ sites, isLoading = false }: ChartsProps) => {
               </ResponsiveContainer>
             </div>
           </Card>
+
+          {/* Agent Performance Over Time */}
+          <AgentPerformanceOverTime 
+            sites={sites} 
+            filters={filters}
+            isLoading={isLoading} 
+          />
         </div>
       </div>
     </div>
