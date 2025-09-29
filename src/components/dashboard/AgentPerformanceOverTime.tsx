@@ -126,20 +126,21 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
     const cumulativeData = weeklyData.map((week, index) => {
       const cumulativeWeek: any = { ...week };
       
-      agents.forEach(agent => {
-        const agentName = formatAgentName(agent);
-        let cumulativeSites = 0;
-        let cumulativeAppointments = 0;
-        
-        // Sum up all previous weeks including current week
-        for (let i = 0; i <= index; i++) {
-          cumulativeSites += weeklyData[i][`${agentName}_sites`] || 0;
-          cumulativeAppointments += weeklyData[i][`${agentName}_appointments`] || 0;
-        }
-        
-        cumulativeWeek[`${agentName}_cumulative_sites`] = cumulativeSites;
-        cumulativeWeek[`${agentName}_cumulative_appointments`] = cumulativeAppointments;
-      });
+      // Calculate total cumulative numbers across all agents
+      let totalCumulativeSites = 0;
+      let totalCumulativeAppointments = 0;
+      
+      // Sum up all previous weeks including current week
+      for (let i = 0; i <= index; i++) {
+        agents.forEach(agent => {
+          const agentName = formatAgentName(agent);
+          totalCumulativeSites += weeklyData[i][`${agentName}_sites`] || 0;
+          totalCumulativeAppointments += weeklyData[i][`${agentName}_appointments`] || 0;
+        });
+      }
+      
+      cumulativeWeek.totalCumulativeSites = totalCumulativeSites;
+      cumulativeWeek.totalCumulativeAppointments = totalCumulativeAppointments;
       
       return cumulativeWeek;
     });
@@ -337,15 +338,12 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
                 wrapperStyle={{ paddingBottom: '20px' }}
               />
               
-              {agents.map((agent, index) => (
-                <Bar
-                  key={`${agent}_cumulative_sites`}
-                  dataKey={`${agent}_cumulative_sites`}
-                  fill={generateAgentColor(index, 'sites')}
-                  name={`${agent} Total Sites`}
-                  opacity={0.8}
-                />
-              ))}
+              <Bar
+                dataKey="totalCumulativeSites"
+                fill="hsl(var(--primary))"
+                name="Total Sites Added"
+                opacity={0.8}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -383,15 +381,12 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
                 wrapperStyle={{ paddingBottom: '20px' }}
               />
               
-              {agents.map((agent, index) => (
-                <Bar
-                  key={`${agent}_cumulative_appointments`}
-                  dataKey={`${agent}_cumulative_appointments`}
-                  fill={generateAgentColor(index, 'appointments')}
-                  name={`${agent} Total Appointments`}
-                  opacity={0.8}
-                />
-              ))}
+              <Bar
+                dataKey="totalCumulativeAppointments"
+                fill="hsl(var(--secondary))"
+                name="Total Appointments Booked"
+                opacity={0.8}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
