@@ -344,7 +344,7 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
               
               <Bar
                 dataKey="totalCumulativeSites"
-                fill="hsl(var(--chart-1))"
+                fill="hsl(220, 70%, 40%)"
                 name="Total Sites Added"
                 opacity={0.9}
               />
@@ -387,7 +387,7 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
               
               <Bar
                 dataKey="totalCumulativeAppointments"
-                fill="hsl(var(--chart-2))"
+                fill="hsl(220, 70%, 40%)"
                 name="Total Appointments Booked"
                 opacity={0.9}
               />
