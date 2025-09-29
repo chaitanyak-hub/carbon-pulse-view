@@ -145,6 +145,10 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
       return cumulativeWeek;
     });
 
+    // Sort weekly data chronologically (oldest to newest)
+    weeklyData.sort((a, b) => new Date(a.fullWeekStart).getTime() - new Date(b.fullWeekStart).getTime());
+    cumulativeData.sort((a, b) => new Date(a.fullWeekStart).getTime() - new Date(b.fullWeekStart).getTime());
+
     return { weeklyData, cumulativeData, agents: agents.map(formatAgentName) };
   };
 
@@ -340,9 +344,9 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
               
               <Bar
                 dataKey="totalCumulativeSites"
-                fill="hsl(var(--primary))"
+                fill="hsl(var(--chart-1))"
                 name="Total Sites Added"
-                opacity={0.8}
+                opacity={0.9}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -383,9 +387,9 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
               
               <Bar
                 dataKey="totalCumulativeAppointments"
-                fill="hsl(var(--secondary))"
+                fill="hsl(var(--chart-2))"
                 name="Total Appointments Booked"
-                opacity={0.8}
+                opacity={0.9}
               />
             </BarChart>
           </ResponsiveContainer>
