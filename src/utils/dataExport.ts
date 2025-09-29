@@ -7,20 +7,20 @@ export const exportToCSV = (sites: SiteData[], filename: string = 'site-data') =
     'Agent Name',
     'Site ID',
     'Site Address',
-    'Onboard Date',
-    'Consent',
-    'Consent Type',
-    'Is Shared',
+    'Date of Call',
+    'Consent Provided by Customer',
+    'Consent Method',
+    'Has Site Been Shared with Customer',
     'Site Status',
-    'Has Appointment',
+    'Appointment Booked with Customer',
     'Appointment Date',
     'Appointment Time From',
     'Appointment Time To',
-    'Appointment Set Date',
+    'Appointment Booking Date',
     'Share Count',
     'Last Shared Date',
     'Deleted Date',
-    'Consent Updated Date'
+    'Consent Last Updated'
   ];
 
   const csvData = sites.map(site => [
@@ -66,20 +66,20 @@ export const exportToExcel = (sites: SiteData[], filename: string = 'site-data')
       'Agent Name': site.agent_name,
       'Site ID': site.siteId,
       'Site Address': site.siteAddress,
-      'Onboard Date': site.onboard_date,
-      'Consent': site.consent,
-      'Consent Type': site.consent_type,
-      'Is Shared': site.is_shared,
+      'Date of Call': site.onboard_date,
+      'Consent Provided by Customer': site.consent,
+      'Consent Method': site.consent_type,
+      'Has Site Been Shared with Customer': site.is_shared,
       'Site Status': site.site_status,
-      'Has Appointment': site.has_appointment,
+      'Appointment Booked with Customer': site.has_appointment,
       'Appointment Date': site.appointment_date,
       'Appointment Time From': site.appointment_time_from,
       'Appointment Time To': site.appointment_time_to,
-      'Appointment Set Date': site.appointment_set_date,
+      'Appointment Booking Date': site.appointment_set_date,
       'Share Count': site.share_count,
       'Last Shared Date': site.last_shared_date,
       'Deleted Date': site.deleted_date,
-      'Consent Updated Date': site.consent_updated_date
+      'Consent Last Updated': site.consent_updated_date
     }))
   );
 
@@ -91,20 +91,20 @@ export const exportToExcel = (sites: SiteData[], filename: string = 'site-data')
     { wch: 25 }, // Agent Name
     { wch: 15 }, // Site ID
     { wch: 30 }, // Site Address
-    { wch: 12 }, // Onboard Date
-    { wch: 10 }, // Consent
-    { wch: 12 }, // Consent Type
-    { wch: 10 }, // Is Shared
+    { wch: 15 }, // Date of Call
+    { wch: 30 }, // Consent Provided by Customer
+    { wch: 15 }, // Consent Method
+    { wch: 35 }, // Has Site Been Shared with Customer
     { wch: 12 }, // Site Status
-    { wch: 15 }, // Has Appointment
+    { wch: 35 }, // Appointment Booked with Customer
     { wch: 15 }, // Appointment Date
     { wch: 18 }, // Appointment Time From
     { wch: 16 }, // Appointment Time To
-    { wch: 18 }, // Appointment Set Date
+    { wch: 25 }, // Appointment Booking Date
     { wch: 12 }, // Share Count
     { wch: 16 }, // Last Shared Date
     { wch: 14 }, // Deleted Date
-    { wch: 18 }  // Consent Updated Date
+    { wch: 20 }  // Consent Last Updated
   ];
   worksheet['!cols'] = columnWidths;
 

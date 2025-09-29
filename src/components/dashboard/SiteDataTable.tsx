@@ -86,18 +86,18 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
               <TableHead>Site ID</TableHead>
               <TableHead>Agent Name</TableHead>
               <TableHead>Site Address</TableHead>
-              <TableHead>Onboard Date</TableHead>
+              <TableHead>Date of Call</TableHead>
               <TableHead>Site Status</TableHead>
-              <TableHead>Consent</TableHead>
-              <TableHead>Consent Type</TableHead>
-              <TableHead>Consent Updated</TableHead>
-              <TableHead>Is Shared</TableHead>
+              <TableHead>Consent Provided by Customer</TableHead>
+              <TableHead>Consent Method</TableHead>
+              <TableHead>Consent Last Updated</TableHead>
+              <TableHead>Has Site Been Shared with Customer</TableHead>
               <TableHead>Share Count</TableHead>
-              <TableHead>Last Shared</TableHead>
-              <TableHead>Has Appointment</TableHead>
+              <TableHead>Last Shared Date</TableHead>
+              <TableHead>Appointment Booked with Customer</TableHead>
               <TableHead>Appointment Date</TableHead>
               <TableHead>Appointment Time</TableHead>
-              <TableHead>Appointment Set Date</TableHead>
+              <TableHead>Appointment Booking Date</TableHead>
               <TableHead>Deleted Date</TableHead>
             </TableRow>
           </TableHeader>
