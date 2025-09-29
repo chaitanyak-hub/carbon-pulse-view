@@ -10,7 +10,9 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend
+  Legend,
+  BarChart,
+  Bar
 } from 'recharts';
 import { SiteData, SiteActivityFilters } from '@/services/api';
 import { TrendingUp } from 'lucide-react';
@@ -120,7 +122,29 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
       return weekData;
     });
 
-    return { weeklyData, agents: agents.map(formatAgentName) };
+    // Calculate cumulative data
+    const cumulativeData = weeklyData.map((week, index) => {
+      const cumulativeWeek: any = { ...week };
+      
+      agents.forEach(agent => {
+        const agentName = formatAgentName(agent);
+        let cumulativeSites = 0;
+        let cumulativeAppointments = 0;
+        
+        // Sum up all previous weeks including current week
+        for (let i = 0; i <= index; i++) {
+          cumulativeSites += weeklyData[i][`${agentName}_sites`] || 0;
+          cumulativeAppointments += weeklyData[i][`${agentName}_appointments`] || 0;
+        }
+        
+        cumulativeWeek[`${agentName}_cumulative_sites`] = cumulativeSites;
+        cumulativeWeek[`${agentName}_cumulative_appointments`] = cumulativeAppointments;
+      });
+      
+      return cumulativeWeek;
+    });
+
+    return { weeklyData, cumulativeData, agents: agents.map(formatAgentName) };
   };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -161,7 +185,7 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
     );
   }
 
-  const { weeklyData, agents } = Array.isArray(performanceData) ? { weeklyData: [], agents: [] } : performanceData;
+  const { weeklyData, cumulativeData, agents } = Array.isArray(performanceData) ? { weeklyData: [], cumulativeData: [], agents: [] } : performanceData;
 
   return (
     <div className="space-y-6">
@@ -280,9 +304,102 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
           </ResponsiveContainer>
         </div>
       </Card>
+
+      {/* Cumulative Sites Added Bar Chart */}
+      <Card className="p-6">
+        <h5 className="text-lg font-semibold text-foreground mb-4">Cumulative Sites Added (Week on Week)</h5>
+        <div className="w-full h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart 
+              data={cumulativeData} 
+              margin={{ top: 20, right: 120, left: 20, bottom: 60 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
+              <XAxis 
+                dataKey="week" 
+                stroke="hsl(var(--foreground))"
+                tick={{ fontSize: 11, fontWeight: 500 }}
+                tickLine={{ stroke: "hsl(var(--border))" }}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                interval={0}
+              />
+              <YAxis 
+                stroke="hsl(var(--foreground))" 
+                tick={{ fontSize: 12, fontWeight: 500 }}
+                tickLine={{ stroke: "hsl(var(--border))" }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend 
+                verticalAlign="top" 
+                height={36}
+                wrapperStyle={{ paddingBottom: '20px' }}
+              />
+              
+              {agents.map((agent, index) => (
+                <Bar
+                  key={`${agent}_cumulative_sites`}
+                  dataKey={`${agent}_cumulative_sites`}
+                  fill={generateAgentColor(index, 'sites')}
+                  name={`${agent} Total Sites`}
+                  opacity={0.8}
+                />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
+      {/* Cumulative Appointments Booked Bar Chart */}
+      <Card className="p-6">
+        <h5 className="text-lg font-semibold text-foreground mb-4">Cumulative Appointments Booked (Week on Week)</h5>
+        <div className="w-full h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart 
+              data={cumulativeData} 
+              margin={{ top: 20, right: 120, left: 20, bottom: 60 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
+              <XAxis 
+                dataKey="week" 
+                stroke="hsl(var(--foreground))"
+                tick={{ fontSize: 11, fontWeight: 500 }}
+                tickLine={{ stroke: "hsl(var(--border))" }}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                interval={0}
+              />
+              <YAxis 
+                stroke="hsl(var(--foreground))" 
+                tick={{ fontSize: 12, fontWeight: 500 }}
+                tickLine={{ stroke: "hsl(var(--border))" }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend 
+                verticalAlign="top" 
+                height={36}
+                wrapperStyle={{ paddingBottom: '20px' }}
+              />
+              
+              {agents.map((agent, index) => (
+                <Bar
+                  key={`${agent}_cumulative_appointments`}
+                  dataKey={`${agent}_cumulative_appointments`}
+                  fill={generateAgentColor(index, 'appointments')}
+                  name={`${agent} Total Appointments`}
+                  opacity={0.8}
+                />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
       
       <div className="text-sm text-muted-foreground">
         <p>• Weekly data shown from Monday to Sunday</p>
+        <p>• Cumulative charts show running totals week on week</p>
         {showConsentOnly && <p>• Filtered to show only sites with consent (YES)</p>}
       </div>
     </div>
