@@ -88,7 +88,7 @@ export const calculateKPIs = (sites: SiteData[]) => {
   console.log('has_appointment values:', sites.slice(0, 5).map(s => ({ id: s.siteId, has_appointment: s.has_appointment, type: typeof s.has_appointment })));
   
   const sitesWithAppointments = sites.filter(site => 
-    site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1
+    site.appointment_time_from !== null && site.appointment_time_from !== ''
   ).length;
   const appointmentRate = totalSites > 0 ? (sitesWithAppointments / totalSites) * 100 : 0;
   
@@ -97,11 +97,11 @@ export const calculateKPIs = (sites: SiteData[]) => {
   const sitesWithoutConsent = sites.filter(site => site.consent !== 'YES');
   
   const appointmentsWithConsent = sitesWithConsent.filter(site => 
-    site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1
+    site.appointment_time_from !== null && site.appointment_time_from !== ''
   ).length;
   
   const appointmentsWithoutConsent = sitesWithoutConsent.filter(site => 
-    site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1
+    site.appointment_time_from !== null && site.appointment_time_from !== ''
   ).length;
   
   const sharedSitesWithConsent = sitesWithConsent.filter(site => 

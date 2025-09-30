@@ -112,10 +112,7 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
 
         weekData[`${agentName}_sites`] = weekSites.length;
         weekData[`${agentName}_appointments`] = weekSites.filter(site => 
-          site.has_appointment === true || 
-          site.has_appointment === 'true' || 
-          site.has_appointment === 'YES' || 
-          site.has_appointment === 1
+          site.appointment_time_from !== null && site.appointment_time_from !== ''
         ).length;
       });
 
