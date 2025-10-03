@@ -64,7 +64,8 @@ const Dashboard = () => {
 
   // Filter out sites from agents with perse or digitalapi in their email, and only show projectsolar agents
   sites = sites.filter(site => {
-    const agentEmail = site.agent_name?.toLowerCase() || '';
+    if (!site.agent_name) return false;
+    const agentEmail = site.agent_name.toLowerCase();
     return !agentEmail.includes('perse') && 
            !agentEmail.includes('digitalapi') && 
            agentEmail.includes('projectsolar');

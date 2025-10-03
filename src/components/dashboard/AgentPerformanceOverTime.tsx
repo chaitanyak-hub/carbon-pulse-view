@@ -89,8 +89,10 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
       { weekStartsOn: 1 } // Monday
     );
 
-    // Get unique agents
-    const agents = [...new Set(filteredSites.map(site => site.agent_name).filter(Boolean))];
+    // Get unique agents - filter out null/undefined/empty values
+    const agents = [...new Set(filteredSites
+      .map(site => site.agent_name)
+      .filter(name => name && typeof name === 'string' && name.trim() !== ''))];
 
     // Calculate weekly data
     const weeklyData = weeks.map(weekStart => {
