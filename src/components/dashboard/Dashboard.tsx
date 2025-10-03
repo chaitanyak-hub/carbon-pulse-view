@@ -8,7 +8,7 @@ import KPICards from './KPICards';
 import Charts from './Charts';
 import SiteDataTable from './SiteDataTable';
 import DataExport from './DataExport';
-import { fetchSiteActivity, calculateKPIs, SiteActivityFilters } from '@/services/api';
+import { fetchSiteActivity, calculateKPIs, SiteActivityFilters, SiteData } from '@/services/api';
 import dashboardHero from '@/assets/dashboard-hero.jpg';
 
 const Dashboard = () => {
@@ -70,6 +70,30 @@ const Dashboard = () => {
            !agentEmail.includes('digitalapi') && 
            agentEmail.includes('projectsolar');
   });
+
+  // Remove duplicate addresses, keeping the most recent (by onboard_date)
+  const addressMap = new Map<string, SiteData>();
+  sites.forEach(site => {
+    if (!site.siteAddress) return;
+    
+    const normalizedAddress = site.siteAddress.trim().toUpperCase();
+    const existingSite = addressMap.get(normalizedAddress);
+    
+    if (!existingSite) {
+      addressMap.set(normalizedAddress, site);
+    } else {
+      // Keep the site with the most recent onboard_date
+      const existingDate = new Date(existingSite.onboard_date).getTime();
+      const currentDate = new Date(site.onboard_date).getTime();
+      
+      if (currentDate > existingDate) {
+        addressMap.set(normalizedAddress, site);
+      }
+    }
+  });
+  
+  sites = Array.from(addressMap.values());
+
   const kpiData = calculateKPIs(sites);
   const summary = data?.data?.summary;
 
