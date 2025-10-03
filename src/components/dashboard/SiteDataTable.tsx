@@ -21,11 +21,14 @@ interface SiteDataTableProps {
 const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredSites = sites.filter(site =>
-    site.siteAddress.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    site.agent_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    site.siteId.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredSites = sites.filter(site => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (site.siteAddress && site.siteAddress.toLowerCase().includes(searchLower)) ||
+      (site.agent_name && site.agent_name.toLowerCase().includes(searchLower)) ||
+      (site.siteId && site.siteId.toLowerCase().includes(searchLower))
+    );
+  });
 
   const getStatusBadge = (status: string) => {
     const variant = status === 'active' ? 'default' : 'secondary';
