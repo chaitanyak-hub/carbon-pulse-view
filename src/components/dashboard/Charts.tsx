@@ -65,7 +65,7 @@ const Charts = ({ sites, filters, isLoading = false }: ChartsProps) => {
       if (site.is_shared === true || site.is_shared === 'true' || site.is_shared === 'YES' || site.is_shared === 1) {
         acc[agent].sitesShared++;
       }
-      if (site.has_appointment === true || site.has_appointment === 'true' || site.has_appointment === 'YES' || site.has_appointment === 1) {
+      if (site.appointment_time_from !== null && site.appointment_time_from !== '') {
         acc[agent].appointmentsBooked++;
       }
       
