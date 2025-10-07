@@ -216,7 +216,7 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
         <h5 className="text-lg font-semibold text-foreground mb-4">Sites Added</h5>
         <div className="w-full h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart 
+            <BarChart 
               data={weeklyData} 
               margin={{ top: 20, right: 120, left: 20, bottom: 60 }}
             >
@@ -244,18 +244,15 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
               />
               
               {agents.map((agent, index) => (
-                <Line
+                <Bar
                   key={`${agent}_sites`}
-                  type="monotone"
                   dataKey={`${agent}_sites`}
-                  stroke={generateAgentColor(index, 'sites')}
-                  strokeWidth={3}
-                  dot={{ fill: generateAgentColor(index, 'sites'), strokeWidth: 2, r: 4 }}
+                  fill={generateAgentColor(index, 'sites')}
                   name={`${agent} Sites Added`}
-                  connectNulls={false}
+                  radius={[4, 4, 0, 0]}
                 />
               ))}
-            </LineChart>
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>
@@ -265,7 +262,7 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
         <h5 className="text-lg font-semibold text-foreground mb-4">Appointments Booked</h5>
         <div className="w-full h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart 
+            <BarChart 
               data={weeklyData} 
               margin={{ top: 20, right: 120, left: 20, bottom: 60 }}
             >
@@ -293,18 +290,15 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
               />
               
               {agents.map((agent, index) => (
-                <Line
+                <Bar
                   key={`${agent}_appointments`}
-                  type="monotone"
                   dataKey={`${agent}_appointments`}
-                  stroke={generateAgentColor(index, 'appointments')}
-                  strokeWidth={3}
-                  dot={{ fill: generateAgentColor(index, 'appointments'), strokeWidth: 2, r: 4 }}
+                  fill={generateAgentColor(index, 'appointments')}
                   name={`${agent} App Booked`}
-                  connectNulls={false}
+                  radius={[4, 4, 0, 0]}
                 />
               ))}
-            </LineChart>
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>
