@@ -121,7 +121,10 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
       return weekData;
     });
 
-    // Calculate weekly totals across all agents
+    // Sort weekly data chronologically FIRST (oldest to newest)
+    weeklyData.sort((a, b) => new Date(a.fullWeekStart).getTime() - new Date(b.fullWeekStart).getTime());
+
+    // Calculate weekly totals across all agents AFTER sorting
     const weeklyTotalsData = weeklyData.map((week, index) => {
       const weekTotals: any = { ...week };
       
@@ -138,7 +141,7 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
       weekTotals.totalWeeklySites = totalWeeklySites;
       weekTotals.totalWeeklyAppointments = totalWeeklyAppointments;
       
-      // Calculate cumulative totals
+      // Calculate cumulative totals (now that data is sorted)
       let cumulativeSites = 0;
       let cumulativeAppointments = 0;
       
@@ -155,10 +158,6 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
       
       return weekTotals;
     });
-
-    // Sort weekly data chronologically (oldest to newest)
-    weeklyData.sort((a, b) => new Date(a.fullWeekStart).getTime() - new Date(b.fullWeekStart).getTime());
-    weeklyTotalsData.sort((a, b) => new Date(a.fullWeekStart).getTime() - new Date(b.fullWeekStart).getTime());
 
     return { weeklyData, weeklyTotalsData, agents: agents.map(formatAgentName) };
   };
