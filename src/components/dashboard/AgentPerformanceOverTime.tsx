@@ -122,7 +122,7 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
     });
 
     // Calculate weekly totals across all agents
-    const weeklyTotalsData = weeklyData.map((week) => {
+    const weeklyTotalsData = weeklyData.map((week, index) => {
       const weekTotals: any = { ...week };
       
       // Calculate total weekly numbers across all agents
@@ -137,6 +137,21 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
       
       weekTotals.totalWeeklySites = totalWeeklySites;
       weekTotals.totalWeeklyAppointments = totalWeeklyAppointments;
+      
+      // Calculate cumulative totals
+      let cumulativeSites = 0;
+      let cumulativeAppointments = 0;
+      
+      for (let i = 0; i <= index; i++) {
+        agents.forEach(agent => {
+          const agentName = formatAgentName(agent);
+          cumulativeSites += weeklyData[i][`${agentName}_sites`] || 0;
+          cumulativeAppointments += weeklyData[i][`${agentName}_appointments`] || 0;
+        });
+      }
+      
+      weekTotals.cumulativeSites = cumulativeSites;
+      weekTotals.cumulativeAppointments = cumulativeAppointments;
       
       return weekTotals;
     });
@@ -387,10 +402,64 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
           </ResponsiveContainer>
         </div>
       </Card>
-      
+
+      {/* Cumulative Performance Line Chart */}
+      <Card className="p-6">
+        <h5 className="text-lg font-semibold text-foreground mb-4">Cumulative Performance</h5>
+        <div className="w-full h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart 
+              data={weeklyTotalsData} 
+              margin={{ top: 20, right: 120, left: 20, bottom: 60 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
+              <XAxis 
+                dataKey="week" 
+                stroke="hsl(var(--foreground))"
+                tick={{ fontSize: 11, fontWeight: 500 }}
+                tickLine={{ stroke: "hsl(var(--border))" }}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                interval={0}
+              />
+              <YAxis 
+                stroke="hsl(var(--foreground))" 
+                tick={{ fontSize: 12, fontWeight: 500 }}
+                tickLine={{ stroke: "hsl(var(--border))" }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend 
+                verticalAlign="top" 
+                height={36}
+                wrapperStyle={{ paddingBottom: '20px' }}
+              />
+              
+              <Line
+                type="monotone"
+                dataKey="cumulativeSites"
+                stroke="hsl(220, 70%, 50%)"
+                strokeWidth={3}
+                dot={{ fill: "hsl(220, 70%, 50%)", strokeWidth: 2, r: 4 }}
+                name="Cumulative Sites Added"
+              />
+              <Line
+                type="monotone"
+                dataKey="cumulativeAppointments"
+                stroke="hsl(142, 76%, 36%)"
+                strokeWidth={3}
+                dot={{ fill: "hsl(142, 76%, 36%)", strokeWidth: 2, r: 4 }}
+                name="Cumulative Appointments Booked"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
       <div className="text-sm text-muted-foreground">
         <p>• Weekly data shown from Monday to Sunday</p>
         <p>• Total charts show the sum of all agents for each week</p>
+        <p>• Cumulative performance shows running totals week on week</p>
         {showConsentOnly && <p>• Filtered to show only sites with consent (YES)</p>}
       </div>
     </div>
