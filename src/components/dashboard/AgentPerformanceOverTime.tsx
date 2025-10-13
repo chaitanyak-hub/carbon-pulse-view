@@ -121,34 +121,31 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
       return weekData;
     });
 
-    // Calculate cumulative data
-    const cumulativeData = weeklyData.map((week, index) => {
-      const cumulativeWeek: any = { ...week };
+    // Calculate weekly totals across all agents
+    const weeklyTotalsData = weeklyData.map((week) => {
+      const weekTotals: any = { ...week };
       
-      // Calculate total cumulative numbers across all agents
-      let totalCumulativeSites = 0;
-      let totalCumulativeAppointments = 0;
+      // Calculate total weekly numbers across all agents
+      let totalWeeklySites = 0;
+      let totalWeeklyAppointments = 0;
       
-      // Sum up all previous weeks including current week
-      for (let i = 0; i <= index; i++) {
-        agents.forEach(agent => {
-          const agentName = formatAgentName(agent);
-          totalCumulativeSites += weeklyData[i][`${agentName}_sites`] || 0;
-          totalCumulativeAppointments += weeklyData[i][`${agentName}_appointments`] || 0;
-        });
-      }
+      agents.forEach(agent => {
+        const agentName = formatAgentName(agent);
+        totalWeeklySites += week[`${agentName}_sites`] || 0;
+        totalWeeklyAppointments += week[`${agentName}_appointments`] || 0;
+      });
       
-      cumulativeWeek.totalCumulativeSites = totalCumulativeSites;
-      cumulativeWeek.totalCumulativeAppointments = totalCumulativeAppointments;
+      weekTotals.totalWeeklySites = totalWeeklySites;
+      weekTotals.totalWeeklyAppointments = totalWeeklyAppointments;
       
-      return cumulativeWeek;
+      return weekTotals;
     });
 
     // Sort weekly data chronologically (oldest to newest)
     weeklyData.sort((a, b) => new Date(a.fullWeekStart).getTime() - new Date(b.fullWeekStart).getTime());
-    cumulativeData.sort((a, b) => new Date(a.fullWeekStart).getTime() - new Date(b.fullWeekStart).getTime());
+    weeklyTotalsData.sort((a, b) => new Date(a.fullWeekStart).getTime() - new Date(b.fullWeekStart).getTime());
 
-    return { weeklyData, cumulativeData, agents: agents.map(formatAgentName) };
+    return { weeklyData, weeklyTotalsData, agents: agents.map(formatAgentName) };
   };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -189,7 +186,7 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
     );
   }
 
-  const { weeklyData, cumulativeData, agents } = Array.isArray(performanceData) ? { weeklyData: [], cumulativeData: [], agents: [] } : performanceData;
+  const { weeklyData, weeklyTotalsData, agents } = Array.isArray(performanceData) ? { weeklyData: [], weeklyTotalsData: [], agents: [] } : performanceData;
 
   return (
     <div className="space-y-6">
@@ -303,13 +300,13 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
         </div>
       </Card>
 
-      {/* Cumulative Sites Added Bar Chart */}
+      {/* Total Sites Added Bar Chart */}
       <Card className="p-6">
-        <h5 className="text-lg font-semibold text-foreground mb-4">Cumulative Sites Added (Week on Week)</h5>
+        <h5 className="text-lg font-semibold text-foreground mb-4">Total Sites Added</h5>
         <div className="w-full h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
-              data={cumulativeData} 
+              data={weeklyTotalsData} 
               margin={{ top: 20, right: 120, left: 20, bottom: 60 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
@@ -336,23 +333,24 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
               />
               
               <Bar
-                dataKey="totalCumulativeSites"
+                dataKey="totalWeeklySites"
                 fill="hsl(220, 70%, 40%)"
                 name="Total Sites Added"
                 opacity={0.9}
+                radius={[4, 4, 0, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>
 
-      {/* Cumulative Appointments Booked Bar Chart */}
+      {/* Total Appointments Added Bar Chart */}
       <Card className="p-6">
-        <h5 className="text-lg font-semibold text-foreground mb-4">Cumulative Appointments Booked (Week on Week)</h5>
+        <h5 className="text-lg font-semibold text-foreground mb-4">Total Appointments Added</h5>
         <div className="w-full h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
-              data={cumulativeData} 
+              data={weeklyTotalsData} 
               margin={{ top: 20, right: 120, left: 20, bottom: 60 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.7} />
@@ -379,10 +377,11 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
               />
               
               <Bar
-                dataKey="totalCumulativeAppointments"
+                dataKey="totalWeeklyAppointments"
                 fill="hsl(220, 70%, 40%)"
-                name="Total Appointments Booked"
+                name="Total Appointments Added"
                 opacity={0.9}
+                radius={[4, 4, 0, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -391,7 +390,7 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
       
       <div className="text-sm text-muted-foreground">
         <p>• Weekly data shown from Monday to Sunday</p>
-        <p>• Cumulative charts show running totals week on week</p>
+        <p>• Total charts show the sum of all agents for each week</p>
         {showConsentOnly && <p>• Filtered to show only sites with consent (YES)</p>}
       </div>
     </div>
