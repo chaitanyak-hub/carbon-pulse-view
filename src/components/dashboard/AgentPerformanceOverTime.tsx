@@ -12,8 +12,7 @@ import {
   ResponsiveContainer,
   Legend,
   BarChart,
-  Bar,
-  ComposedChart
+  Bar
 } from 'recharts';
 import { SiteData, SiteActivityFilters } from '@/services/api';
 import { TrendingUp } from 'lucide-react';
@@ -123,7 +122,7 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
     });
 
     // Calculate weekly totals across all agents
-    const weeklyTotalsData = weeklyData.map((week, index) => {
+    const weeklyTotalsData = weeklyData.map((week) => {
       const weekTotals: any = { ...week };
       
       // Calculate total weekly numbers across all agents
@@ -138,21 +137,6 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
       
       weekTotals.totalWeeklySites = totalWeeklySites;
       weekTotals.totalWeeklyAppointments = totalWeeklyAppointments;
-      
-      // Calculate cumulative totals
-      let cumulativeSites = 0;
-      let cumulativeAppointments = 0;
-      
-      for (let i = 0; i <= index; i++) {
-        agents.forEach(agent => {
-          const agentName = formatAgentName(agent);
-          cumulativeSites += weeklyData[i][`${agentName}_sites`] || 0;
-          cumulativeAppointments += weeklyData[i][`${agentName}_appointments`] || 0;
-        });
-      }
-      
-      weekTotals.cumulativeSites = cumulativeSites;
-      weekTotals.cumulativeAppointments = cumulativeAppointments;
       
       return weekTotals;
     });
@@ -316,12 +300,12 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
         </div>
       </Card>
 
-      {/* Total Sites Added Bar Chart with Cumulative Line */}
+      {/* Total Sites Added Bar Chart */}
       <Card className="p-6">
         <h5 className="text-lg font-semibold text-foreground mb-4">Total Sites Added</h5>
         <div className="w-full h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart 
+            <BarChart 
               data={weeklyTotalsData} 
               margin={{ top: 20, right: 120, left: 20, bottom: 60 }}
             >
@@ -337,14 +321,6 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
                 interval={0}
               />
               <YAxis 
-                yAxisId="left"
-                stroke="hsl(var(--foreground))" 
-                tick={{ fontSize: 12, fontWeight: 500 }}
-                tickLine={{ stroke: "hsl(var(--border))" }}
-              />
-              <YAxis 
-                yAxisId="right"
-                orientation="right"
                 stroke="hsl(var(--foreground))" 
                 tick={{ fontSize: 12, fontWeight: 500 }}
                 tickLine={{ stroke: "hsl(var(--border))" }}
@@ -357,33 +333,23 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
               />
               
               <Bar
-                yAxisId="left"
                 dataKey="totalWeeklySites"
                 fill="hsl(220, 70%, 40%)"
-                name="Weekly Sites Added"
+                name="Total Sites Added"
                 opacity={0.9}
                 radius={[4, 4, 0, 0]}
               />
-              <Line
-                yAxisId="right"
-                type="monotone"
-                dataKey="cumulativeSites"
-                stroke="hsl(142, 76%, 36%)"
-                strokeWidth={3}
-                dot={{ fill: "hsl(142, 76%, 36%)", strokeWidth: 2, r: 4 }}
-                name="Cumulative Sites"
-              />
-            </ComposedChart>
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>
 
-      {/* Total Appointments Added Bar Chart with Cumulative Line */}
+      {/* Total Appointments Added Bar Chart */}
       <Card className="p-6">
         <h5 className="text-lg font-semibold text-foreground mb-4">Total Appointments Added</h5>
         <div className="w-full h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart 
+            <BarChart 
               data={weeklyTotalsData} 
               margin={{ top: 20, right: 120, left: 20, bottom: 60 }}
             >
@@ -399,14 +365,6 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
                 interval={0}
               />
               <YAxis 
-                yAxisId="left"
-                stroke="hsl(var(--foreground))" 
-                tick={{ fontSize: 12, fontWeight: 500 }}
-                tickLine={{ stroke: "hsl(var(--border))" }}
-              />
-              <YAxis 
-                yAxisId="right"
-                orientation="right"
                 stroke="hsl(var(--foreground))" 
                 tick={{ fontSize: 12, fontWeight: 500 }}
                 tickLine={{ stroke: "hsl(var(--border))" }}
@@ -419,30 +377,20 @@ const AgentPerformanceOverTime = ({ sites, filters, isLoading = false }: AgentPe
               />
               
               <Bar
-                yAxisId="left"
                 dataKey="totalWeeklyAppointments"
                 fill="hsl(220, 70%, 40%)"
-                name="Weekly Appointments Added"
+                name="Total Appointments Added"
                 opacity={0.9}
                 radius={[4, 4, 0, 0]}
               />
-              <Line
-                yAxisId="right"
-                type="monotone"
-                dataKey="cumulativeAppointments"
-                stroke="hsl(142, 76%, 36%)"
-                strokeWidth={3}
-                dot={{ fill: "hsl(142, 76%, 36%)", strokeWidth: 2, r: 4 }}
-                name="Cumulative Appointments"
-              />
-            </ComposedChart>
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>
       
       <div className="text-sm text-muted-foreground">
         <p>• Weekly data shown from Monday to Sunday</p>
-        <p>• Total charts show bars for weekly numbers and line for cumulative totals</p>
+        <p>• Total charts show the sum of all agents for each week</p>
         {showConsentOnly && <p>• Filtered to show only sites with consent (YES)</p>}
       </div>
     </div>
