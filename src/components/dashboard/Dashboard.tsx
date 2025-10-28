@@ -14,12 +14,15 @@ import dashboardHero from '@/assets/dashboard-hero.jpg';
 const Dashboard = () => {
   const [filters, setFilters] = useState<SiteActivityFilters>({
     utmSource: 'PROJECTSOLAR',
+    from: '2024-01-01',
+    to: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
     siteType: 'domestic',
-    activeOnly: true
+    activeOnly: true,
+    includeSiteDetails: true,
   });
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['siteActivity', filters],
+    queryKey: ['siteActivity', filters.utmSource, filters.from, filters.to, filters.siteType],
     queryFn: () => fetchSiteActivity(filters),
     enabled: false, // Start with manual trigger
   });
@@ -44,22 +47,6 @@ const Dashboard = () => {
   
   if (filters.activeOnly) {
     sites = sites.filter(site => site.site_status === 'ACTIVE');
-  }
-  
-  if (filters.fromDate) {
-    sites = sites.filter(site => {
-      const siteDate = new Date(site.onboard_date);
-      const fromDate = new Date(filters.fromDate!);
-      return siteDate >= fromDate;
-    });
-  }
-  
-  if (filters.toDate) {
-    sites = sites.filter(site => {
-      const siteDate = new Date(site.onboard_date);
-      const toDate = new Date(filters.toDate!);
-      return siteDate <= toDate;
-    });
   }
 
   // Filter out sites from agents with perse or digitalapi in their email, and only show projectsolar agents

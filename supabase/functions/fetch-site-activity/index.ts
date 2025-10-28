@@ -6,8 +6,13 @@ const corsHeaders = {
 };
 
 interface SiteActivityFilters {
-  utmSource?: string;
+  utmSource: string;
+  from: string;
+  to: string;
   siteType?: string;
+  includeSiteDetails?: boolean;
+  limit?: number;
+  offset?: number;
 }
 
 serve(async (req) => {
@@ -28,7 +33,18 @@ serve(async (req) => {
     // Build query parameters with new format
     const params = new URLSearchParams();
     params.append('utmSource', filters.utmSource);
+    params.append('from', filters.from);
+    params.append('to', filters.to);
     params.append('siteType', filters.siteType || 'domestic');
+    if (filters.includeSiteDetails !== undefined) {
+      params.append('includeSiteDetails', String(filters.includeSiteDetails));
+    }
+    if (filters.limit) {
+      params.append('limit', String(filters.limit));
+    }
+    if (filters.offset) {
+      params.append('offset', String(filters.offset));
+    }
 
     const url = `https://api.thelabrador.co.uk/carbon/v3/site-activity?${params.toString()}`;
     

@@ -3,7 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface SiteActivityFilters {
   utmSource: string;
+  from: string;
+  to: string;
   siteType?: string;
+  includeSiteDetails?: boolean;
+  limit?: number;
+  offset?: number;
+  // Client-side only filters
   activeOnly?: boolean;
   fromDate?: string;
   toDate?: string;
@@ -35,6 +41,20 @@ export interface SiteActivityResponse {
   data: {
     summary: {
       totalSites: number;
+      returnedSites: number;
+      dateRange: {
+        from: string;
+        to: string;
+      };
+      filters: {
+        utmSource: string;
+        includeSiteDetails: boolean;
+      };
+    };
+    pagination: {
+      limit: number;
+      offset: number;
+      hasMore: boolean;
     };
     sites: SiteData[];
   };
@@ -44,9 +64,20 @@ export const fetchSiteActivity = async (filters: SiteActivityFilters): Promise<S
   console.log('=== API REQUEST DEBUG ===');
   console.log('Calling Supabase Edge Function with filters:', filters);
 
+  // Prepare API filters (exclude client-side only filters)
+  const apiFilters = {
+    utmSource: filters.utmSource,
+    from: filters.from,
+    to: filters.to,
+    siteType: filters.siteType,
+    includeSiteDetails: filters.includeSiteDetails,
+    limit: filters.limit,
+    offset: filters.offset,
+  };
+
   try {
     const { data, error } = await supabase.functions.invoke('fetch-site-activity', {
-      body: { filters }
+      body: { filters: apiFilters }
     });
 
     if (error) {
@@ -58,7 +89,7 @@ export const fetchSiteActivity = async (filters: SiteActivityFilters): Promise<S
     return data;
   } catch (error) {
     console.error('API call error:', error);
-    throw error; // Don't return mock data, let the error propagate
+    throw error;
   }
 };
 

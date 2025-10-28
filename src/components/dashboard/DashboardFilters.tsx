@@ -50,27 +50,27 @@ const DashboardFilters = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="fromDate" className="text-sm font-medium">
+            <Label htmlFor="from" className="text-sm font-medium">
               From Date
             </Label>
             <Input
-              id="fromDate"
+              id="from"
               type="date"
-              value={localFilters.fromDate || ''}
-              onChange={(e) => handleInputChange('fromDate', e.target.value)}
+              value={localFilters.from || ''}
+              onChange={(e) => handleInputChange('from', e.target.value)}
               className="w-full"
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="toDate" className="text-sm font-medium">
+            <Label htmlFor="to" className="text-sm font-medium">
               To Date
             </Label>
             <Input
-              id="toDate"
+              id="to"
               type="date"
-              value={localFilters.toDate || ''}
-              onChange={(e) => handleInputChange('toDate', e.target.value)}
+              value={localFilters.to || ''}
+              onChange={(e) => handleInputChange('to', e.target.value)}
               className="w-full"
             />
           </div>
