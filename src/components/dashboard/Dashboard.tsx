@@ -23,7 +23,55 @@ const Dashboard = () => {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['siteActivity', filters.utmSource, filters.from, filters.to, filters.siteType],
-    queryFn: () => fetchSiteActivity(filters),
+    queryFn: async () => {
+      let allSites: any[] = [];
+      let offset = 0;
+      let hasMore = true;
+      const limit = 100;
+
+      // Keep fetching until we get all data
+      while (hasMore) {
+        const response = await fetchSiteActivity({
+          ...filters,
+          includeSiteDetails: true,
+          limit,
+          offset,
+        });
+
+        if (response?.data?.sites) {
+          allSites = [...allSites, ...response.data.sites];
+          hasMore = response.data.pagination?.hasMore || false;
+          offset += limit;
+        } else {
+          hasMore = false;
+        }
+      }
+
+      // Return data in the same structure as the API
+      return {
+        ...data,
+        data: {
+          summary: {
+            totalSites: allSites.length,
+            returnedSites: allSites.length,
+            dateRange: {
+              from: filters.from,
+              to: filters.to,
+            },
+            agentFilter: 'all',
+            siteDetailsIncluded: true,
+            pagination: {
+              limit: allSites.length,
+              offset: 0,
+              currentPage: 1,
+              totalPages: 1,
+              hasMore: false,
+            },
+          },
+          sites: allSites,
+        },
+      };
+    },
     enabled: false, // Start with manual trigger
   });
 
