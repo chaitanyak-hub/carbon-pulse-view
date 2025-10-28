@@ -38,12 +38,19 @@ const Dashboard = () => {
           offset,
         });
 
-        if (response?.data?.sites) {
-          allSites = [...allSites, ...response.data.sites];
-          hasMore = response.data.pagination?.hasMore || false;
-          offset += limit;
+        const pageSites = response?.data?.sites || [];
+        allSites = [...allSites, ...pageSites];
+
+        // Determine if there are more pages (fallback to length-based check)
+        const apiHasMore = response?.data?.pagination?.hasMore;
+        if (typeof apiHasMore === 'boolean') {
+          hasMore = apiHasMore;
         } else {
-          hasMore = false;
+          hasMore = pageSites.length === limit; // if page is full, likely more data
+        }
+
+        if (hasMore) {
+          offset += limit;
         }
       }
 

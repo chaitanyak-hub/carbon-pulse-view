@@ -39,10 +39,10 @@ serve(async (req) => {
     if (filters.includeSiteDetails !== undefined) {
       params.append('includeSiteDetails', String(filters.includeSiteDetails));
     }
-    if (filters.limit) {
+    if (filters.limit !== undefined) {
       params.append('limit', String(filters.limit));
     }
-    if (filters.offset) {
+    if (filters.offset !== undefined) {
       params.append('offset', String(filters.offset));
     }
 
@@ -69,7 +69,7 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log('API response received, data length:', data?.data?.length || 0);
+    console.log('API response received, sites length:', data?.data?.sites?.length || 0, 'pagination:', data?.data?.pagination);
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
