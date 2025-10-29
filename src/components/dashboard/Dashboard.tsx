@@ -14,8 +14,6 @@ import dashboardHero from '@/assets/dashboard-hero.jpg';
 const Dashboard = () => {
   const [filters, setFilters] = useState<SiteActivityFilters>({
     utmSource: 'PROJECTSOLAR',
-    from: '2024-01-01',
-    to: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
     siteType: 'domestic',
     activeOnly: true,
     includeSiteDetails: true,
@@ -24,55 +22,30 @@ const Dashboard = () => {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['siteActivity', filters.utmSource, filters.from, filters.to, filters.siteType],
     queryFn: async () => {
-      let allSites: any[] = [];
-      let offset = 0;
-      let hasMore = true;
-      const limit = 100;
+      // Fetch all data with a single request using high limit
+      const response = await fetchSiteActivity({
+        ...filters,
+        includeSiteDetails: true,
+        limit: 5000,
+        offset: 0,
+      });
 
-      // Keep fetching until we get all data
-      while (hasMore) {
-        const response = await fetchSiteActivity({
-          ...filters,
-          includeSiteDetails: true,
-          limit,
-          offset,
-        });
-
-        const pageSites = response?.data?.sites || [];
-        allSites = [...allSites, ...pageSites];
-
-        // Determine if there are more pages (fallback to length-based check)
-        const apiHasMore = response?.data?.pagination?.hasMore;
-        if (typeof apiHasMore === 'boolean') {
-          hasMore = apiHasMore;
-        } else {
-          hasMore = pageSites.length === limit; // if page is full, likely more data
-        }
-
-        if (hasMore) {
-          offset += limit;
-        }
-      }
+      const allSites = response?.data?.sites || [];
 
       // Return data in the same structure as the API
       return {
-        ...data,
+        ...response,
         data: {
-          summary: {
+          summary: response?.data?.summary || {
             totalSites: allSites.length,
             returnedSites: allSites.length,
             dateRange: {
-              from: filters.from,
-              to: filters.to,
+              from: filters.from || '',
+              to: filters.to || '',
             },
-            agentFilter: 'all',
-            siteDetailsIncluded: true,
-            pagination: {
-              limit: allSites.length,
-              offset: 0,
-              currentPage: 1,
-              totalPages: 1,
-              hasMore: false,
+            filters: {
+              utmSource: filters.utmSource,
+              includeSiteDetails: true,
             },
           },
           sites: allSites,

@@ -7,8 +7,8 @@ const corsHeaders = {
 
 interface SiteActivityFilters {
   utmSource: string;
-  from: string;
-  to: string;
+  from?: string;
+  to?: string;
   siteType?: string;
   includeSiteDetails?: boolean;
   limit?: number;
@@ -33,8 +33,12 @@ serve(async (req) => {
     // Build query parameters with new format
     const params = new URLSearchParams();
     params.append('utmSource', filters.utmSource);
-    params.append('from', filters.from);
-    params.append('to', filters.to);
+    if (filters.from) {
+      params.append('from', filters.from);
+    }
+    if (filters.to) {
+      params.append('to', filters.to);
+    }
     params.append('siteType', filters.siteType || 'domestic');
     if (filters.includeSiteDetails !== undefined) {
       params.append('includeSiteDetails', String(filters.includeSiteDetails));
@@ -46,7 +50,7 @@ serve(async (req) => {
       params.append('offset', String(filters.offset));
     }
 
-    const url = `https://api.thelabrador.co.uk/carbon/v3/site-activity?${params.toString()}`;
+    const url = `http://domestic-prod-alb-terra-1678302567.eu-west-1.elb.amazonaws.com:6777/v3/site-activity?${params.toString()}`;
     
     console.log('Making request to:', url);
 

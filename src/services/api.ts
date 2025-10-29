@@ -3,8 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface SiteActivityFilters {
   utmSource: string;
-  from: string;
-  to: string;
+  from?: string;
+  to?: string;
   siteType?: string;
   includeSiteDetails?: boolean;
   limit?: number;
@@ -65,15 +65,21 @@ export const fetchSiteActivity = async (filters: SiteActivityFilters): Promise<S
   console.log('Calling Supabase Edge Function with filters:', filters);
 
   // Prepare API filters (exclude client-side only filters)
-  const apiFilters = {
+  const apiFilters: any = {
     utmSource: filters.utmSource,
-    from: filters.from,
-    to: filters.to,
     siteType: filters.siteType,
     includeSiteDetails: filters.includeSiteDetails,
     limit: filters.limit,
     offset: filters.offset,
   };
+  
+  // Only include from/to if provided
+  if (filters.from) {
+    apiFilters.from = filters.from;
+  }
+  if (filters.to) {
+    apiFilters.to = filters.to;
+  }
 
   try {
     const { data, error } = await supabase.functions.invoke('fetch-site-activity', {
