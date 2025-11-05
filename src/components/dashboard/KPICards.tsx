@@ -7,7 +7,8 @@ import {
   Calendar,
   TrendingUp,
   TrendingDown,
-  Activity 
+  Activity,
+  UserCheck
 } from 'lucide-react';
 
 interface KPIData {
@@ -29,6 +30,8 @@ interface KPIData {
   sitesWithoutConsentCount: number;
   sharedSitesWithConsent: number;
   sharedSitesWithoutConsent: number;
+  sitesWithLogin: number;
+  loginRate: number;
 }
 
 interface KPICardsProps {
@@ -62,6 +65,14 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       icon: Calendar,
       gradient: 'from-purple-500 to-purple-600',
       status: data.appointmentRate >= 60 ? 'good' : data.appointmentRate >= 45 ? 'warning' : 'poor'
+    },
+    {
+      title: 'Sites with Login Activity',
+      value: data.sitesWithLogin,
+      subtitle: `${data.loginRate.toFixed(1)}% login rate`,
+      icon: UserCheck,
+      gradient: 'from-indigo-500 to-indigo-600',
+      status: data.loginRate >= 40 ? 'good' : data.loginRate >= 20 ? 'warning' : 'poor'
     }
   ];
 
@@ -173,7 +184,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
   const renderCardRow = (cards: any[], rowTitle: string) => (
     <div className="space-y-3">
       <h3 className="text-lg font-semibold text-foreground">{rowTitle}</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className={`grid grid-cols-1 gap-6 ${cards.length === 4 ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
         {cards.map((card, index) => {
           const IconComponent = card.icon;
           return (

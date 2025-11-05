@@ -33,6 +33,7 @@ export interface SiteData {
   last_shared_date: string | null;
   deleted_date: string | null;
   consent_updated_date: string | null;
+  last_login_time: string | null;
 }
 
 export interface SiteActivityResponse {
@@ -152,6 +153,12 @@ export const calculateKPIs = (sites: SiteData[]) => {
   const appointmentRateWithConsent = sitesWithConsent.length > 0 ? (appointmentsWithConsent / sitesWithConsent.length) * 100 : 0;
   const appointmentRateWithoutConsent = sitesWithoutConsent.length > 0 ? (appointmentsWithoutConsent / sitesWithoutConsent.length) * 100 : 0;
   
+  // Calculate sites with login activity
+  const sitesWithLogin = sites.filter(site => 
+    site.last_login_time !== null && site.last_login_time !== ''
+  ).length;
+  const loginRate = totalSites > 0 ? (sitesWithLogin / totalSites) * 100 : 0;
+  
   const result = {
     totalSites: totalSites || 0,
     activeSites: activeSites || 0,
@@ -170,7 +177,9 @@ export const calculateKPIs = (sites: SiteData[]) => {
     sitesWithConsentCount: sitesWithConsent.length || 0,
     sitesWithoutConsentCount: sitesWithoutConsent.length || 0,
     sharedSitesWithConsent: sharedSitesWithConsent || 0,
-    sharedSitesWithoutConsent: sharedSitesWithoutConsent || 0
+    sharedSitesWithoutConsent: sharedSitesWithoutConsent || 0,
+    sitesWithLogin: sitesWithLogin || 0,
+    loginRate: isNaN(loginRate) ? 0 : loginRate
   };
   
   console.log('KPI Results:', result);
