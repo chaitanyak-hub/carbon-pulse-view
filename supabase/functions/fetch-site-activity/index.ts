@@ -54,31 +54,22 @@ serve(async (req) => {
     
     console.log('Making request to:', url);
 
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'e_api_key': apiKey,
-      },
-    });
+    // Add timeout to prevent hanging requests
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-    if (!response.ok) {
-      console.error('API request failed:', response.status, response.statusText);
-      return new Response(JSON.stringify({ 
-        error: `API request failed: ${response.status} ${response.statusText}` 
-      }), {
-        status: response.status,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'e_api_key': apiKey,
+        },
+        signal: controller.signal,
       });
-    }
 
-    const data = await response.json();
-    console.log('API response received, sites length:', data?.data?.sites?.length || 0, 'pagination:', data?.data?.pagination);
+      clearTimeout(timeoutId);
 
-    return new Response(JSON.stringify(data), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-    
   } catch (error) {
     console.error('Error in fetch-site-activity function:', error);
     return new Response(JSON.stringify({ 
