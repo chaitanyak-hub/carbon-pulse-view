@@ -70,6 +70,48 @@ serve(async (req) => {
 
       clearTimeout(timeoutId);
 
+      console.log('API Response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        return new Response(JSON.stringify({ 
+          error: `API request failed: ${response.status} ${response.statusText}`,
+          details: errorText
+        }), {
+          status: response.status,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const data = await response.json();
+      console.log('API Response data summary:', {
+        code: data.code,
+        status: data.status,
+        totalSites: data.data?.summary?.totalSites
+      });
+
+      return new Response(JSON.stringify(data), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      
+      if (fetchError.name === 'AbortError') {
+        console.error('Request timeout after 30 seconds');
+        return new Response(JSON.stringify({ 
+          error: 'Request timeout: The external API took too long to respond' 
+        }), {
+          status: 504,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      throw fetchError;
+    }
+
   } catch (error) {
     console.error('Error in fetch-site-activity function:', error);
     return new Response(JSON.stringify({ 
