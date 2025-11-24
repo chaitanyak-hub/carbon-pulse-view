@@ -182,6 +182,19 @@ const Charts = ({ sites, filters, isLoading = false }: ChartsProps) => {
                     />
                   </Bar>
                   <Bar 
+                    dataKey="sitesShared" 
+                    fill="hsl(220, 100%, 45%)" 
+                    name="Sites Shared" 
+                    radius={[4, 4, 0, 0]}
+                  >
+                    <LabelList 
+                      dataKey="sitesShared" 
+                      position="top" 
+                      className="fill-foreground text-xs font-semibold" 
+                      offset={8}
+                    />
+                  </Bar>
+                  <Bar 
                     dataKey="appointmentsBooked" 
                     fill="hsl(220, 100%, 30%)" 
                     name="Appointments Booked" 
