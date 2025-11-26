@@ -40,11 +40,28 @@ const filterSitesByDateRange = (sites: SiteData[], startDate: Date, endDate: Dat
   });
 };
 
+// Format agent name from email (e.g., omar.osman@projectsolaruk.com -> Omar Osman)
+const formatAgentName = (email: string): string => {
+  if (!email) return 'Unknown';
+  
+  // Extract the part before @
+  const namePart = email.split('@')[0];
+  
+  // Split by dots and capitalize each part
+  const names = namePart.split('.');
+  const formattedName = names
+    .map(name => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase())
+    .join(' ');
+  
+  return formattedName;
+};
+
 const calculateAgentMetrics = (sites: SiteData[]): AgentMetrics[] => {
   const agentMap = new Map<string, AgentMetrics>();
 
   sites.forEach(site => {
-    const agentName = site.agent_name || 'Unknown';
+    const agentEmail = site.agent_name || 'Unknown';
+    const agentName = formatAgentName(agentEmail);
     
     if (!agentMap.has(agentName)) {
       agentMap.set(agentName, {
@@ -171,12 +188,12 @@ const TimePeriodMetrics = ({ title, sites }: TimePeriodMetricsProps) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Agent Name</TableHead>
-                <TableHead className="text-right">Sites Added</TableHead>
-                <TableHead className="text-right">Sites Shared</TableHead>
-                <TableHead className="text-right">Appointments Booked</TableHead>
-                <TableHead className="text-right">Shared %</TableHead>
-                <TableHead className="text-right">Appointment %</TableHead>
+                <TableHead className="font-bold text-foreground">Agent Name</TableHead>
+                <TableHead className="text-right font-bold text-foreground">Sites Added</TableHead>
+                <TableHead className="text-right font-bold text-foreground">Sites Shared</TableHead>
+                <TableHead className="text-right font-bold text-foreground">Appointments Booked</TableHead>
+                <TableHead className="text-right font-bold text-foreground">Shared %</TableHead>
+                <TableHead className="text-right font-bold text-foreground">Appointment %</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
