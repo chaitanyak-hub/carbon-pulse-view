@@ -50,17 +50,19 @@ serve(async (req) => {
       params.append('offset', String(filters.offset));
     }
 
-    const url = `http://domestic-prod-alb-terra-1678302567.eu-west-1.elb.amazonaws.com:6777/v3/site-activity?${params.toString()}`;
-    
-    console.log('Making request to:', url);
-
-    // Function to make API request with timeout
-    const makeRequest = async (attemptNum: number): Promise<Response> => {
+    // Function to fetch a single batch with retry logic
+    const fetchBatch = async (offset: number, attemptNum: number = 1): Promise<any> => {
+      const batchParams = new URLSearchParams(params);
+      batchParams.set('limit', '500');
+      batchParams.set('offset', String(offset));
+      
+      const url = `http://domestic-prod-alb-terra-1678302567.eu-west-1.elb.amazonaws.com:6777/v3/site-activity?${batchParams.toString()}`;
+      
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout per batch
 
       try {
-        console.log(`Attempt ${attemptNum}: Fetching data...`);
+        console.log(`Batch at offset ${offset}, Attempt ${attemptNum}: Fetching...`);
         const response = await fetch(url, {
           method: 'GET',
           headers: {
@@ -71,66 +73,106 @@ serve(async (req) => {
         });
 
         clearTimeout(timeoutId);
-        console.log(`Attempt ${attemptNum}: Received status ${response.status}`);
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error(`Attempt ${attemptNum}: API Error:`, errorText);
+          console.error(`Batch ${offset}, Attempt ${attemptNum}: API Error:`, errorText);
           
-          // Retry on 504 Gateway Timeout
+          // Retry on 504
           if (response.status === 504 && attemptNum === 1) {
-            console.log('Retrying due to 504 error...');
-            return makeRequest(2);
+            console.log(`Retrying batch ${offset}...`);
+            return fetchBatch(offset, 2);
           }
           
-          return new Response(JSON.stringify({ 
-            error: `API request failed: ${response.status} ${response.statusText}`,
-            details: errorText
-          }), {
-            status: response.status,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
+          throw new Error(`API request failed: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
-        console.log('API Response data summary:', {
-          code: data.code,
-          status: data.status,
-          totalSites: data.data?.summary?.totalSites,
-          attempt: attemptNum
+        console.log(`Batch ${offset} completed:`, {
+          sites: data.data?.sites?.length || 0,
+          totalSites: data.data?.summary?.totalSites
         });
-
-        return new Response(JSON.stringify(data), {
-          status: 200,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+        
+        return data;
 
       } catch (fetchError) {
         clearTimeout(timeoutId);
         
         if (fetchError.name === 'AbortError') {
-          console.error(`Attempt ${attemptNum}: Request timeout after 120 seconds`);
+          console.error(`Batch ${offset}, Attempt ${attemptNum}: Timeout after 60s`);
           
-          // Retry on timeout (only once)
+          // Retry on timeout
           if (attemptNum === 1) {
-            console.log('Retrying due to timeout...');
-            return makeRequest(2);
+            console.log(`Retrying batch ${offset} due to timeout...`);
+            return fetchBatch(offset, 2);
           }
           
-          return new Response(JSON.stringify({ 
-            error: 'Request timeout: The external API took too long to respond (tried 120s timeout twice)' 
-          }), {
-            status: 504,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
+          throw new Error(`Batch ${offset} timeout after retry`);
         }
         
         throw fetchError;
       }
     };
 
-    // Start with first attempt
-    return await makeRequest(1);
+    // Fetch first batch to get total count
+    console.log('Fetching first batch to determine total...');
+    const firstBatch = await fetchBatch(0);
+    
+    const totalSites = firstBatch.data?.summary?.totalSites || 0;
+    const allSites = [...(firstBatch.data?.sites || [])];
+    
+    console.log(`Total sites to fetch: ${totalSites}, first batch returned: ${allSites.length}`);
+    
+    // Calculate remaining batches needed
+    const batchSize = 500;
+    const remainingBatches: number[] = [];
+    
+    for (let offset = batchSize; offset < totalSites; offset += batchSize) {
+      remainingBatches.push(offset);
+    }
+    
+    console.log(`Need to fetch ${remainingBatches.length} more batches`);
+    
+    // Fetch remaining batches in parallel (max 3 at a time to avoid overwhelming the API)
+    const maxConcurrent = 3;
+    for (let i = 0; i < remainingBatches.length; i += maxConcurrent) {
+      const batchPromises = remainingBatches
+        .slice(i, i + maxConcurrent)
+        .map(offset => fetchBatch(offset));
+      
+      const batchResults = await Promise.all(batchPromises);
+      
+      batchResults.forEach(result => {
+        if (result.data?.sites) {
+          allSites.push(...result.data.sites);
+        }
+      });
+      
+      console.log(`Progress: ${allSites.length}/${totalSites} sites fetched`);
+    }
+    
+    console.log(`Fetching complete: ${allSites.length} total sites retrieved`);
+    
+    // Return aggregated response
+    return new Response(JSON.stringify({
+      code: firstBatch.code,
+      status: firstBatch.status,
+      data: {
+        summary: {
+          ...firstBatch.data?.summary,
+          totalSites: allSites.length
+        },
+        pagination: {
+          limit: totalSites,
+          offset: 0,
+          total: allSites.length
+        },
+        sites: allSites
+      }
+    }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
 
   } catch (error) {
     console.error('Error in fetch-site-activity function:', error);
