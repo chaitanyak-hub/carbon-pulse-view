@@ -86,22 +86,22 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Site ID</TableHead>
-              <TableHead>Agent Name</TableHead>
-              <TableHead>Site Address</TableHead>
-              <TableHead>Date of Call</TableHead>
-              <TableHead>Site Status</TableHead>
-              <TableHead>Consent Provided by Customer</TableHead>
-              <TableHead>Consent Method</TableHead>
-              <TableHead>Consent Last Updated</TableHead>
-              <TableHead>Has Site Been Shared with Customer</TableHead>
-              <TableHead>Share Count</TableHead>
-              <TableHead>Last Shared Date</TableHead>
-              <TableHead>Appointment Booked with Customer</TableHead>
-              <TableHead>Appointment Date</TableHead>
-              <TableHead>Appointment Time</TableHead>
-              <TableHead>Appointment Booking Date</TableHead>
-              <TableHead>Deleted Date</TableHead>
+              <TableHead className="font-bold text-foreground">Site ID</TableHead>
+              <TableHead className="font-bold text-foreground">Agent Name</TableHead>
+              <TableHead className="font-bold text-foreground">Site Address</TableHead>
+              <TableHead className="font-bold text-foreground">Date of Call</TableHead>
+              <TableHead className="font-bold text-foreground">Site Status</TableHead>
+              <TableHead className="font-bold text-foreground">Consent Provided by Customer</TableHead>
+              <TableHead className="font-bold text-foreground">Consent Method</TableHead>
+              <TableHead className="font-bold text-foreground">Consent Last Updated</TableHead>
+              <TableHead className="font-bold text-foreground">Has Site Been Shared with Customer</TableHead>
+              <TableHead className="font-bold text-foreground">Share Count</TableHead>
+              <TableHead className="font-bold text-foreground">Last Shared Date</TableHead>
+              <TableHead className="font-bold text-foreground">Appointment Booked with Customer</TableHead>
+              <TableHead className="font-bold text-foreground">Appointment Date</TableHead>
+              <TableHead className="font-bold text-foreground">Appointment Time</TableHead>
+              <TableHead className="font-bold text-foreground">Appointment Booking Date</TableHead>
+              <TableHead className="font-bold text-foreground">Deleted Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -14,11 +14,19 @@ import { fetchSiteActivity, calculateKPIs, SiteActivityFilters, SiteData } from 
 import dashboardHero from '@/assets/dashboard-hero.jpg';
 
 const Dashboard = () => {
+  // Get today's date in YYYY-MM-DD format
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
   const [filters, setFilters] = useState<SiteActivityFilters>({
     utmSource: 'PROJECTSOLAR',
     siteType: 'domestic',
     activeOnly: true,
     includeSiteDetails: true,
+    from: getTodayDate(),
+    to: getTodayDate(),
   });
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -166,7 +174,7 @@ const Dashboard = () => {
             <TabsTrigger value="metrics">Key Metrics</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="stats">
+          <TabsContent value="stats" className="bg-muted/30 p-6 rounded-lg">
             {/* Data Summary Section */}
             {summary && (
               <div className="mb-8">
@@ -225,7 +233,7 @@ const Dashboard = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="metrics">
+          <TabsContent value="metrics" className="bg-muted/30 p-6 rounded-lg">
             <KeyMetrics sites={sites} />
           </TabsContent>
         </Tabs>
