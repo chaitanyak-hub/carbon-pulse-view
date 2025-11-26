@@ -57,7 +57,7 @@ serve(async (req) => {
     // Function to make API request with timeout
     const makeRequest = async (attemptNum: number): Promise<Response> => {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 50000); // 50 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 second timeout
 
       try {
         console.log(`Attempt ${attemptNum}: Fetching data...`);
@@ -109,7 +109,7 @@ serve(async (req) => {
         clearTimeout(timeoutId);
         
         if (fetchError.name === 'AbortError') {
-          console.error(`Attempt ${attemptNum}: Request timeout after 50 seconds`);
+          console.error(`Attempt ${attemptNum}: Request timeout after 120 seconds`);
           
           // Retry on timeout (only once)
           if (attemptNum === 1) {
@@ -118,7 +118,7 @@ serve(async (req) => {
           }
           
           return new Response(JSON.stringify({ 
-            error: 'Request timeout: The external API took too long to respond after retrying' 
+            error: 'Request timeout: The external API took too long to respond (tried 120s timeout twice)' 
           }), {
             status: 504,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
