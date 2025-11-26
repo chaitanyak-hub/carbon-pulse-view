@@ -53,13 +53,13 @@ serve(async (req) => {
     // Function to fetch a single batch with retry logic
     const fetchBatch = async (offset: number, attemptNum: number = 1): Promise<any> => {
       const batchParams = new URLSearchParams(params);
-      batchParams.set('limit', '500');
+      batchParams.set('limit', '200');
       batchParams.set('offset', String(offset));
       
       const url = `http://domestic-prod-alb-terra-1678302567.eu-west-1.elb.amazonaws.com:6777/v3/site-activity?${batchParams.toString()}`;
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout per batch
+      const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 second timeout per batch
 
       try {
         console.log(`Batch at offset ${offset}, Attempt ${attemptNum}: Fetching...`);
@@ -124,7 +124,7 @@ serve(async (req) => {
     console.log(`Total sites to fetch: ${totalSites}, first batch returned: ${allSites.length}`);
     
     // Calculate remaining batches needed
-    const batchSize = 500;
+    const batchSize = 200;
     const remainingBatches: number[] = [];
     
     for (let offset = batchSize; offset < totalSites; offset += batchSize) {
@@ -133,34 +133,45 @@ serve(async (req) => {
     
     console.log(`Need to fetch ${remainingBatches.length} more batches`);
     
-    // Fetch remaining batches in parallel (max 3 at a time to avoid overwhelming the API)
-    const maxConcurrent = 3;
+    // Track failed batches
+    const failedBatches: number[] = [];
+    
+    // Fetch remaining batches in parallel (max 2 at a time)
+    const maxConcurrent = 2;
     for (let i = 0; i < remainingBatches.length; i += maxConcurrent) {
-      const batchPromises = remainingBatches
-        .slice(i, i + maxConcurrent)
-        .map(offset => fetchBatch(offset));
+      const currentBatch = remainingBatches.slice(i, i + maxConcurrent);
+      const batchPromises = currentBatch.map(offset => 
+        fetchBatch(offset).catch(error => {
+          console.error(`Failed to fetch batch at offset ${offset}:`, error.message);
+          failedBatches.push(offset);
+          return null;
+        })
+      );
       
       const batchResults = await Promise.all(batchPromises);
       
       batchResults.forEach(result => {
-        if (result.data?.sites) {
+        if (result?.data?.sites) {
           allSites.push(...result.data.sites);
         }
       });
       
-      console.log(`Progress: ${allSites.length}/${totalSites} sites fetched`);
+      console.log(`Progress: ${allSites.length}/${totalSites} sites fetched (${failedBatches.length} batches failed)`);
     }
     
-    console.log(`Fetching complete: ${allSites.length} total sites retrieved`);
+    console.log(`Fetching complete: ${allSites.length} total sites retrieved${failedBatches.length > 0 ? ` (${failedBatches.length} batches failed)` : ''}`);
     
-    // Return aggregated response
-    return new Response(JSON.stringify({
+    // Return aggregated response with warning if some batches failed
+    const response = {
       code: firstBatch.code,
       status: firstBatch.status,
       data: {
         summary: {
           ...firstBatch.data?.summary,
-          totalSites: allSites.length
+          totalSites: allSites.length,
+          ...(failedBatches.length > 0 && {
+            warning: `${failedBatches.length} batches failed to load due to API timeouts. Showing ${allSites.length} of ${totalSites} sites.`
+          })
         },
         pagination: {
           limit: totalSites,
@@ -169,7 +180,9 @@ serve(async (req) => {
         },
         sites: allSites
       }
-    }), {
+    };
+    
+    return new Response(JSON.stringify(response), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
