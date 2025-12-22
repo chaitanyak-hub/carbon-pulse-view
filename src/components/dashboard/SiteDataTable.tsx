@@ -88,6 +88,7 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
             <TableRow>
               <TableHead className="font-bold text-foreground">Site ID</TableHead>
               <TableHead className="font-bold text-foreground">Agent Name</TableHead>
+              <TableHead className="font-bold text-foreground">Contact Name</TableHead>
               <TableHead className="font-bold text-foreground">Site Address</TableHead>
               <TableHead className="font-bold text-foreground">Date of Call</TableHead>
               <TableHead className="font-bold text-foreground">Site Status</TableHead>
@@ -109,6 +110,7 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
               <TableRow key={index} className="hover:bg-muted/50 transition-colors">
                 <TableCell className="font-mono text-sm">{site.siteId}</TableCell>
                 <TableCell className="font-medium">{site.agent_name}</TableCell>
+                <TableCell className="font-medium">{site.contact_name || 'N/A'}</TableCell>
                 <TableCell className="max-w-xs truncate" title={site.siteAddress}>
                   {site.siteAddress}
                 </TableCell>
