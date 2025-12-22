@@ -17,6 +17,7 @@ export interface SiteActivityFilters {
 
 export interface SiteData {
   agent_name: string;
+  contact_name: string | null;
   siteId: string;
   siteAddress: string;
   onboard_date: string;
