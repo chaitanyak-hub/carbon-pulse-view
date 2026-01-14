@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, BarChart3 } from 'lucide-react';
+import { AlertCircle, BarChart3, Activity, Target } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DashboardFilters from './DashboardFilters';
 import KPICards from './KPICards';
@@ -172,14 +172,16 @@ const Dashboard = () => {
           <TabsList className="mb-6 bg-muted p-1 rounded-lg">
             <TabsTrigger 
               value="stats" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-6 py-2 rounded-md font-medium transition-all"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-6 py-2 rounded-md font-medium transition-all flex items-center gap-2"
             >
+              <Activity className="h-4 w-4" />
               Stats Monitoring
             </TabsTrigger>
             <TabsTrigger 
               value="metrics"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-6 py-2 rounded-md font-medium transition-all"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-6 py-2 rounded-md font-medium transition-all flex items-center gap-2"
             >
+              <Target className="h-4 w-4" />
               Key Metrics
             </TabsTrigger>
           </TabsList>
