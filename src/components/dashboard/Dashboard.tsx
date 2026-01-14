@@ -169,9 +169,19 @@ const Dashboard = () => {
 
         {/* Tabs for Stats Monitoring and Key Metrics */}
         <Tabs defaultValue="stats" className="w-full">
-          <TabsList className="mb-6">
-            <TabsTrigger value="stats">Stats Monitoring</TabsTrigger>
-            <TabsTrigger value="metrics">Key Metrics</TabsTrigger>
+          <TabsList className="mb-6 bg-muted p-1 rounded-lg">
+            <TabsTrigger 
+              value="stats" 
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-6 py-2 rounded-md font-medium transition-all"
+            >
+              Stats Monitoring
+            </TabsTrigger>
+            <TabsTrigger 
+              value="metrics"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-6 py-2 rounded-md font-medium transition-all"
+            >
+              Key Metrics
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="stats" className="bg-muted/30 p-6 rounded-lg">
