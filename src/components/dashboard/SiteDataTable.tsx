@@ -103,6 +103,7 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
               <TableHead className="font-bold text-foreground">Appointment Time</TableHead>
               <TableHead className="font-bold text-foreground">Appointment Booking Date</TableHead>
               <TableHead className="font-bold text-foreground">Deleted Date</TableHead>
+              <TableHead className="font-bold text-foreground">Last Login Time</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
