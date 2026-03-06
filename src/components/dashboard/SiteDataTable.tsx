@@ -162,6 +162,9 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
                 <TableCell className="font-mono text-sm">
                   {site.deleted_date ? new Date(site.deleted_date).toLocaleDateString() : 'N/A'}
                 </TableCell>
+                <TableCell className="font-mono text-sm">
+                  {site.last_login_time ? new Date(site.last_login_time).toLocaleString() : 'N/A'}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
