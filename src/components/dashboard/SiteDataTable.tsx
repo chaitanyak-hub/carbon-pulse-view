@@ -103,6 +103,7 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
               <TableHead className="font-bold text-foreground">Appointment Time</TableHead>
               <TableHead className="font-bold text-foreground">Appointment Booking Date</TableHead>
               <TableHead className="font-bold text-foreground">Deleted Date</TableHead>
+              <TableHead className="font-bold text-foreground">Last Login Time</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -160,6 +161,9 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
                 </TableCell>
                 <TableCell className="font-mono text-sm">
                   {site.deleted_date ? new Date(site.deleted_date).toLocaleDateString() : 'N/A'}
+                </TableCell>
+                <TableCell className="font-mono text-sm">
+                  {site.last_login_time ? new Date(site.last_login_time).toLocaleString() : 'N/A'}
                 </TableCell>
               </TableRow>
             ))}
