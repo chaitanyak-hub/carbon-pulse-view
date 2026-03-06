@@ -26,7 +26,10 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
     return (
       (site.siteAddress && site.siteAddress.toLowerCase().includes(searchLower)) ||
       (site.agent_name && site.agent_name.toLowerCase().includes(searchLower)) ||
-      (site.siteId && site.siteId.toLowerCase().includes(searchLower))
+      (site.siteId && site.siteId.toLowerCase().includes(searchLower)) ||
+      (site.contact_first_name && site.contact_first_name.toLowerCase().includes(searchLower)) ||
+      (site.contact_last_name && site.contact_last_name.toLowerCase().includes(searchLower)) ||
+      (site.contact_email && site.contact_email.toLowerCase().includes(searchLower))
     );
   });
 
@@ -52,6 +55,24 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
     );
   };
 
+  const formatDate = (dateStr: string | null) => {
+    if (!dateStr) return 'N/A';
+    try {
+      return new Date(dateStr).toLocaleDateString();
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const formatDateTime = (dateStr: string | null) => {
+    if (!dateStr) return 'N/A';
+    try {
+      return new Date(dateStr).toLocaleString();
+    } catch {
+      return dateStr;
+    }
+  };
+
   if (isLoading) {
     return (
       <Card className="dashboard-card">
@@ -74,7 +95,7 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search sites..."
+            placeholder="Search by name, email, address..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -86,38 +107,96 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="font-bold text-foreground">Site ID</TableHead>
-              <TableHead className="font-bold text-foreground">Agent Name</TableHead>
-              <TableHead className="font-bold text-foreground">Contact Name</TableHead>
-              <TableHead className="font-bold text-foreground">Site Address</TableHead>
-              <TableHead className="font-bold text-foreground">Date of Call</TableHead>
-              <TableHead className="font-bold text-foreground">Site Status</TableHead>
-              <TableHead className="font-bold text-foreground">Consent Provided by Customer</TableHead>
-              <TableHead className="font-bold text-foreground">Consent Method</TableHead>
-              <TableHead className="font-bold text-foreground">Consent Last Updated</TableHead>
-              <TableHead className="font-bold text-foreground">Has Site Been Shared with Customer</TableHead>
-              <TableHead className="font-bold text-foreground">Share Count</TableHead>
-              <TableHead className="font-bold text-foreground">Last Shared Date</TableHead>
-              <TableHead className="font-bold text-foreground">Appointment Booked with Customer</TableHead>
-              <TableHead className="font-bold text-foreground">Appointment Date</TableHead>
-              <TableHead className="font-bold text-foreground">Appointment Time</TableHead>
-              <TableHead className="font-bold text-foreground">Appointment Booking Date</TableHead>
-              <TableHead className="font-bold text-foreground">Deleted Date</TableHead>
-              <TableHead className="font-bold text-foreground">Last Login Time</TableHead>
+              {/* Identifiers */}
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Site ID</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Agent Name</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Site Address</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Date of Call</TableHead>
+              {/* Contact Details */}
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Contact First Name</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Contact Last Name</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Contact Email</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Contact Phone</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Contact UUID</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Dialler Contact ID</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Lead ID</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Source UUID</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Dialler Username</TableHead>
+              {/* Status & Consent */}
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Site Status</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Consent</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Consent Method</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Consent Updated</TableHead>
+              {/* Sharing */}
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Shared</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Share Count</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Last Shared Date</TableHead>
+              {/* Appointments */}
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Has Appointment</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Appointment Date</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Appointment Time</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Appointment Set Date</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Appointment ID</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Appointment Status</TableHead>
+              {/* Sales/Rep */}
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Sales Status</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Rep Name</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Rep Email</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Rep ID</TableHead>
+              {/* Property */}
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Property Type</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Premise Type</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Bedrooms</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Floor Area (m²)</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Floor Count</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Decade of Build</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Roof Type</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Listed Grade</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Heating Source</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Hot Water Source</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Cooking Source</TableHead>
+              {/* EPC */}
+              <TableHead className="font-bold text-foreground whitespace-nowrap">EPC Available</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">EPC Address</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Current EPC</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Potential EPC</TableHead>
+              {/* Energy */}
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Annual Elec (kWh)</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Annual Gas (kWh)</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Elec Unit Rate</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Gas Unit Rate</TableHead>
+              {/* Solar */}
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Solar Panels</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Panel Capacity (W)</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Potential Savings (£)</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Energy Savings (kWh)</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Carbon Savings (kg)</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Lat/Long</TableHead>
+              {/* Other */}
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Last Login</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Login Count</TableHead>
+              <TableHead className="font-bold text-foreground whitespace-nowrap">Deleted Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredSites.map((site, index) => (
               <TableRow key={index} className="hover:bg-muted/50 transition-colors">
-                <TableCell className="font-mono text-sm">{site.siteId}</TableCell>
-                <TableCell className="font-medium">{site.agent_name}</TableCell>
-                <TableCell className="font-medium">{site.contact_name || 'N/A'}</TableCell>
-                <TableCell className="max-w-xs truncate" title={site.siteAddress}>
-                  {site.siteAddress}
-                </TableCell>
-                <TableCell className="font-mono text-sm">
-                  {site.onboard_date ? new Date(site.onboard_date).toLocaleDateString() : 'N/A'}
-                </TableCell>
+                {/* Identifiers */}
+                <TableCell className="font-mono text-sm whitespace-nowrap">{site.siteId}</TableCell>
+                <TableCell className="font-medium whitespace-nowrap">{site.agent_name}</TableCell>
+                <TableCell className="max-w-xs truncate whitespace-nowrap" title={site.siteAddress}>{site.siteAddress}</TableCell>
+                <TableCell className="font-mono text-sm whitespace-nowrap">{formatDate(site.onboard_date)}</TableCell>
+                {/* Contact */}
+                <TableCell className="whitespace-nowrap">{site.contact_first_name || 'N/A'}</TableCell>
+                <TableCell className="whitespace-nowrap">{site.contact_last_name || 'N/A'}</TableCell>
+                <TableCell className="font-mono text-sm whitespace-nowrap">{site.contact_email || 'N/A'}</TableCell>
+                <TableCell className="font-mono text-sm whitespace-nowrap">{site.contact_phone || 'N/A'}</TableCell>
+                <TableCell className="font-mono text-xs whitespace-nowrap">{site.contact_uuid || 'N/A'}</TableCell>
+                <TableCell className="font-mono text-xs whitespace-nowrap">{site.dialler_contact_id || 'N/A'}</TableCell>
+                <TableCell className="font-mono text-sm whitespace-nowrap">{site.lead_id || 'N/A'}</TableCell>
+                <TableCell className="font-mono text-xs whitespace-nowrap">{site.source_uuid === 'null' ? 'N/A' : (site.source_uuid || 'N/A')}</TableCell>
+                <TableCell className="whitespace-nowrap">{site.dialler_username === 'null' ? 'N/A' : (site.dialler_username || 'N/A')}</TableCell>
+                {/* Status & Consent */}
                 <TableCell>{getStatusBadge(site.site_status)}</TableCell>
                 <TableCell>{getConsentBadge(site.consent)}</TableCell>
                 <TableCell>
@@ -125,46 +204,87 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
                     {site.consent_type || 'N/A'}
                   </Badge>
                 </TableCell>
-                <TableCell className="font-mono text-sm">
-                  {site.consent_updated_date ? new Date(site.consent_updated_date).toLocaleDateString() : 'N/A'}
-                </TableCell>
+                <TableCell className="font-mono text-sm whitespace-nowrap">{formatDate(site.consent_updated_date)}</TableCell>
+                {/* Sharing */}
                 <TableCell>
-                  <Badge variant={site.is_shared ? "default" : "secondary"} 
-                         className={site.is_shared ? 'bg-success text-success-foreground' : 'bg-muted text-muted-foreground'}>
-                    {site.is_shared ? 'YES' : 'NO'}
+                  <Badge variant={site.is_shared === 'YES' || site.is_shared === true ? "default" : "secondary"} 
+                         className={site.is_shared === 'YES' || site.is_shared === true ? 'bg-success text-success-foreground' : 'bg-muted text-muted-foreground'}>
+                    {site.is_shared === 'YES' || site.is_shared === true ? 'YES' : 'NO'}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-center">
-                  <Badge variant="outline" className="font-mono">
-                    {site.share_count}
-                  </Badge>
+                  <Badge variant="outline" className="font-mono">{site.share_count ?? 0}</Badge>
                 </TableCell>
-                <TableCell className="font-mono text-sm">
-                  {site.last_shared_date ? new Date(site.last_shared_date).toLocaleDateString() : 'N/A'}
-                </TableCell>
+                <TableCell className="font-mono text-sm whitespace-nowrap">{formatDate(site.last_shared_date)}</TableCell>
+                {/* Appointments */}
                 <TableCell>
-                  <Badge variant={site.has_appointment ? "default" : "secondary"} 
-                         className={site.has_appointment ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}>
-                    {site.has_appointment ? 'YES' : 'NO'}
+                  <Badge variant={site.has_appointment === 'YES' || site.has_appointment === true ? "default" : "secondary"} 
+                         className={site.has_appointment === 'YES' || site.has_appointment === true ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}>
+                    {site.has_appointment === 'YES' || site.has_appointment === true ? 'YES' : 'NO'}
                   </Badge>
                 </TableCell>
-                <TableCell className="font-mono text-sm">
-                  {site.appointment_date ? new Date(site.appointment_date).toLocaleDateString() : 'N/A'}
-                </TableCell>
-                <TableCell className="font-mono text-sm">
+                <TableCell className="font-mono text-sm whitespace-nowrap">{formatDate(site.appointment_date)}</TableCell>
+                <TableCell className="font-mono text-sm whitespace-nowrap">
                   {site.appointment_time_from && site.appointment_time_to 
                     ? `${site.appointment_time_from} - ${site.appointment_time_to}` 
                     : 'N/A'}
                 </TableCell>
-                <TableCell className="font-mono text-sm">
-                  {site.appointment_set_date ? new Date(site.appointment_set_date).toLocaleDateString() : 'N/A'}
+                <TableCell className="font-mono text-sm whitespace-nowrap">{formatDate(site.appointment_set_date)}</TableCell>
+                <TableCell className="font-mono text-xs whitespace-nowrap">{site.appointment_id || 'N/A'}</TableCell>
+                <TableCell className="whitespace-nowrap">{site.appointment_status || 'N/A'}</TableCell>
+                {/* Sales/Rep */}
+                <TableCell className="whitespace-nowrap">
+                  {site.sales_status ? (
+                    <Badge variant="outline" className="text-primary">{site.sales_status}</Badge>
+                  ) : 'N/A'}
                 </TableCell>
-                <TableCell className="font-mono text-sm">
-                  {site.deleted_date ? new Date(site.deleted_date).toLocaleDateString() : 'N/A'}
+                <TableCell className="whitespace-nowrap">
+                  {site.rep_first_name || site.rep_last_name 
+                    ? `${site.rep_first_name || ''} ${site.rep_last_name || ''}`.trim() 
+                    : 'N/A'}
                 </TableCell>
-                <TableCell className="font-mono text-sm">
-                  {site.last_login_time ? new Date(site.last_login_time).toLocaleString() : 'N/A'}
+                <TableCell className="font-mono text-sm whitespace-nowrap">{site.rep_email_id || 'N/A'}</TableCell>
+                <TableCell className="font-mono text-sm whitespace-nowrap">{site.rep_id || 'N/A'}</TableCell>
+                {/* Property */}
+                <TableCell className="whitespace-nowrap">{site.property_type || 'N/A'}</TableCell>
+                <TableCell className="whitespace-nowrap">{site.premise_type || 'N/A'}</TableCell>
+                <TableCell className="text-center">{site.no_of_bedrooms ?? 'N/A'}</TableCell>
+                <TableCell className="text-center">{site.floor_area ?? 'N/A'}</TableCell>
+                <TableCell className="text-center">{site.floor_count || 'N/A'}</TableCell>
+                <TableCell className="whitespace-nowrap">{site.decade_of_build || 'N/A'}</TableCell>
+                <TableCell className="whitespace-nowrap">{site.roof_type || 'N/A'}</TableCell>
+                <TableCell className="whitespace-nowrap">{site.listed_grade || 'N/A'}</TableCell>
+                <TableCell className="whitespace-nowrap">{site.heating_source || 'N/A'}</TableCell>
+                <TableCell className="whitespace-nowrap">{site.hot_water_source || 'N/A'}</TableCell>
+                <TableCell className="whitespace-nowrap">{site.cooking_source || 'N/A'}</TableCell>
+                {/* EPC */}
+                <TableCell>
+                  <Badge variant={site.epc_available ? "default" : "secondary"} 
+                         className={site.epc_available ? 'bg-success text-success-foreground' : 'bg-muted text-muted-foreground'}>
+                    {site.epc_available ? 'YES' : 'NO'}
+                  </Badge>
                 </TableCell>
+                <TableCell className="max-w-xs truncate whitespace-nowrap" title={site.epc_address || ''}>{site.epc_address || 'N/A'}</TableCell>
+                <TableCell className="text-center font-bold">{site.current_epc_rating || 'N/A'}</TableCell>
+                <TableCell className="text-center font-bold">{site.potential_epc_rating || 'N/A'}</TableCell>
+                {/* Energy */}
+                <TableCell className="font-mono text-sm text-center">{site.annual_elec_consumption ?? 'N/A'}</TableCell>
+                <TableCell className="font-mono text-sm text-center">{site.annual_gas_consumption ?? 'N/A'}</TableCell>
+                <TableCell className="font-mono text-sm text-center">{site.elec_unit_rate ?? 'N/A'}</TableCell>
+                <TableCell className="font-mono text-sm text-center">{site.gas_unit_rate ?? 'N/A'}</TableCell>
+                {/* Solar */}
+                <TableCell className="text-center">{site.solar_panel_count ?? 'N/A'}</TableCell>
+                <TableCell className="text-center">{site.panel_capacity ?? 'N/A'}</TableCell>
+                <TableCell className="font-mono text-sm text-center">{site.potential_savings != null ? `£${site.potential_savings.toLocaleString()}` : 'N/A'}</TableCell>
+                <TableCell className="font-mono text-sm text-center">{site.potential_energy_savings?.toLocaleString() ?? 'N/A'}</TableCell>
+                <TableCell className="font-mono text-sm text-center">{site.potential_carbon_savings?.toLocaleString() ?? 'N/A'}</TableCell>
+                <TableCell className="font-mono text-xs whitespace-nowrap">
+                  {site.latitude && site.longitude ? `${site.latitude}, ${site.longitude}` : 'N/A'}
+                </TableCell>
+                {/* Other */}
+                <TableCell className="font-mono text-sm whitespace-nowrap">{formatDateTime(site.last_login_time)}</TableCell>
+                <TableCell className="text-center">{site.login_count ?? 'N/A'}</TableCell>
+                <TableCell className="font-mono text-sm whitespace-nowrap">{formatDate(site.deleted_date)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -189,7 +309,7 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
             Export JSON
           </button>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
             <span className="text-muted-foreground">Total Records:</span>
             <span className="ml-2 font-mono">{sites.length}</span>
@@ -212,65 +332,6 @@ const SiteDataTable = ({ sites, isLoading = false }: SiteDataTableProps) => {
                 </>
               )}
             </span>
-          </div>
-        </div>
-        
-        <div className="border-t border-border pt-3">
-          <h5 className="font-medium text-xs mb-2 text-muted-foreground">Available Data Fields for Charts:</h5>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-            <div>
-              <span className="font-medium text-primary">Identifiers:</span>
-              <div className="ml-2 text-muted-foreground">
-                • siteId<br/>
-                • agent_name<br/>
-                • siteAddress
-              </div>
-            </div>
-            <div>
-              <span className="font-medium text-primary">Status & Consent:</span>
-              <div className="ml-2 text-muted-foreground">
-                • site_status (active/inactive)<br/>
-                • consent (YES/NO)<br/>
-                • consent_type (VERBAL/DIGITAL)<br/>
-                • consent_updated_date
-              </div>
-            </div>
-            <div>
-              <span className="font-medium text-primary">Dates:</span>
-              <div className="ml-2 text-muted-foreground">
-                • onboard_date<br/>
-                • appointment_date<br/>
-                • appointment_set_date<br/>
-                • last_shared_date<br/>
-                • deleted_date
-              </div>
-            </div>
-            <div>
-              <span className="font-medium text-primary">Sharing:</span>
-              <div className="ml-2 text-muted-foreground">
-                • is_shared (boolean)<br/>
-                • share_count (number)<br/>
-                • last_shared_date
-              </div>
-            </div>
-            <div>
-              <span className="font-medium text-primary">Appointments:</span>
-              <div className="ml-2 text-muted-foreground">
-                • has_appointment (boolean)<br/>
-                • appointment_time_from<br/>
-                • appointment_time_to<br/>
-                • appointment_set_date
-              </div>
-            </div>
-            <div>
-              <span className="font-medium text-primary">Metrics Possible:</span>
-              <div className="ml-2 text-muted-foreground">
-                • Conversion rates<br/>
-                • Time-based trends<br/>
-                • Agent performance<br/>
-                • Funnel analysis
-              </div>
-            </div>
           </div>
         </div>
       </div>

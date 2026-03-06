@@ -21,20 +21,76 @@ export interface SiteData {
   siteId: string;
   siteAddress: string;
   onboard_date: string;
+  // Contact details
+  contact_uuid: string | null;
+  dialler_contact_id: string | null;
+  lead_id: string | null;
+  source_uuid: string | null;
+  dialler_username: string | null;
+  contact_email: string | null;
+  contact_first_name: string | null;
+  contact_last_name: string | null;
+  contact_phone: string | null;
+  // Consent
   consent: 'YES' | 'NO' | 'PENDING';
-  consent_type: 'VERBAL' | 'DIGITAL' | null;
+  consent_type: 'VERBAL' | 'DIGITAL' | 'EMAIL' | null;
+  consent_updated_date: string | null;
+  // Status & sharing
   is_shared: boolean | string | number;
   site_status: 'ACTIVE' | 'INACTIVE';
+  share_count: number | null;
+  last_shared_date: string | null;
+  deleted_date: string | null;
+  last_login_time: string | null;
+  login_count: number | null;
+  // Appointments
   has_appointment: boolean | string | number;
   appointment_date: string | null;
   appointment_time_from: string | null;
   appointment_time_to: string | null;
   appointment_set_date: string | null;
-  share_count: number;
-  last_shared_date: string | null;
-  deleted_date: string | null;
-  consent_updated_date: string | null;
-  last_login_time: string | null;
+  appointment_id: string | null;
+  appointment_status: string | null;
+  // Sales/Rep
+  rep_email_id: string | null;
+  rep_first_name: string | null;
+  rep_last_name: string | null;
+  rep_id: string | null;
+  sales_status: string | null;
+  // Property details
+  heating_source: string | null;
+  hot_water_source: string | null;
+  cooking_source: string | null;
+  no_of_bedrooms: number | null;
+  property_type: string | null;
+  floor_area: number | null;
+  decade_of_build: string | null;
+  premise_type: string | null;
+  floor_count: string | number | null;
+  listed_grade: string | null;
+  roof_type: string | null;
+  // EPC
+  epc_available: boolean | null;
+  epc_address: string | null;
+  current_epc_rating: string | null;
+  potential_epc_rating: string | null;
+  // Energy
+  elecMeter: Record<string, any> | null;
+  gasMeter: Record<string, any> | null;
+  annual_elec_consumption: number | null;
+  annual_gas_consumption: number | null;
+  elec_unit_rate: number | null;
+  gas_unit_rate: number | null;
+  // Solar
+  solar_panel_count: number | null;
+  panel_capacity: number | null;
+  latitude: string | null;
+  longitude: string | null;
+  installation_life_span_years: number | null;
+  potential_energy_savings: number | null;
+  potential_savings: number | null;
+  potential_carbon_savings: number | null;
+  recommendations: any[] | null;
 }
 
 export interface SiteActivityResponse {
