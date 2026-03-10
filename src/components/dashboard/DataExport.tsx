@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Download, FileSpreadsheet, FileText } from 'lucide-react';
+import { Download, FileSpreadsheet, FileText, Zap } from 'lucide-react';
 import { SiteData } from '@/services/api';
 import { exportToCSV, exportToExcel, generateFilename } from '@/utils/dataExport';
 import { useToast } from '@/hooks/use-toast';
