@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Download, FileSpreadsheet, FileText } from 'lucide-react';
+import { Download, FileSpreadsheet, FileText, Zap } from 'lucide-react';
 import { SiteData } from '@/services/api';
 import { exportToCSV, exportToExcel, generateFilename } from '@/utils/dataExport';
 import { useToast } from '@/hooks/use-toast';
@@ -65,6 +65,36 @@ const DataExport = ({ sites, isLoading = false }: DataExportProps) => {
     }
   };
 
+  const zeroElecSites = sites.filter(site => 
+    site.annual_elec_consumption === 0 || site.annual_elec_consumption === null || site.annual_elec_consumption === undefined
+  );
+
+  const handleZeroElecDownload = () => {
+    if (zeroElecSites.length === 0) {
+      toast({
+        title: "No Records Found",
+        description: "No sites with zero annual electricity consumption found.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const filename = generateFilename('zero-electricity-sites');
+      exportToExcel(zeroElecSites, filename);
+      toast({
+        title: "Export Successful",
+        description: `Downloaded ${zeroElecSites.length} sites with zero electricity as ${filename}.xlsx`,
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "Failed to export data. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <Card className="dashboard-card">
       <div className="flex items-center justify-between">
@@ -78,6 +108,15 @@ const DataExport = ({ sites, isLoading = false }: DataExportProps) => {
           </p>
         </div>
         <div className="flex gap-3">
+          <Button
+            onClick={handleZeroElecDownload}
+            disabled={isLoading || zeroElecSites.length === 0}
+            variant="outline"
+            className="flex items-center gap-2 border-warning text-warning-foreground bg-warning/10 hover:bg-warning/20"
+          >
+            <Zap className="h-4 w-4" />
+            Zero Elec ({zeroElecSites.length})
+          </Button>
           <Button
             onClick={handleCSVDownload}
             disabled={isLoading || sites.length === 0}
