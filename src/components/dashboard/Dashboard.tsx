@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, BarChart3, Activity, Target } from 'lucide-react';
+import { AlertCircle, BarChart3, Activity, Target, ShieldAlert } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DashboardFilters from './DashboardFilters';
 import KPICards from './KPICards';
@@ -10,6 +10,7 @@ import Charts from './Charts';
 import SiteDataTable from './SiteDataTable';
 import DataExport from './DataExport';
 import KeyMetrics from './KeyMetrics';
+import NoEpcSites from './NoEpcSites';
 import { fetchSiteActivity, calculateKPIs, SiteActivityFilters, SiteData } from '@/services/api';
 import dashboardHero from '@/assets/dashboard-hero.jpg';
 
@@ -184,6 +185,13 @@ const Dashboard = () => {
               <Target className="h-4 w-4" />
               Key Metrics
             </TabsTrigger>
+            <TabsTrigger 
+              value="no-epc"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-6 py-2 rounded-md font-medium transition-all flex items-center gap-2"
+            >
+              <ShieldAlert className="h-4 w-4" />
+              No EPC Sites
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="stats" className="bg-muted/30 p-6 rounded-lg">
@@ -247,6 +255,10 @@ const Dashboard = () => {
 
           <TabsContent value="metrics" className="bg-muted/30 p-6 rounded-lg">
             <KeyMetrics sites={sites} />
+          </TabsContent>
+
+          <TabsContent value="no-epc" className="bg-muted/30 p-6 rounded-lg">
+            <NoEpcSites sites={sites} />
           </TabsContent>
         </Tabs>
       </div>
