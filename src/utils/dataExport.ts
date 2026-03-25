@@ -1,51 +1,78 @@
 import * as XLSX from 'xlsx';
 import { SiteData } from '@/services/api';
 
+const getAllFields = (site: SiteData) => ({
+  'Site ID': site.siteId,
+  'Agent Name': site.agent_name,
+  'Site Address': site.siteAddress,
+  'Date of Call': site.onboard_date,
+  'Contact First Name': site.contact_first_name,
+  'Contact Last Name': site.contact_last_name,
+  'Contact Email': site.contact_email,
+  'Contact Phone': site.contact_phone,
+  'Contact UUID': site.contact_uuid,
+  'Dialler Contact ID': site.dialler_contact_id,
+  'Lead ID': site.lead_id,
+  'Source UUID': site.source_uuid,
+  'Dialler Username': site.dialler_username,
+  'Site Status': site.site_status,
+  'Consent': site.consent,
+  'Consent Method': site.consent_type,
+  'Consent Updated': site.consent_updated_date,
+  'Shared': site.is_shared,
+  'Share Count': site.share_count,
+  'Last Shared Date': site.last_shared_date,
+  'Has Appointment': site.has_appointment,
+  'Appointment Date': site.appointment_date,
+  'Appointment Time From': site.appointment_time_from,
+  'Appointment Time To': site.appointment_time_to,
+  'Appointment Set Date': site.appointment_set_date,
+  'Appointment ID': site.appointment_id,
+  'Appointment Status': site.appointment_status,
+  'Sales Status': site.sales_status,
+  'Rep Name': [site.rep_first_name, site.rep_last_name].filter(Boolean).join(' ') || null,
+  'Rep Email': site.rep_email_id,
+  'Rep ID': site.rep_id,
+  'Property Type': site.property_type,
+  'Premise Type': site.premise_type,
+  'Bedrooms': site.no_of_bedrooms,
+  'Floor Area (m²)': site.floor_area,
+  'Floor Count': site.floor_count,
+  'Decade of Build': site.decade_of_build,
+  'Roof Type': site.roof_type,
+  'Listed Grade': site.listed_grade,
+  'Heating Source': site.heating_source,
+  'Hot Water Source': site.hot_water_source,
+  'Cooking Source': site.cooking_source,
+  'EPC Available': site.epc_available,
+  'EPC Address': site.epc_address,
+  'Current EPC Rating': site.current_epc_rating,
+  'Potential EPC Rating': site.potential_epc_rating,
+  'Annual Elec (kWh)': site.annual_elec_consumption,
+  'Annual Gas (kWh)': site.annual_gas_consumption,
+  'Elec Unit Rate': site.elec_unit_rate,
+  'Gas Unit Rate': site.gas_unit_rate,
+  'Solar Panels': site.solar_panel_count,
+  'Panel Capacity (W)': site.panel_capacity,
+  'Potential Savings (£)': site.potential_savings,
+  'Energy Savings (kWh)': site.potential_energy_savings,
+  'Carbon Savings (kg)': site.potential_carbon_savings,
+  'Latitude': site.latitude,
+  'Longitude': site.longitude,
+  'Last Login': site.last_login_time,
+  'Login Count': site.login_count,
+  'Deleted Date': site.deleted_date,
+});
+
 // Convert site data to CSV format
 export const exportToCSV = (sites: SiteData[], filename: string = 'site-data') => {
-  const headers = [
-    'Agent Name',
-    'Site ID',
-    'Site Address',
-    'Date of Call',
-    'Consent Provided by Customer',
-    'Consent Method',
-    'Has Site Been Shared with Customer',
-    'Site Status',
-    'Appointment Booked with Customer',
-    'Appointment Date',
-    'Appointment Time From',
-    'Appointment Time To',
-    'Appointment Booking Date',
-    'Share Count',
-    'Last Shared Date',
-    'Deleted Date',
-    'Consent Last Updated'
-  ];
+  const allData = sites.map(getAllFields);
+  const headers = Object.keys(allData[0] || {});
 
-  const csvData = sites.map(site => [
-    site.agent_name,
-    site.siteId,
-    site.siteAddress,
-    site.onboard_date,
-    site.consent,
-    site.consent_type,
-    site.is_shared,
-    site.site_status,
-    site.has_appointment,
-    site.appointment_date,
-    site.appointment_time_from,
-    site.appointment_time_to,
-    site.appointment_set_date,
-    site.share_count,
-    site.last_shared_date,
-    site.deleted_date,
-    site.consent_updated_date
-  ]);
-
-  const csvContent = [headers, ...csvData]
-    .map(row => row.map(field => `"${field || ''}"`).join(','))
-    .join('\n');
+  const csvContent = [
+    headers.map(h => `"${h}"`).join(','),
+    ...allData.map(row => headers.map(h => `"${row[h as keyof typeof row] ?? ''}"`).join(','))
+  ].join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
@@ -61,52 +88,15 @@ export const exportToCSV = (sites: SiteData[], filename: string = 'site-data') =
 
 // Convert site data to Excel format
 export const exportToExcel = (sites: SiteData[], filename: string = 'site-data') => {
-  const worksheet = XLSX.utils.json_to_sheet(
-    sites.map(site => ({
-      'Agent Name': site.agent_name,
-      'Site ID': site.siteId,
-      'Site Address': site.siteAddress,
-      'Date of Call': site.onboard_date,
-      'Consent Provided by Customer': site.consent,
-      'Consent Method': site.consent_type,
-      'Has Site Been Shared with Customer': site.is_shared,
-      'Site Status': site.site_status,
-      'Appointment Booked with Customer': site.has_appointment,
-      'Appointment Date': site.appointment_date,
-      'Appointment Time From': site.appointment_time_from,
-      'Appointment Time To': site.appointment_time_to,
-      'Appointment Booking Date': site.appointment_set_date,
-      'Share Count': site.share_count,
-      'Last Shared Date': site.last_shared_date,
-      'Deleted Date': site.deleted_date,
-      'Consent Last Updated': site.consent_updated_date
-    }))
-  );
+  const allData = sites.map(getAllFields);
+  const worksheet = XLSX.utils.json_to_sheet(allData);
 
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Site Data');
 
-  // Auto-size columns
-  const columnWidths = [
-    { wch: 25 }, // Agent Name
-    { wch: 15 }, // Site ID
-    { wch: 30 }, // Site Address
-    { wch: 15 }, // Date of Call
-    { wch: 30 }, // Consent Provided by Customer
-    { wch: 15 }, // Consent Method
-    { wch: 35 }, // Has Site Been Shared with Customer
-    { wch: 12 }, // Site Status
-    { wch: 35 }, // Appointment Booked with Customer
-    { wch: 15 }, // Appointment Date
-    { wch: 18 }, // Appointment Time From
-    { wch: 16 }, // Appointment Time To
-    { wch: 25 }, // Appointment Booking Date
-    { wch: 12 }, // Share Count
-    { wch: 16 }, // Last Shared Date
-    { wch: 14 }, // Deleted Date
-    { wch: 20 }  // Consent Last Updated
-  ];
-  worksheet['!cols'] = columnWidths;
+  // Auto-size columns based on headers
+  const headers = Object.keys(allData[0] || {});
+  worksheet['!cols'] = headers.map(h => ({ wch: Math.max(h.length + 2, 14) }));
 
   XLSX.writeFile(workbook, `${filename}.xlsx`);
 };
