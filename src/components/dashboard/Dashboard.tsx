@@ -256,6 +256,10 @@ const Dashboard = () => {
           <TabsContent value="metrics" className="bg-muted/30 p-6 rounded-lg">
             <KeyMetrics sites={sites} />
           </TabsContent>
+
+          <TabsContent value="no-epc" className="bg-muted/30 p-6 rounded-lg">
+            <NoEpcSites sites={sites} />
+          </TabsContent>
         </Tabs>
       </div>
     </div>
