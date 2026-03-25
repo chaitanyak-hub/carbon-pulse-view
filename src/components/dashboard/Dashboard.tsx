@@ -10,6 +10,7 @@ import Charts from './Charts';
 import SiteDataTable from './SiteDataTable';
 import DataExport from './DataExport';
 import KeyMetrics from './KeyMetrics';
+import NoEpcSites from './NoEpcSites';
 import { fetchSiteActivity, calculateKPIs, SiteActivityFilters, SiteData } from '@/services/api';
 import dashboardHero from '@/assets/dashboard-hero.jpg';
 
