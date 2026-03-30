@@ -17,9 +17,10 @@ interface ChartsProps {
   sites: SiteData[];
   filters: SiteActivityFilters;
   isLoading?: boolean;
+  webSites?: SiteData[];
 }
 
-const Charts = ({ sites, filters, isLoading = false }: ChartsProps) => {
+const Charts = ({ sites, filters, isLoading = false, webSites = [] }: ChartsProps) => {
   // Function to format agent names
   const formatAgentName = (email: string) => {
     if (!email) return '';
