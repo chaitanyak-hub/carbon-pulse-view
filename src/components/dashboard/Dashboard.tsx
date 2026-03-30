@@ -253,7 +253,7 @@ const Dashboard = () => {
                 <div className="w-1 h-6 bg-primary mr-3 rounded"></div>
                 Business Intelligence Charts
               </h2>
-              <Charts sites={sites} filters={filters} isLoading={isLoading} />
+              <Charts sites={sites} filters={filters} isLoading={isLoading} webSites={webSites} />
             </div>
 
             {/* Raw Data Analysis Section */}
