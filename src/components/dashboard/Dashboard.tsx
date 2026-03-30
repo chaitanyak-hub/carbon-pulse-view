@@ -94,7 +94,8 @@ const Dashboard = () => {
   // Initial load
   useEffect(() => {
     refetch();
-  }, [refetch]);
+    refetchWeb();
+  }, [refetch, refetchWeb]);
 
   const allSites = data?.data?.sites || [];
   
