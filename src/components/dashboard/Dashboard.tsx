@@ -66,20 +66,39 @@ const Dashboard = () => {
     enabled: false, // Start with manual trigger
   });
 
+  // Fetch PROJECTSOLAR_WEB sites separately
+  const { data: webData, refetch: refetchWeb } = useQuery({
+    queryKey: ['siteActivityWeb', filters.from, filters.to, filters.siteType],
+    queryFn: async () => {
+      const response = await fetchSiteActivity({
+        ...filters,
+        utmSource: 'PROJECTSOLAR_WEB',
+        includeSiteDetails: true,
+        limit: 5000,
+        offset: 0,
+      });
+      return response?.data?.sites || [];
+    },
+    enabled: false,
+  });
+
   const handleFiltersChange = (newFilters: SiteActivityFilters) => {
     setFilters(newFilters);
   };
 
   const handleApplyFilters = () => {
     refetch();
+    refetchWeb();
   };
 
   // Initial load
   useEffect(() => {
     refetch();
-  }, [refetch]);
+    refetchWeb();
+  }, [refetch, refetchWeb]);
 
   const allSites = data?.data?.sites || [];
+  const webSites = (webData as SiteData[] | undefined) || [];
   
   // Apply filters client-side
   let sites = allSites;
@@ -234,7 +253,7 @@ const Dashboard = () => {
                 <div className="w-1 h-6 bg-primary mr-3 rounded"></div>
                 Business Intelligence Charts
               </h2>
-              <Charts sites={sites} filters={filters} isLoading={isLoading} />
+              <Charts sites={sites} filters={filters} isLoading={isLoading} webSites={webSites} />
             </div>
 
             {/* Raw Data Analysis Section */}

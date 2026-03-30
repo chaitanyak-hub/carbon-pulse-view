@@ -17,9 +17,10 @@ interface ChartsProps {
   sites: SiteData[];
   filters: SiteActivityFilters;
   isLoading?: boolean;
+  webSites?: SiteData[];
 }
 
-const Charts = ({ sites, filters, isLoading = false }: ChartsProps) => {
+const Charts = ({ sites, filters, isLoading = false, webSites = [] }: ChartsProps) => {
   // Function to format agent names
   const formatAgentName = (email: string) => {
     if (!email) return '';
@@ -140,6 +141,19 @@ const Charts = ({ sites, filters, isLoading = false }: ChartsProps) => {
           <Users className="h-6 w-6 text-primary" />
           <h3 className="text-xl font-semibold text-foreground">Agent Performance Metrics</h3>
         </div>
+        
+        {/* Web Sites Added (PROJECTSOLAR_WEB) */}
+        <Card className="p-4 border-l-4 border-l-primary bg-accent/30">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Sites Added via Web (PROJECTSOLAR_WEB)</p>
+              <p className="text-3xl font-bold text-foreground">{webSites.length}</p>
+            </div>
+            <div className="text-right text-sm text-muted-foreground">
+              <p>Not included in overall numbers</p>
+            </div>
+          </div>
+        </Card>
 
         <div className="space-y-8">
           {/* Combined Agent Performance Metrics */}
