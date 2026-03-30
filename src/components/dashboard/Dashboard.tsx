@@ -98,6 +98,7 @@ const Dashboard = () => {
   }, [refetch, refetchWeb]);
 
   const allSites = data?.data?.sites || [];
+  const webSites = (webData as SiteData[] | undefined) || [];
   
   // Apply filters client-side
   let sites = allSites;
