@@ -11,7 +11,9 @@ import {
 } from 'recharts';
 import { SiteData, SiteActivityFilters } from '@/services/api';
 import AgentPerformanceOverTime from './AgentPerformanceOverTime';
-import { Users } from 'lucide-react';
+import { Users, Globe } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { format, parseISO } from 'date-fns';
 
 interface ChartsProps {
   sites: SiteData[];
