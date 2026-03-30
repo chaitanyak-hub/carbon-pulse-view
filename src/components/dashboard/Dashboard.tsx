@@ -88,6 +88,7 @@ const Dashboard = () => {
 
   const handleApplyFilters = () => {
     refetch();
+    refetchWeb();
   };
 
   // Initial load
