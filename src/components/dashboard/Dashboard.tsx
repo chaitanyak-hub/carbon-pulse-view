@@ -66,6 +66,22 @@ const Dashboard = () => {
     enabled: false, // Start with manual trigger
   });
 
+  // Fetch PROJECTSOLAR_WEB sites separately
+  const { data: webData, refetch: refetchWeb } = useQuery({
+    queryKey: ['siteActivityWeb', filters.from, filters.to, filters.siteType],
+    queryFn: async () => {
+      const response = await fetchSiteActivity({
+        ...filters,
+        utmSource: 'PROJECTSOLAR_WEB',
+        includeSiteDetails: true,
+        limit: 5000,
+        offset: 0,
+      });
+      return response?.data?.sites || [];
+    },
+    enabled: false,
+  });
+
   const handleFiltersChange = (newFilters: SiteActivityFilters) => {
     setFilters(newFilters);
   };
