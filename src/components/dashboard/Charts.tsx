@@ -144,17 +144,50 @@ const Charts = ({ sites, filters, isLoading = false, webSites = [] }: ChartsProp
           <h3 className="text-xl font-semibold text-foreground">Agent Performance Metrics</h3>
         </div>
         
-        {/* Web Sites Added (PROJECTSOLAR_WEB) */}
-        <Card className="p-4 border-l-4 border-l-primary bg-accent/30">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Sites Added via Web (PROJECTSOLAR_WEB)</p>
-              <p className="text-3xl font-bold text-foreground">{webSites.length}</p>
-            </div>
-            <div className="text-right text-sm text-muted-foreground">
-              <p>Not included in overall numbers</p>
-            </div>
+        {/* Web Leads (PROJECTSOLAR_WEB) */}
+        <Card className="p-6 border-l-4 border-l-primary bg-accent/30">
+          <div className="flex items-center gap-3 mb-4">
+            <Globe className="h-5 w-5 text-primary" />
+            <h4 className="text-lg font-semibold text-foreground">Web Leads</h4>
+            <span className="text-sm text-muted-foreground">(PROJECTSOLAR_WEB — not included in overall numbers)</span>
           </div>
+          <p className="text-3xl font-bold text-foreground mb-4">{webSites.length}</p>
+          
+          {webSites.length > 0 && (
+            <div className="max-h-[400px] overflow-auto rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="sticky top-0 bg-muted">Address</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Customer Name</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Date Added</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {webSites
+                    .sort((a, b) => new Date(b.onboard_date).getTime() - new Date(a.onboard_date).getTime())
+                    .map((site, index) => {
+                      const customerName = [site.contact_first_name, site.contact_last_name]
+                        .filter(Boolean)
+                        .join(' ') || site.contact_name || '—';
+                      
+                      let dateAdded = '—';
+                      try {
+                        dateAdded = site.onboard_date ? format(parseISO(site.onboard_date), 'dd MMM yyyy, HH:mm') : '—';
+                      } catch { /* ignore */ }
+
+                      return (
+                        <TableRow key={`${site.siteId}-${index}`}>
+                          <TableCell className="text-sm">{site.siteAddress || '—'}</TableCell>
+                          <TableCell className="text-sm">{customerName}</TableCell>
+                          <TableCell className="text-sm">{dateAdded}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </Card>
 
         <div className="space-y-8">
