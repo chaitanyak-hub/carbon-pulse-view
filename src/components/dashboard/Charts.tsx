@@ -11,9 +11,12 @@ import {
 } from 'recharts';
 import { SiteData, SiteActivityFilters } from '@/services/api';
 import AgentPerformanceOverTime from './AgentPerformanceOverTime';
-import { Users, Globe } from 'lucide-react';
+import { Users, Globe, FileSpreadsheet } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import { format, parseISO } from 'date-fns';
+import { exportToExcel, generateFilename } from '@/utils/dataExport';
+import { useToast } from '@/hooks/use-toast';
 
 interface ChartsProps {
   sites: SiteData[];
