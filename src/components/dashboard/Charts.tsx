@@ -26,6 +26,7 @@ interface ChartsProps {
 }
 
 const Charts = ({ sites, filters, isLoading = false, webSites = [] }: ChartsProps) => {
+  const { toast } = useToast();
   // Function to format agent names
   const formatAgentName = (email: string) => {
     if (!email) return '';
