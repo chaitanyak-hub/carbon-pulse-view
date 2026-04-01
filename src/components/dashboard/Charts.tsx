@@ -11,9 +11,12 @@ import {
 } from 'recharts';
 import { SiteData, SiteActivityFilters } from '@/services/api';
 import AgentPerformanceOverTime from './AgentPerformanceOverTime';
-import { Users, Globe } from 'lucide-react';
+import { Users, Globe, FileSpreadsheet } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import { format, parseISO } from 'date-fns';
+import { exportToExcel, generateFilename } from '@/utils/dataExport';
+import { useToast } from '@/hooks/use-toast';
 
 interface ChartsProps {
   sites: SiteData[];
@@ -23,6 +26,7 @@ interface ChartsProps {
 }
 
 const Charts = ({ sites, filters, isLoading = false, webSites = [] }: ChartsProps) => {
+  const { toast } = useToast();
   // Function to format agent names
   const formatAgentName = (email: string) => {
     if (!email) return '';
@@ -146,10 +150,30 @@ const Charts = ({ sites, filters, isLoading = false, webSites = [] }: ChartsProp
         
         {/* Web Leads (PROJECTSOLAR_WEB) */}
         <Card className="p-6 border-l-4 border-l-primary bg-accent/30">
-          <div className="flex items-center gap-3 mb-4">
-            <Globe className="h-5 w-5 text-primary" />
-            <h4 className="text-lg font-semibold text-foreground">Web Leads</h4>
-            <span className="text-sm text-muted-foreground">(PROJECTSOLAR_WEB — not included in overall numbers)</span>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Globe className="h-5 w-5 text-primary" />
+              <h4 className="text-lg font-semibold text-foreground">Web Leads</h4>
+              <span className="text-sm text-muted-foreground">(PROJECTSOLAR_WEB — not included in overall numbers)</span>
+            </div>
+            <Button
+              onClick={() => {
+                if (webSites.length === 0) return;
+                try {
+                  const filename = generateFilename('web-leads');
+                  exportToExcel(webSites, filename);
+                  toast({ title: "Export Successful", description: `Downloaded ${webSites.length} web leads as ${filename}.xlsx` });
+                } catch {
+                  toast({ title: "Export Failed", description: "Failed to export web leads.", variant: "destructive" });
+                }
+              }}
+              disabled={webSites.length === 0}
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <FileSpreadsheet className="h-4 w-4" />
+              Download Excel
+            </Button>
           </div>
           <p className="text-3xl font-bold text-foreground mb-4">{webSites.length}</p>
           
@@ -158,9 +182,23 @@ const Charts = ({ sites, filters, isLoading = false, webSites = [] }: ChartsProp
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="sticky top-0 bg-muted">Site ID</TableHead>
                     <TableHead className="sticky top-0 bg-muted">Address</TableHead>
                     <TableHead className="sticky top-0 bg-muted">Customer Name</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Email</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Phone</TableHead>
                     <TableHead className="sticky top-0 bg-muted">Date Added</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Status</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Consent</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Shared</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Appointment</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Property Type</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Bedrooms</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">EPC Rating</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Elec (kWh)</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Gas (kWh)</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Solar Panels</TableHead>
+                    <TableHead className="sticky top-0 bg-muted">Potential Savings (£)</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -176,11 +214,33 @@ const Charts = ({ sites, filters, isLoading = false, webSites = [] }: ChartsProp
                         dateAdded = site.onboard_date ? format(parseISO(site.onboard_date), 'dd MMM yyyy, HH:mm') : '—';
                       } catch { /* ignore */ }
 
+                      let apptInfo = '—';
+                      if (site.appointment_date) {
+                        try {
+                          apptInfo = format(parseISO(site.appointment_date), 'dd MMM yyyy');
+                          if (site.appointment_status) apptInfo += ` (${site.appointment_status})`;
+                        } catch { apptInfo = site.appointment_date; }
+                      }
+
                       return (
                         <TableRow key={`${site.siteId}-${index}`}>
+                          <TableCell className="text-sm font-mono">{site.siteId || '—'}</TableCell>
                           <TableCell className="text-sm">{site.siteAddress || '—'}</TableCell>
                           <TableCell className="text-sm">{customerName}</TableCell>
+                          <TableCell className="text-sm">{site.contact_email || '—'}</TableCell>
+                          <TableCell className="text-sm">{site.contact_phone || '—'}</TableCell>
                           <TableCell className="text-sm">{dateAdded}</TableCell>
+                          <TableCell className="text-sm">{site.site_status || '—'}</TableCell>
+                          <TableCell className="text-sm">{site.consent || '—'}</TableCell>
+                          <TableCell className="text-sm">{site.is_shared ? 'Yes' : 'No'}</TableCell>
+                          <TableCell className="text-sm">{apptInfo}</TableCell>
+                          <TableCell className="text-sm">{site.property_type || '—'}</TableCell>
+                          <TableCell className="text-sm">{site.no_of_bedrooms ?? '—'}</TableCell>
+                          <TableCell className="text-sm">{site.current_epc_rating || '—'}</TableCell>
+                          <TableCell className="text-sm">{site.annual_elec_consumption ?? '—'}</TableCell>
+                          <TableCell className="text-sm">{site.annual_gas_consumption ?? '—'}</TableCell>
+                          <TableCell className="text-sm">{site.solar_panel_count ?? '—'}</TableCell>
+                          <TableCell className="text-sm">{site.potential_savings ?? '—'}</TableCell>
                         </TableRow>
                       );
                     })}
