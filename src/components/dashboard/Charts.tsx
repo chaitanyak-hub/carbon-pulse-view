@@ -181,24 +181,24 @@ const Charts = ({ sites, filters, isLoading = false, webSites = [] }: ChartsProp
             <div className="max-h-[400px] overflow-auto rounded-md border">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead className="sticky top-0 bg-muted">Site ID</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Address</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Customer Name</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Email</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Phone</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Date Added</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Status</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Consent</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Shared</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Appointment</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Property Type</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Bedrooms</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">EPC Rating</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Elec (kWh)</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Gas (kWh)</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Solar Panels</TableHead>
-                    <TableHead className="sticky top-0 bg-muted">Potential Savings (£)</TableHead>
+                  <TableRow className="bg-muted/80 hover:bg-muted/80">
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Site ID</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Address</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Customer Name</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Email</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Phone</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Date Added</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Status</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Consent</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Shared</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Appointment</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Property Type</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Bedrooms</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">EPC Rating</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Elec (kWh)</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Gas (kWh)</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Solar Panels</TableHead>
+                    <TableHead className="sticky top-0 bg-muted font-semibold text-foreground whitespace-nowrap">Potential Savings (£)</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
