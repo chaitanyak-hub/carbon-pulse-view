@@ -67,9 +67,11 @@ const Dashboard = () => {
   });
 
   // Fetch PROJECTSOLAR_WEB sites separately
-  const { data: webData, refetch: refetchWeb } = useQuery({
+  const { data: webData, isLoading: isWebLoading, error: webError, refetch: refetchWeb } = useQuery({
     queryKey: ['siteActivityWeb', filters.from, filters.to, filters.siteType],
     queryFn: async () => {
+      // Add a small delay to avoid overloading the upstream API with concurrent requests
+      await new Promise(resolve => setTimeout(resolve, 3000));
       const response = await fetchSiteActivity({
         ...filters,
         utmSource: 'PROJECTSOLAR_WEB',
@@ -80,6 +82,8 @@ const Dashboard = () => {
       return response?.data?.sites || [];
     },
     enabled: false,
+    retry: 2,
+    retryDelay: 5000,
   });
 
   const handleFiltersChange = (newFilters: SiteActivityFilters) => {
