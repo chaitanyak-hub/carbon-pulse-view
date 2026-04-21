@@ -176,7 +176,43 @@ const Charts = ({ sites, filters, isLoading = false, webSites = [] }: ChartsProp
             </Button>
           </div>
           <p className="text-3xl font-bold text-foreground mb-4">{webSites.length}</p>
-          
+
+          {webSites.length > 0 && (() => {
+            const counts = webSites.reduce((acc: Record<string, number>, s) => {
+              if (!s.onboard_date) return acc;
+              try {
+                const day = format(parseISO(s.onboard_date), 'yyyy-MM-dd');
+                acc[day] = (acc[day] || 0) + 1;
+              } catch { /* ignore */ }
+              return acc;
+            }, {});
+            const perDay = Object.entries(counts)
+              .map(([date, count]) => ({ date, label: format(parseISO(date), 'dd MMM'), count }))
+              .sort((a, b) => a.date.localeCompare(b.date));
+            return (
+              <div className="mb-6 w-full h-[300px]">
+                <h5 className="text-sm font-semibold text-foreground mb-2">Sites Added Per Day</h5>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={perDay} margin={{ top: 20, right: 20, left: 0, bottom: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                    <YAxis allowDecimals={false} stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                    <Tooltip
+                      contentStyle={{
+                        background: 'hsl(var(--background))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '6px',
+                      }}
+                    />
+                    <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="count" position="top" fill="hsl(var(--foreground))" fontSize={11} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            );
+          })()}
+
           {webSites.length > 0 && (
             <div className="max-h-[400px] overflow-auto rounded-md border">
               <Table>
