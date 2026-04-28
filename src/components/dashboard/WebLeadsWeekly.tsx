@@ -1,5 +1,13 @@
 import { Card } from '@/components/ui/card';
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
   BarChart,
   Bar,
   XAxis,
@@ -12,6 +20,8 @@ import {
 import { SiteData } from '@/services/api';
 import { format, parseISO, startOfWeek, addWeeks, isBefore, isAfter } from 'date-fns';
 import { Globe } from 'lucide-react';
+
+const TABLE_START_DATE = new Date(2026, 3, 6); // 6th April 2026
 
 interface WebLeadsWeeklyProps {
   webSites: SiteData[];
