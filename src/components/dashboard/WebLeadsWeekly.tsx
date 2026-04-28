@@ -163,11 +163,11 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Onboard Date</TableHead>
-                    <TableHead>Site Name</TableHead>
-                    <TableHead>Address</TableHead>
+                    <TableHead>Site Address</TableHead>
                     <TableHead>Contact Name</TableHead>
                     <TableHead>Contact Email</TableHead>
                     <TableHead>Contact Phone</TableHead>
+                    <TableHead>Agent</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
