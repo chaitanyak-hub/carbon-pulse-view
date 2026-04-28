@@ -179,7 +179,7 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
                     </TableRow>
                   ) : (
                     tableSites.map((s, i) => (
-                      <TableRow key={`${s.site_id || i}-${i}`}>
+                      <TableRow key={`${s.siteId || i}-${i}`}>
                         <TableCell>
                           {(() => {
                             try {
@@ -189,11 +189,11 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
                             }
                           })()}
                         </TableCell>
-                        <TableCell>{s.site_name || '-'}</TableCell>
-                        <TableCell>{s.site_address || '-'}</TableCell>
+                        <TableCell>{s.siteAddress || '-'}</TableCell>
                         <TableCell>{s.contact_name || '-'}</TableCell>
                         <TableCell>{s.contact_email || '-'}</TableCell>
                         <TableCell>{s.contact_phone || '-'}</TableCell>
+                        <TableCell>{s.agent_name || '-'}</TableCell>
                       </TableRow>
                     ))
                   )}
