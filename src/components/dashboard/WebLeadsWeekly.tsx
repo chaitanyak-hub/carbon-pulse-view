@@ -132,6 +132,77 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
           </ResponsiveContainer>
         </div>
       </Card>
+
+      {(() => {
+        const tableSites = filtered
+          .filter((s) => {
+            try {
+              return !isBefore(parseISO(s.onboard_date), TABLE_START_DATE);
+            } catch {
+              return false;
+            }
+          })
+          .sort((a, b) => (a.onboard_date < b.onboard_date ? 1 : -1));
+
+        return (
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h4 className="text-lg font-semibold text-foreground">Web Leads Detail</h4>
+                <p className="text-sm text-muted-foreground">
+                  From week starting 6th April 2026 — excludes perse.energy emails
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">Total</p>
+                <p className="text-2xl font-bold text-foreground">{tableSites.length}</p>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Onboard Date</TableHead>
+                    <TableHead>Site Name</TableHead>
+                    <TableHead>Address</TableHead>
+                    <TableHead>Contact Name</TableHead>
+                    <TableHead>Contact Email</TableHead>
+                    <TableHead>Contact Phone</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {tableSites.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                        No web leads from 6th April 2026 onwards
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    tableSites.map((s, i) => (
+                      <TableRow key={`${s.site_id || i}-${i}`}>
+                        <TableCell>
+                          {(() => {
+                            try {
+                              return format(parseISO(s.onboard_date), 'dd MMM yyyy');
+                            } catch {
+                              return s.onboard_date || '-';
+                            }
+                          })()}
+                        </TableCell>
+                        <TableCell>{s.site_name || '-'}</TableCell>
+                        <TableCell>{s.site_address || '-'}</TableCell>
+                        <TableCell>{s.contact_name || '-'}</TableCell>
+                        <TableCell>{s.contact_email || '-'}</TableCell>
+                        <TableCell>{s.contact_phone || '-'}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 };
