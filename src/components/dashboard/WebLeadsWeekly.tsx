@@ -55,12 +55,16 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
     cursor = addWeeks(cursor, 1);
   }
 
+  const weeklyLoggedIn: Record<string, number> = {};
   filtered.forEach((s) => {
     try {
       const d = parseISO(s.onboard_date);
       const weekStart = startOfWeek(d, { weekStartsOn: 1 });
       const key = format(weekStart, 'yyyy-MM-dd');
-      if (buckets[key]) buckets[key].count++;
+      if (buckets[key]) {
+        buckets[key].count++;
+        if (s.last_login_time) weeklyLoggedIn[key] = (weeklyLoggedIn[key] || 0) + 1;
+      }
     } catch {
       /* ignore */
     }
@@ -68,12 +72,17 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
 
   const chartData = Object.values(buckets)
     .sort((a, b) => a.weekStart.getTime() - b.weekStart.getTime())
-    .map((b) => ({
-      label: `W/C ${format(b.weekStart, 'dd MMM')}`,
-      count: b.count,
-    }));
+    .map((b) => {
+      const key = format(b.weekStart, 'yyyy-MM-dd');
+      return {
+        label: `W/C ${format(b.weekStart, 'dd MMM')}`,
+        count: b.count,
+        loggedIn: weeklyLoggedIn[key] || 0,
+      };
+    });
 
   const total = filtered.length;
+  const totalLoggedIn = filtered.filter((s) => !!s.last_login_time).length;
 
   if (isLoading) {
     return (
