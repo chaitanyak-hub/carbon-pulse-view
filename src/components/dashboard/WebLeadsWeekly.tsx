@@ -18,7 +18,7 @@ import {
   LabelList,
 } from 'recharts';
 import { SiteData } from '@/services/api';
-import { format, parseISO, startOfWeek, addWeeks, isBefore, isAfter } from 'date-fns';
+import { format, parseISO, startOfWeek, addWeeks, isBefore, isAfter, startOfDay, addDays, isSameDay, subDays } from 'date-fns';
 import { Globe } from 'lucide-react';
 
 const TABLE_START_DATE = new Date(2026, 3, 6); // 6th April 2026
