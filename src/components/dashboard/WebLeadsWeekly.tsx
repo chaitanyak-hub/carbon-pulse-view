@@ -141,7 +141,7 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
               <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Leads">
                 <LabelList dataKey="count" position="top" fill="hsl(var(--foreground))" fontSize={11} />
               </Bar>
-              <Bar dataKey="loggedIn" fill="hsl(var(--accent-foreground))" radius={[4, 4, 0, 0]} name="Logged In">
+              <Bar dataKey="loggedIn" fill="hsl(var(--chart-4))" radius={[4, 4, 0, 0]} name="Logged In">
                 <LabelList dataKey="loggedIn" position="top" fill="hsl(var(--muted-foreground))" fontSize={11} />
               </Bar>
             </BarChart>
@@ -215,7 +215,7 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
                   <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Leads">
                     <LabelList dataKey="count" position="top" fill="hsl(var(--foreground))" fontSize={11} />
                   </Bar>
-                  <Bar dataKey="loggedIn" fill="hsl(var(--accent-foreground))" radius={[4, 4, 0, 0]} name="Logged In">
+                  <Bar dataKey="loggedIn" fill="hsl(var(--chart-4))" radius={[4, 4, 0, 0]} name="Logged In">
                     <LabelList dataKey="loggedIn" position="top" fill="hsl(var(--muted-foreground))" fontSize={11} />
                   </Bar>
                 </BarChart>
