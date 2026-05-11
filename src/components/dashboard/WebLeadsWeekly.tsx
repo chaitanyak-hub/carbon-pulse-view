@@ -110,6 +110,10 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
           <div className="text-right">
             <p className="text-sm text-muted-foreground">Total leads</p>
             <p className="text-3xl font-bold text-foreground">{total}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Logged in: <span className="font-semibold text-foreground">{totalLoggedIn}</span>
+              {total > 0 && ` (${Math.round((totalLoggedIn / total) * 100)}%)`}
+            </p>
           </div>
         </div>
 
