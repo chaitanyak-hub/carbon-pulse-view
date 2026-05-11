@@ -152,21 +152,25 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
       {(() => {
         // Last 7 days including today
         const today = startOfDay(new Date());
-        const days: { date: Date; label: string; count: number }[] = [];
+        const days: { date: Date; label: string; count: number; loggedIn: number }[] = [];
         for (let i = 6; i >= 0; i--) {
           const d = subDays(today, i);
-          days.push({ date: d, label: format(d, 'EEE dd MMM'), count: 0 });
+          days.push({ date: d, label: format(d, 'EEE dd MMM'), count: 0, loggedIn: 0 });
         }
         filtered.forEach((s) => {
           try {
             const d = startOfDay(parseISO(s.onboard_date));
             const bucket = days.find((x) => isSameDay(x.date, d));
-            if (bucket) bucket.count++;
+            if (bucket) {
+              bucket.count++;
+              if (s.last_login_time) bucket.loggedIn++;
+            }
           } catch {
             /* ignore */
           }
         });
         const dailyTotal = days.reduce((a, b) => a + b.count, 0);
+        const dailyLoggedIn = days.reduce((a, b) => a + b.loggedIn, 0);
 
         return (
           <Card className="p-6 border-l-4 border-l-primary bg-accent/30">
