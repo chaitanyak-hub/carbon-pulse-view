@@ -55,12 +55,16 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
     cursor = addWeeks(cursor, 1);
   }
 
+  const weeklyLoggedIn: Record<string, number> = {};
   filtered.forEach((s) => {
     try {
       const d = parseISO(s.onboard_date);
       const weekStart = startOfWeek(d, { weekStartsOn: 1 });
       const key = format(weekStart, 'yyyy-MM-dd');
-      if (buckets[key]) buckets[key].count++;
+      if (buckets[key]) {
+        buckets[key].count++;
+        if (s.last_login_time) weeklyLoggedIn[key] = (weeklyLoggedIn[key] || 0) + 1;
+      }
     } catch {
       /* ignore */
     }
@@ -68,12 +72,17 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
 
   const chartData = Object.values(buckets)
     .sort((a, b) => a.weekStart.getTime() - b.weekStart.getTime())
-    .map((b) => ({
-      label: `W/C ${format(b.weekStart, 'dd MMM')}`,
-      count: b.count,
-    }));
+    .map((b) => {
+      const key = format(b.weekStart, 'yyyy-MM-dd');
+      return {
+        label: `W/C ${format(b.weekStart, 'dd MMM')}`,
+        count: b.count,
+        loggedIn: weeklyLoggedIn[key] || 0,
+      };
+    });
 
   const total = filtered.length;
+  const totalLoggedIn = filtered.filter((s) => !!s.last_login_time).length;
 
   if (isLoading) {
     return (
@@ -101,6 +110,10 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
           <div className="text-right">
             <p className="text-sm text-muted-foreground">Total leads</p>
             <p className="text-3xl font-bold text-foreground">{total}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Logged in: <span className="font-semibold text-foreground">{totalLoggedIn}</span>
+              {total > 0 && ` (${Math.round((totalLoggedIn / total) * 100)}%)`}
+            </p>
           </div>
         </div>
 
@@ -128,6 +141,9 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
               <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Leads">
                 <LabelList dataKey="count" position="top" fill="hsl(var(--foreground))" fontSize={11} />
               </Bar>
+              <Bar dataKey="loggedIn" fill="hsl(var(--accent-foreground))" radius={[4, 4, 0, 0]} name="Logged In">
+                <LabelList dataKey="loggedIn" position="top" fill="hsl(var(--muted-foreground))" fontSize={11} />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -136,21 +152,25 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
       {(() => {
         // Last 7 days including today
         const today = startOfDay(new Date());
-        const days: { date: Date; label: string; count: number }[] = [];
+        const days: { date: Date; label: string; count: number; loggedIn: number }[] = [];
         for (let i = 6; i >= 0; i--) {
           const d = subDays(today, i);
-          days.push({ date: d, label: format(d, 'EEE dd MMM'), count: 0 });
+          days.push({ date: d, label: format(d, 'EEE dd MMM'), count: 0, loggedIn: 0 });
         }
         filtered.forEach((s) => {
           try {
             const d = startOfDay(parseISO(s.onboard_date));
             const bucket = days.find((x) => isSameDay(x.date, d));
-            if (bucket) bucket.count++;
+            if (bucket) {
+              bucket.count++;
+              if (s.last_login_time) bucket.loggedIn++;
+            }
           } catch {
             /* ignore */
           }
         });
         const dailyTotal = days.reduce((a, b) => a + b.count, 0);
+        const dailyLoggedIn = days.reduce((a, b) => a + b.loggedIn, 0);
 
         return (
           <Card className="p-6 border-l-4 border-l-primary bg-accent/30">
@@ -164,6 +184,10 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">Total (7 days)</p>
                 <p className="text-3xl font-bold text-foreground">{dailyTotal}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Logged in: <span className="font-semibold text-foreground">{dailyLoggedIn}</span>
+                  {dailyTotal > 0 && ` (${Math.round((dailyLoggedIn / dailyTotal) * 100)}%)`}
+                </p>
               </div>
             </div>
 
@@ -190,6 +214,9 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
                   />
                   <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Leads">
                     <LabelList dataKey="count" position="top" fill="hsl(var(--foreground))" fontSize={11} />
+                  </Bar>
+                  <Bar dataKey="loggedIn" fill="hsl(var(--accent-foreground))" radius={[4, 4, 0, 0]} name="Logged In">
+                    <LabelList dataKey="loggedIn" position="top" fill="hsl(var(--muted-foreground))" fontSize={11} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
