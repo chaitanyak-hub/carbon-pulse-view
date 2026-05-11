@@ -18,7 +18,7 @@ import {
   LabelList,
 } from 'recharts';
 import { SiteData } from '@/services/api';
-import { format, parseISO, startOfWeek, addWeeks, isBefore, isAfter } from 'date-fns';
+import { format, parseISO, startOfWeek, addWeeks, isBefore, isAfter, startOfDay, addDays, isSameDay, subDays } from 'date-fns';
 import { Globe } from 'lucide-react';
 
 const TABLE_START_DATE = new Date(2026, 3, 6); // 6th April 2026
@@ -132,6 +132,71 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
           </ResponsiveContainer>
         </div>
       </Card>
+
+      {(() => {
+        // Last 7 days including today
+        const today = startOfDay(new Date());
+        const days: { date: Date; label: string; count: number }[] = [];
+        for (let i = 6; i >= 0; i--) {
+          const d = subDays(today, i);
+          days.push({ date: d, label: format(d, 'EEE dd MMM'), count: 0 });
+        }
+        filtered.forEach((s) => {
+          try {
+            const d = startOfDay(parseISO(s.onboard_date));
+            const bucket = days.find((x) => isSameDay(x.date, d));
+            if (bucket) bucket.count++;
+          } catch {
+            /* ignore */
+          }
+        });
+        const dailyTotal = days.reduce((a, b) => a + b.count, 0);
+
+        return (
+          <Card className="p-6 border-l-4 border-l-primary bg-accent/30">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h4 className="text-lg font-semibold text-foreground">Sites Added — Last 7 Days</h4>
+                <p className="text-sm text-muted-foreground">
+                  Day-by-day breakdown — excludes perse.energy emails
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">Total (7 days)</p>
+                <p className="text-3xl font-bold text-foreground">{dailyTotal}</p>
+              </div>
+            </div>
+
+            <div className="w-full h-[350px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={days} margin={{ top: 30, right: 20, left: 0, bottom: 40 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis
+                    dataKey="label"
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={12}
+                    angle={-30}
+                    textAnchor="end"
+                    height={60}
+                    interval={0}
+                  />
+                  <YAxis allowDecimals={false} stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <Tooltip
+                    contentStyle={{
+                      background: 'hsl(var(--background))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '6px',
+                    }}
+                  />
+                  <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Leads">
+                    <LabelList dataKey="count" position="top" fill="hsl(var(--foreground))" fontSize={11} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+        );
+      })()}
 
       {(() => {
         const tableSites = filtered
