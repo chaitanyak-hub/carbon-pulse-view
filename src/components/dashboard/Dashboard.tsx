@@ -88,6 +88,54 @@ const Dashboard = () => {
     retryDelay: 5000,
   });
 
+  // Independent unfiltered fetch for the Web Leads page — covers ~7 months to support MoM(6) view.
+  const getMonthsAgo = (n: number) => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - n);
+    return d.toISOString().split('T')[0];
+  };
+  const wlFrom = getMonthsAgo(7);
+  const wlTo = getTodayDate();
+
+  const { data: wlWebData, isLoading: wlWebLoading } = useQuery({
+    queryKey: ['webLeadsPageWeb', wlFrom, wlTo],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 4000));
+      const res = await fetchSiteActivity({
+        utmSource: 'PROJECTSOLAR_WEB',
+        siteType: 'domestic',
+        includeSiteDetails: true,
+        from: wlFrom,
+        to: wlTo,
+        limit: 5000,
+        offset: 0,
+      });
+      return res?.data?.sites || [];
+    },
+    retry: 2,
+    retryDelay: 5000,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: wlNonWebData, isLoading: wlNonWebLoading } = useQuery({
+    queryKey: ['webLeadsPageNonWeb', wlFrom, wlTo],
+    queryFn: async () => {
+      const res = await fetchSiteActivity({
+        utmSource: 'PROJECTSOLAR',
+        siteType: 'domestic',
+        includeSiteDetails: true,
+        from: wlFrom,
+        to: wlTo,
+        limit: 5000,
+        offset: 0,
+      });
+      return res?.data?.sites || [];
+    },
+    retry: 2,
+    retryDelay: 5000,
+    staleTime: 5 * 60 * 1000,
+  });
+
   const handleFiltersChange = (newFilters: SiteActivityFilters) => {
     setFilters(newFilters);
   };
