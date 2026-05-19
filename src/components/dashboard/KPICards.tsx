@@ -154,24 +154,24 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
     return (
       <div className="space-y-6 mb-8">
         {/* Row 1 Loading */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {Array.from({ length: 3 }).map((_, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, index) => (
             <Card key={`row1-${index}`} className="bg-blue-600 text-white p-6 rounded-lg animate-pulse">
               <div className="h-24 bg-blue-500 rounded"></div>
             </Card>
           ))}
         </div>
         {/* Row 2 Loading */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {Array.from({ length: 3 }).map((_, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, index) => (
             <Card key={`row2-${index}`} className="bg-green-600 text-white p-6 rounded-lg animate-pulse">
               <div className="h-24 bg-green-500 rounded"></div>
             </Card>
           ))}
         </div>
         {/* Row 3 Loading */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {Array.from({ length: 3 }).map((_, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, index) => (
             <Card key={`row3-${index}`} className="bg-red-600 text-white p-6 rounded-lg animate-pulse">
               <div className="h-24 bg-red-500 rounded"></div>
             </Card>
@@ -202,7 +202,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
   const renderCardRow = (cards: any[], rowTitle: string) => (
     <div className="space-y-3">
       <h3 className="text-lg font-semibold text-foreground">{rowTitle}</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {cards.map((card, index) => {
           const IconComponent = card.icon;
           return (
