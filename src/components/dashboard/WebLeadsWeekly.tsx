@@ -97,6 +97,13 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
   const total = filtered.length;
   const totalLoggedIn = filtered.filter((s) => !!s.last_login_time).length;
   const totalEmailOpened = filtered.filter(hasEmailOpened).length;
+  const sumOpens = (s: SiteData) => {
+    const shared = Object.values(s.shared_contacts_email_status || {}).reduce(
+      (a: number, v: any) => a + (v?.email_open_count ?? 0), 0
+    );
+    return (s.email_open_count ?? 0) + shared;
+  };
+  const totalOpensSum = filtered.reduce((a, s) => a + sumOpens(s), 0);
 
   if (isLoading) {
     return (
@@ -131,6 +138,9 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
             <p className="text-xs text-muted-foreground mt-1">
               Email opened: <span className="font-semibold text-foreground">{totalEmailOpened}</span>
               {total > 0 && ` (${Math.round((totalEmailOpened / total) * 100)}%)`}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Total opens: <span className="font-semibold text-foreground">{totalOpensSum}</span>
             </p>
           </div>
         </div>
@@ -178,6 +188,7 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
           const d = subDays(today, i);
           days.push({ date: d, label: format(d, 'EEE dd MMM'), count: 0, loggedIn: 0, emailOpened: 0 });
         }
+        let dailyOpensSum = 0;
         filtered.forEach((s) => {
           try {
             const d = startOfDay(parseISO(s.onboard_date));
@@ -186,6 +197,7 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
               bucket.count++;
               if (s.last_login_time) bucket.loggedIn++;
               if (hasEmailOpened(s)) bucket.emailOpened++;
+              dailyOpensSum += sumOpens(s);
             }
           } catch {
             /* ignore */
@@ -214,6 +226,9 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
                 <p className="text-xs text-muted-foreground mt-1">
                   Email opened: <span className="font-semibold text-foreground">{dailyEmailOpened}</span>
                   {dailyTotal > 0 && ` (${Math.round((dailyEmailOpened / dailyTotal) * 100)}%)`}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Total opens: <span className="font-semibold text-foreground">{dailyOpensSum}</span>
                 </p>
               </div>
             </div>

@@ -176,6 +176,26 @@ const Charts = ({ sites, filters, isLoading = false, webSites = [] }: ChartsProp
             </Button>
           </div>
           <p className="text-3xl font-bold text-foreground mb-4">{webSites.length}</p>
+          {(() => {
+            const totalOpens = webSites.reduce((acc: number, s: any) => {
+              const shared = Object.values(s.shared_contacts_email_status || {}).reduce(
+                (a: number, v: any) => a + (v?.email_open_count ?? 0), 0
+              );
+              return acc + (s.email_open_count ?? 0) + shared;
+            }, 0);
+            const recipientsOpened = webSites.filter((s: any) => {
+              if ((s.email_open_count ?? 0) > 0) return true;
+              const shared = s.shared_contacts_email_status;
+              if (shared) for (const k of Object.keys(shared)) if ((shared[k]?.email_open_count ?? 0) > 0) return true;
+              return false;
+            }).length;
+            return (
+              <p className="text-sm text-muted-foreground mb-4">
+                Recipients opened: <span className="font-semibold text-foreground">{recipientsOpened}</span>
+                {' · '}Total opens: <span className="font-semibold text-foreground">{totalOpens}</span>
+              </p>
+            );
+          })()}
 
           {webSites.length > 0 && (() => {
             const hasEmailOpened = (s: any) => {
