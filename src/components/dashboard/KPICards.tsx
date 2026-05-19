@@ -139,6 +139,14 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       icon: Calendar,
       gradient: 'from-rose-500 to-rose-600',
       status: data.appointmentRateWithoutConsent >= 30 ? 'good' : data.appointmentRateWithoutConsent >= 15 ? 'warning' : 'poor'
+    },
+    {
+      title: 'Emails Opened (Without Consent)',
+      value: data.emailOpenedWithoutConsent,
+      subtitle: `${data.sitesWithoutConsentCount > 0 ? ((data.emailOpenedWithoutConsent / data.sitesWithoutConsentCount) * 100).toFixed(1) : 0}% of non-consented`,
+      icon: MailOpen,
+      gradient: 'from-pink-500 to-pink-600',
+      status: 'warning'
     }
   ];
 
