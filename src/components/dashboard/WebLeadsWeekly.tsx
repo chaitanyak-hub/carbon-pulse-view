@@ -56,6 +56,17 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
   }
 
   const weeklyLoggedIn: Record<string, number> = {};
+  const weeklyEmailOpened: Record<string, number> = {};
+  const hasEmailOpened = (s: SiteData) => {
+    if ((s.email_open_count ?? 0) > 0) return true;
+    const shared = s.shared_contacts_email_status;
+    if (shared && typeof shared === 'object') {
+      for (const k of Object.keys(shared)) {
+        if ((shared[k]?.email_open_count ?? 0) > 0) return true;
+      }
+    }
+    return false;
+  };
   filtered.forEach((s) => {
     try {
       const d = parseISO(s.onboard_date);
@@ -64,6 +75,7 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
       if (buckets[key]) {
         buckets[key].count++;
         if (s.last_login_time) weeklyLoggedIn[key] = (weeklyLoggedIn[key] || 0) + 1;
+        if (hasEmailOpened(s)) weeklyEmailOpened[key] = (weeklyEmailOpened[key] || 0) + 1;
       }
     } catch {
       /* ignore */
@@ -78,11 +90,13 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
         label: `W/C ${format(b.weekStart, 'dd MMM')}`,
         count: b.count,
         loggedIn: weeklyLoggedIn[key] || 0,
+        emailOpened: weeklyEmailOpened[key] || 0,
       };
     });
 
   const total = filtered.length;
   const totalLoggedIn = filtered.filter((s) => !!s.last_login_time).length;
+  const totalEmailOpened = filtered.filter(hasEmailOpened).length;
 
   if (isLoading) {
     return (
@@ -114,6 +128,10 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
               Logged in: <span className="font-semibold text-foreground">{totalLoggedIn}</span>
               {total > 0 && ` (${Math.round((totalLoggedIn / total) * 100)}%)`}
             </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Email opened: <span className="font-semibold text-foreground">{totalEmailOpened}</span>
+              {total > 0 && ` (${Math.round((totalEmailOpened / total) * 100)}%)`}
+            </p>
           </div>
         </div>
 
@@ -144,6 +162,9 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
               <Bar dataKey="loggedIn" fill="hsl(25 95% 53%)" radius={[4, 4, 0, 0]} name="Logged In">
                 <LabelList dataKey="loggedIn" position="top" fill="hsl(25 95% 40%)" fontSize={11} />
               </Bar>
+              <Bar dataKey="emailOpened" fill="hsl(142 71% 45%)" radius={[4, 4, 0, 0]} name="Email Opened">
+                <LabelList dataKey="emailOpened" position="top" fill="hsl(142 71% 30%)" fontSize={11} />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -152,10 +173,10 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
       {(() => {
         // Last 7 days including today
         const today = startOfDay(new Date());
-        const days: { date: Date; label: string; count: number; loggedIn: number }[] = [];
+        const days: { date: Date; label: string; count: number; loggedIn: number; emailOpened: number }[] = [];
         for (let i = 6; i >= 0; i--) {
           const d = subDays(today, i);
-          days.push({ date: d, label: format(d, 'EEE dd MMM'), count: 0, loggedIn: 0 });
+          days.push({ date: d, label: format(d, 'EEE dd MMM'), count: 0, loggedIn: 0, emailOpened: 0 });
         }
         filtered.forEach((s) => {
           try {
@@ -164,6 +185,7 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
             if (bucket) {
               bucket.count++;
               if (s.last_login_time) bucket.loggedIn++;
+              if (hasEmailOpened(s)) bucket.emailOpened++;
             }
           } catch {
             /* ignore */
@@ -171,6 +193,7 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
         });
         const dailyTotal = days.reduce((a, b) => a + b.count, 0);
         const dailyLoggedIn = days.reduce((a, b) => a + b.loggedIn, 0);
+        const dailyEmailOpened = days.reduce((a, b) => a + b.emailOpened, 0);
 
         return (
           <Card className="p-6 border-l-4 border-l-primary bg-accent/30">
@@ -187,6 +210,10 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
                 <p className="text-xs text-muted-foreground mt-1">
                   Logged in: <span className="font-semibold text-foreground">{dailyLoggedIn}</span>
                   {dailyTotal > 0 && ` (${Math.round((dailyLoggedIn / dailyTotal) * 100)}%)`}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Email opened: <span className="font-semibold text-foreground">{dailyEmailOpened}</span>
+                  {dailyTotal > 0 && ` (${Math.round((dailyEmailOpened / dailyTotal) * 100)}%)`}
                 </p>
               </div>
             </div>
@@ -217,6 +244,9 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
                   </Bar>
                   <Bar dataKey="loggedIn" fill="hsl(25 95% 53%)" radius={[4, 4, 0, 0]} name="Logged In">
                     <LabelList dataKey="loggedIn" position="top" fill="hsl(25 95% 40%)" fontSize={11} />
+                  </Bar>
+                  <Bar dataKey="emailOpened" fill="hsl(142 71% 45%)" radius={[4, 4, 0, 0]} name="Email Opened">
+                    <LabelList dataKey="emailOpened" position="top" fill="hsl(142 71% 30%)" fontSize={11} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

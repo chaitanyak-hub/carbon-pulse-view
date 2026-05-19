@@ -43,6 +43,10 @@ export interface SiteData {
   deleted_date: string | null;
   last_login_time: string | null;
   login_count: number | null;
+  email_send_count?: number | null;
+  email_delivered?: boolean | null;
+  email_open_count?: number | null;
+  shared_contacts_email_status?: Record<string, { email_send_count?: number; email_delivered?: boolean; email_open_count?: number }> | null;
   // Appointments
   has_appointment: boolean | string | number;
   appointment_date: string | null;
@@ -209,7 +213,23 @@ export const calculateKPIs = (sites: SiteData[]) => {
   
   const appointmentRateWithConsent = sitesWithConsent.length > 0 ? (appointmentsWithConsent / sitesWithConsent.length) * 100 : 0;
   const appointmentRateWithoutConsent = sitesWithoutConsent.length > 0 ? (appointmentsWithoutConsent / sitesWithoutConsent.length) * 100 : 0;
-  
+
+  // Email opened: open count > 0 on the site OR any shared contact
+  const hasEmailOpened = (site: SiteData) => {
+    if ((site.email_open_count ?? 0) > 0) return true;
+    const shared = site.shared_contacts_email_status;
+    if (shared && typeof shared === 'object') {
+      for (const k of Object.keys(shared)) {
+        if ((shared[k]?.email_open_count ?? 0) > 0) return true;
+      }
+    }
+    return false;
+  };
+  const emailOpened = sites.filter(hasEmailOpened).length;
+  const emailOpenedWithConsent = sitesWithConsent.filter(hasEmailOpened).length;
+  const emailOpenedWithoutConsent = sitesWithoutConsent.filter(hasEmailOpened).length;
+  const emailOpenRate = totalSites > 0 ? (emailOpened / totalSites) * 100 : 0;
+
   const result = {
     totalSites: totalSites || 0,
     activeSites: activeSites || 0,
@@ -228,7 +248,11 @@ export const calculateKPIs = (sites: SiteData[]) => {
     sitesWithConsentCount: sitesWithConsent.length || 0,
     sitesWithoutConsentCount: sitesWithoutConsent.length || 0,
     sharedSitesWithConsent: sharedSitesWithConsent || 0,
-    sharedSitesWithoutConsent: sharedSitesWithoutConsent || 0
+    sharedSitesWithoutConsent: sharedSitesWithoutConsent || 0,
+    emailOpened: emailOpened || 0,
+    emailOpenedWithConsent: emailOpenedWithConsent || 0,
+    emailOpenedWithoutConsent: emailOpenedWithoutConsent || 0,
+    emailOpenRate: isNaN(emailOpenRate) ? 0 : emailOpenRate,
   };
   
   console.log('KPI Results:', result);

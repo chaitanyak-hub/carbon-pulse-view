@@ -7,7 +7,8 @@ import {
   Calendar,
   TrendingUp,
   TrendingDown,
-  Activity 
+  Activity,
+  MailOpen
 } from 'lucide-react';
 
 interface KPIData {
@@ -29,6 +30,10 @@ interface KPIData {
   sitesWithoutConsentCount: number;
   sharedSitesWithConsent: number;
   sharedSitesWithoutConsent: number;
+  emailOpened: number;
+  emailOpenedWithConsent: number;
+  emailOpenedWithoutConsent: number;
+  emailOpenRate: number;
 }
 
 interface KPICardsProps {
@@ -62,6 +67,14 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       icon: Calendar,
       gradient: 'from-purple-500 to-purple-600',
       status: data.appointmentRate >= 60 ? 'good' : data.appointmentRate >= 45 ? 'warning' : 'poor'
+    },
+    {
+      title: 'Emails Opened',
+      value: data.emailOpened,
+      subtitle: `${data.emailOpenRate.toFixed(1)}% open rate`,
+      icon: MailOpen,
+      gradient: 'from-amber-500 to-amber-600',
+      status: data.emailOpenRate >= 30 ? 'good' : data.emailOpenRate >= 15 ? 'warning' : 'poor'
     }
   ];
 
@@ -90,6 +103,14 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       icon: Calendar,
       gradient: 'from-teal-500 to-teal-600',
       status: data.appointmentRateWithConsent >= 60 ? 'good' : data.appointmentRateWithConsent >= 45 ? 'warning' : 'poor'
+    },
+    {
+      title: 'Emails Opened (With Consent)',
+      value: data.emailOpenedWithConsent,
+      subtitle: `${data.sitesWithConsentCount > 0 ? ((data.emailOpenedWithConsent / data.sitesWithConsentCount) * 100).toFixed(1) : 0}% of consented`,
+      icon: MailOpen,
+      gradient: 'from-lime-500 to-lime-600',
+      status: 'good'
     }
   ];
 
@@ -118,6 +139,14 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       icon: Calendar,
       gradient: 'from-rose-500 to-rose-600',
       status: data.appointmentRateWithoutConsent >= 30 ? 'good' : data.appointmentRateWithoutConsent >= 15 ? 'warning' : 'poor'
+    },
+    {
+      title: 'Emails Opened (Without Consent)',
+      value: data.emailOpenedWithoutConsent,
+      subtitle: `${data.sitesWithoutConsentCount > 0 ? ((data.emailOpenedWithoutConsent / data.sitesWithoutConsentCount) * 100).toFixed(1) : 0}% of non-consented`,
+      icon: MailOpen,
+      gradient: 'from-pink-500 to-pink-600',
+      status: 'warning'
     }
   ];
 
@@ -125,24 +154,24 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
     return (
       <div className="space-y-6 mb-8">
         {/* Row 1 Loading */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {Array.from({ length: 3 }).map((_, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, index) => (
             <Card key={`row1-${index}`} className="bg-blue-600 text-white p-6 rounded-lg animate-pulse">
               <div className="h-24 bg-blue-500 rounded"></div>
             </Card>
           ))}
         </div>
         {/* Row 2 Loading */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {Array.from({ length: 3 }).map((_, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, index) => (
             <Card key={`row2-${index}`} className="bg-green-600 text-white p-6 rounded-lg animate-pulse">
               <div className="h-24 bg-green-500 rounded"></div>
             </Card>
           ))}
         </div>
         {/* Row 3 Loading */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {Array.from({ length: 3 }).map((_, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, index) => (
             <Card key={`row3-${index}`} className="bg-red-600 text-white p-6 rounded-lg animate-pulse">
               <div className="h-24 bg-red-500 rounded"></div>
             </Card>
@@ -173,7 +202,7 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
   const renderCardRow = (cards: any[], rowTitle: string) => (
     <div className="space-y-3">
       <h3 className="text-lg font-semibold text-foreground">{rowTitle}</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {cards.map((card, index) => {
           const IconComponent = card.icon;
           return (
