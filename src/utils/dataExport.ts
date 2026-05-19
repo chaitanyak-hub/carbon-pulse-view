@@ -59,6 +59,7 @@ const getAllFields = (site: SiteData) => ({
   'Carbon Savings (kg)': site.potential_carbon_savings,
   'Latitude': site.latitude,
   'Longitude': site.longitude,
+  'MPAN': Object.keys(site.elecMeter || {}).join(', ') || '',
   'Last Login': site.last_login_time,
   'Login Count': site.login_count,
   'Deleted Date': site.deleted_date,
