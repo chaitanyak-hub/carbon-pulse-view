@@ -292,6 +292,7 @@ const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) =
         'Current EPC Rating': s.current_epc_rating,
         'Annual Elec (kWh)': s.annual_elec_consumption,
         'Annual Gas (kWh)': s.annual_gas_consumption,
+        'MPAN': Object.keys(s.elecMeter || {}).join(', ') || '',
       });
 
       const combined = [...tag(web, 'WEB'), ...tag(nonWeb, 'NON-WEB')];
