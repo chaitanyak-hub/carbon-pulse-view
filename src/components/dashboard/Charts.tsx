@@ -178,16 +178,28 @@ const Charts = ({ sites, filters, isLoading = false, webSites = [] }: ChartsProp
           <p className="text-3xl font-bold text-foreground mb-4">{webSites.length}</p>
 
           {webSites.length > 0 && (() => {
-            const counts = webSites.reduce((acc: Record<string, number>, s) => {
-              if (!s.onboard_date) return acc;
+            const hasEmailOpened = (s: any) => {
+              if ((s.email_open_count ?? 0) > 0) return true;
+              const shared = s.shared_contacts_email_status;
+              if (shared && typeof shared === 'object') {
+                for (const k of Object.keys(shared)) {
+                  if ((shared[k]?.email_open_count ?? 0) > 0) return true;
+                }
+              }
+              return false;
+            };
+            const counts: Record<string, { count: number; emailOpened: number }> = {};
+            webSites.forEach((s: any) => {
+              if (!s.onboard_date) return;
               try {
                 const day = format(parseISO(s.onboard_date), 'yyyy-MM-dd');
-                acc[day] = (acc[day] || 0) + 1;
+                if (!counts[day]) counts[day] = { count: 0, emailOpened: 0 };
+                counts[day].count++;
+                if (hasEmailOpened(s)) counts[day].emailOpened++;
               } catch { /* ignore */ }
-              return acc;
-            }, {});
+            });
             const perDay = Object.entries(counts)
-              .map(([date, count]) => ({ date, label: format(parseISO(date), 'dd MMM'), count }))
+              .map(([date, v]) => ({ date, label: format(parseISO(date), 'dd MMM'), count: v.count, emailOpened: v.emailOpened }))
               .sort((a, b) => a.date.localeCompare(b.date));
             return (
               <div className="mb-6 w-full h-[300px]">
@@ -204,8 +216,11 @@ const Charts = ({ sites, filters, isLoading = false, webSites = [] }: ChartsProp
                         borderRadius: '6px',
                       }}
                     />
-                    <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Sites Added">
                       <LabelList dataKey="count" position="top" fill="hsl(var(--foreground))" fontSize={11} />
+                    </Bar>
+                    <Bar dataKey="emailOpened" fill="hsl(142 71% 45%)" radius={[4, 4, 0, 0]} name="Email Opened">
+                      <LabelList dataKey="emailOpened" position="top" fill="hsl(142 71% 30%)" fontSize={11} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
