@@ -1,0 +1,366 @@
+import { useMemo, useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  LabelList,
+} from 'recharts';
+import {
+  Building2,
+  Share2,
+  Calendar,
+  MailOpen,
+  Download,
+  FileSpreadsheet,
+  Globe,
+} from 'lucide-react';
+import {
+  format,
+  parseISO,
+  startOfDay,
+  endOfDay,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  subDays,
+  subWeeks,
+  subMonths,
+  addWeeks,
+  addMonths,
+  isWithinInterval,
+} from 'date-fns';
+import { SiteData, calculateKPIs } from '@/services/api';
+import { exportToExcel, generateFilename } from '@/utils/dataExport';
+import * as XLSX from 'xlsx';
+import { useToast } from '@/hooks/use-toast';
+
+interface WebLeadsPageProps {
+  webSites: SiteData[];
+  nonWebSites: SiteData[];
+  isLoading?: boolean;
+}
+
+const inRange = (site: SiteData, start: Date, end: Date) => {
+  if (!site.onboard_date) return false;
+  try {
+    return isWithinInterval(parseISO(site.onboard_date), { start, end });
+  } catch {
+    return false;
+  }
+};
+
+const KpiTile = ({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  gradient,
+}: {
+  title: string;
+  value: number;
+  subtitle?: string;
+  icon: any;
+  gradient: string;
+}) => (
+  <Card
+    className={`relative overflow-hidden bg-gradient-to-br ${gradient} text-white p-5 rounded-xl shadow-lg`}
+  >
+    <div className="absolute top-0 right-0 w-24 h-24 opacity-10">
+      <Icon className="w-full h-full" />
+    </div>
+    <div className="relative z-10">
+      <div className="flex items-center gap-2 mb-3">
+        <Icon className="h-5 w-5" />
+        <span className="text-sm font-medium opacity-90">{title}</span>
+      </div>
+      <div className="text-3xl font-bold tracking-tight">{value}</div>
+      {subtitle && <div className="text-xs opacity-80 mt-1">{subtitle}</div>}
+    </div>
+  </Card>
+);
+
+const KpiBlock = ({ sites, label }: { sites: SiteData[]; label: string }) => {
+  const k = calculateKPIs(sites);
+  return (
+    <div className="space-y-3">
+      <h4 className="text-base font-semibold text-foreground">{label} ({sites.length} sites)</h4>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KpiTile
+          title="Total Sites Onboarded"
+          value={k.totalSites}
+          subtitle="Total pipeline entries"
+          icon={Building2}
+          gradient="from-primary to-primary/80"
+        />
+        <KpiTile
+          title="Total Sites Shared"
+          value={k.sharedSites}
+          subtitle={`${k.shareRate.toFixed(1)}% share rate`}
+          icon={Share2}
+          gradient="from-blue-500 to-blue-600"
+        />
+        <KpiTile
+          title="Total Appointments"
+          value={k.sitesWithAppointments}
+          subtitle={`${k.appointmentRate.toFixed(1)}% appointment rate`}
+          icon={Calendar}
+          gradient="from-purple-500 to-purple-600"
+        />
+        <KpiTile
+          title="Emails Opened"
+          value={k.emailOpened}
+          subtitle={`${k.emailOpenRate.toFixed(1)}% open rate`}
+          icon={MailOpen}
+          gradient="from-amber-500 to-amber-600"
+        />
+      </div>
+    </div>
+  );
+};
+
+const computeMetrics = (sites: SiteData[]) => {
+  const k = calculateKPIs(sites);
+  return {
+    onboarded: k.totalSites,
+    shared: k.sharedSites,
+    appointments: k.sitesWithAppointments,
+    emailsOpened: k.emailOpened,
+  };
+};
+
+const PeriodComparisonChart = ({
+  data,
+  title,
+  subtitle,
+}: {
+  data: any[];
+  title: string;
+  subtitle: string;
+}) => (
+  <Card className="p-6 border-l-4 border-l-primary bg-accent/30">
+    <div className="mb-4">
+      <h4 className="text-lg font-semibold text-foreground">{title}</h4>
+      <p className="text-sm text-muted-foreground">{subtitle}</p>
+    </div>
+    <div className="w-full h-[400px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={{ top: 30, right: 20, left: 0, bottom: 60 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis
+            dataKey="label"
+            stroke="hsl(var(--muted-foreground))"
+            fontSize={12}
+            angle={-30}
+            textAnchor="end"
+            height={70}
+            interval={0}
+          />
+          <YAxis allowDecimals={false} stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <Tooltip
+            contentStyle={{
+              background: 'hsl(var(--background))',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: '6px',
+            }}
+          />
+          <Legend />
+          <Bar dataKey="onboarded" fill="hsl(var(--primary))" name="Onboarded" radius={[4, 4, 0, 0]}>
+            <LabelList dataKey="onboarded" position="top" fontSize={10} />
+          </Bar>
+          <Bar dataKey="shared" fill="hsl(217 91% 60%)" name="Shared" radius={[4, 4, 0, 0]}>
+            <LabelList dataKey="shared" position="top" fontSize={10} />
+          </Bar>
+          <Bar dataKey="appointments" fill="hsl(271 81% 56%)" name="Appointments" radius={[4, 4, 0, 0]}>
+            <LabelList dataKey="appointments" position="top" fontSize={10} />
+          </Bar>
+          <Bar dataKey="emailsOpened" fill="hsl(38 92% 50%)" name="Emails Opened" radius={[4, 4, 0, 0]}>
+            <LabelList dataKey="emailsOpened" position="top" fontSize={10} />
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  </Card>
+);
+
+const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) => {
+  const { toast } = useToast();
+  const [source, setSource] = useState<'web' | 'nonweb' | 'all'>('web');
+
+  // Filter web sites: exclude perse.energy
+  const cleanWeb = useMemo(
+    () =>
+      (webSites || []).filter(
+        (s) => !(s.contact_email || '').toLowerCase().includes('perse.energy')
+      ),
+    [webSites]
+  );
+
+  const activeSites = useMemo(() => {
+    if (source === 'web') return cleanWeb;
+    if (source === 'nonweb') return nonWebSites || [];
+    return [...cleanWeb, ...(nonWebSites || [])];
+  }, [source, cleanWeb, nonWebSites]);
+
+  const now = new Date();
+  const todayStart = startOfDay(now);
+  const todayEnd = endOfDay(now);
+  const yesterdayStart = startOfDay(subDays(now, 1));
+  const yesterdayEnd = endOfDay(subDays(now, 1));
+  const wtdStart = startOfWeek(now, { weekStartsOn: 1 });
+  const mtdStart = startOfMonth(now);
+
+  const todaySites = activeSites.filter((s) => inRange(s, todayStart, todayEnd));
+  const yesterdaySites = activeSites.filter((s) => inRange(s, yesterdayStart, yesterdayEnd));
+  const wtdSites = activeSites.filter((s) => inRange(s, wtdStart, todayEnd));
+  const mtdSites = activeSites.filter((s) => inRange(s, mtdStart, todayEnd));
+
+  // Week-on-week last 8 weeks
+  const wowData = useMemo(() => {
+    const rows: any[] = [];
+    for (let i = 7; i >= 0; i--) {
+      const ws = startOfWeek(subWeeks(now, i), { weekStartsOn: 1 });
+      const we = endOfWeek(ws, { weekStartsOn: 1 });
+      const subset = activeSites.filter((s) => inRange(s, ws, we));
+      rows.push({
+        label: `W/C ${format(ws, 'dd MMM')}`,
+        ...computeMetrics(subset),
+      });
+    }
+    return rows;
+  }, [activeSites]);
+
+  // Month-on-month last 6 months
+  const momData = useMemo(() => {
+    const rows: any[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const ms = startOfMonth(subMonths(now, i));
+      const me = endOfMonth(ms);
+      const subset = activeSites.filter((s) => inRange(s, ms, me));
+      rows.push({
+        label: format(ms, 'MMM yyyy'),
+        ...computeMetrics(subset),
+      });
+    }
+    return rows;
+  }, [activeSites]);
+
+  const handleCombinedExport = () => {
+    const web = cleanWeb;
+    const nonWeb = nonWebSites || [];
+    if (web.length === 0 && nonWeb.length === 0) {
+      toast({ title: 'No data', description: 'Nothing to export.', variant: 'destructive' });
+      return;
+    }
+    try {
+      const tag = (arr: SiteData[], source: string) =>
+        arr.map((s) => ({ Source: source, ...flatten(s) }));
+      const flatten = (s: SiteData) => ({
+        'Site ID': s.siteId,
+        'Onboard Date': s.onboard_date,
+        'Agent Name': s.agent_name,
+        'Site Address': s.siteAddress,
+        'Contact First Name': s.contact_first_name,
+        'Contact Last Name': s.contact_last_name,
+        'Contact Email': s.contact_email,
+        'Contact Phone': s.contact_phone,
+        'Consent': s.consent,
+        'Consent Type': s.consent_type,
+        'Site Status': s.site_status,
+        'Is Shared': s.is_shared,
+        'Share Count': s.share_count,
+        'Last Shared Date': s.last_shared_date,
+        'Has Appointment': s.has_appointment,
+        'Appointment Date': s.appointment_date,
+        'Appointment Time From': s.appointment_time_from,
+        'Appointment Status': s.appointment_status,
+        'Email Send Count': s.email_send_count,
+        'Email Delivered': s.email_delivered,
+        'Email Open Count': s.email_open_count,
+        'Last Login': s.last_login_time,
+        'Login Count': s.login_count,
+        'Property Type': s.property_type,
+        'Bedrooms': s.no_of_bedrooms,
+        'Current EPC Rating': s.current_epc_rating,
+        'Annual Elec (kWh)': s.annual_elec_consumption,
+        'Annual Gas (kWh)': s.annual_gas_consumption,
+      });
+
+      const combined = [...tag(web, 'WEB'), ...tag(nonWeb, 'NON-WEB')];
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(combined), 'All Leads');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tag(web, 'WEB')), 'Web Leads');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tag(nonWeb, 'NON-WEB')), 'Non-Web Leads');
+      const headers = combined.length ? Object.keys(combined[0]) : [];
+      wb.Sheets['All Leads']['!cols'] = headers.map((h) => ({ wch: Math.max(h.length + 2, 14) }));
+      XLSX.writeFile(wb, `${generateFilename('all-leads-combined')}.xlsx`);
+      toast({
+        title: 'Export Successful',
+        description: `Downloaded ${combined.length} records (${web.length} web + ${nonWeb.length} non-web).`,
+      });
+    } catch (e) {
+      toast({ title: 'Export Failed', description: 'Could not export data.', variant: 'destructive' });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Card className="p-6 animate-pulse">
+        <div className="h-96 bg-muted rounded" />
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-3">
+          <Globe className="h-6 w-6 text-primary" />
+          <h3 className="text-xl font-semibold text-foreground">Web Leads — KPI & Trends</h3>
+        </div>
+        <div className="flex items-center gap-3">
+          <Tabs value={source} onValueChange={(v) => setSource(v as any)}>
+            <TabsList>
+              <TabsTrigger value="web">Web</TabsTrigger>
+              <TabsTrigger value="nonweb">Non-Web</TabsTrigger>
+              <TabsTrigger value="all">All</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Button onClick={handleCombinedExport} className="flex items-center gap-2">
+            <FileSpreadsheet className="h-4 w-4" />
+            Download Combined Excel
+          </Button>
+        </div>
+      </div>
+
+      <Card className="p-6 space-y-6">
+        <KpiBlock sites={todaySites} label="Today" />
+        <KpiBlock sites={yesterdaySites} label="Yesterday" />
+        <KpiBlock sites={wtdSites} label="Week to Date" />
+        <KpiBlock sites={mtdSites} label="Month to Date" />
+      </Card>
+
+      <PeriodComparisonChart
+        data={wowData}
+        title="Week on Week — Last 8 Weeks"
+        subtitle="Onboarded, Shared, Appointments and Emails Opened per week"
+      />
+
+      <PeriodComparisonChart
+        data={momData}
+        title="Month on Month — Last 6 Months"
+        subtitle="Onboarded, Shared, Appointments and Emails Opened per month"
+      />
+    </div>
+  );
+};
+
+export default WebLeadsPage;

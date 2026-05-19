@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, BarChart3, Activity, Target, ShieldAlert, Globe } from 'lucide-react';
+import { AlertCircle, BarChart3, Activity, Target, ShieldAlert, Globe, Layers } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DashboardFilters from './DashboardFilters';
 import KPICards from './KPICards';
@@ -12,6 +12,7 @@ import DataExport from './DataExport';
 import KeyMetrics from './KeyMetrics';
 import NoEpcSites from './NoEpcSites';
 import WebLeadsWeekly from './WebLeadsWeekly';
+import WebLeadsPage from './WebLeadsPage';
 import { fetchSiteActivity, calculateKPIs, SiteActivityFilters, SiteData } from '@/services/api';
 import dashboardHero from '@/assets/dashboard-hero.jpg';
 
@@ -223,6 +224,13 @@ const Dashboard = () => {
               <Globe className="h-4 w-4" />
               Web Leads Weekly
             </TabsTrigger>
+            <TabsTrigger 
+              value="web-leads"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-6 py-2 rounded-md font-medium transition-all flex items-center gap-2"
+            >
+              <Layers className="h-4 w-4" />
+              Web Leads
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="stats" className="bg-muted/30 p-6 rounded-lg">
@@ -294,6 +302,10 @@ const Dashboard = () => {
 
           <TabsContent value="web-weekly" className="bg-muted/30 p-6 rounded-lg">
             <WebLeadsWeekly webSites={webSites} isLoading={isWebLoading} />
+          </TabsContent>
+
+          <TabsContent value="web-leads" className="bg-muted/30 p-6 rounded-lg">
+            <WebLeadsPage webSites={webSites} nonWebSites={sites} isLoading={isWebLoading || isLoading} />
           </TabsContent>
         </Tabs>
       </div>
