@@ -222,6 +222,20 @@ const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) =
     return [...cleanWeb, ...(nonWebSites || [])];
   }, [source, cleanWeb, nonWebSites]);
 
+  const filteredSites = useMemo(() => {
+    if (!searchTerm.trim()) return activeSites;
+    const term = searchTerm.toLowerCase();
+    return activeSites.filter((s) =>
+      (s.siteId || '').toLowerCase().includes(term) ||
+      (s.siteAddress || '').toLowerCase().includes(term) ||
+      (s.agent_name || '').toLowerCase().includes(term) ||
+      (s.contact_first_name || '').toLowerCase().includes(term) ||
+      (s.contact_last_name || '').toLowerCase().includes(term) ||
+      (s.contact_email || '').toLowerCase().includes(term) ||
+      Object.keys(s.elecMeter || {}).some((m) => m.toLowerCase().includes(term))
+    );
+  }, [activeSites, searchTerm]);
+
   const now = new Date();
   const todayStart = startOfDay(now);
   const todayEnd = endOfDay(now);
