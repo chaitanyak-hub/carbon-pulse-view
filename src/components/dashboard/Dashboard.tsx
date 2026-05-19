@@ -303,6 +303,10 @@ const Dashboard = () => {
           <TabsContent value="web-weekly" className="bg-muted/30 p-6 rounded-lg">
             <WebLeadsWeekly webSites={webSites} isLoading={isWebLoading} />
           </TabsContent>
+
+          <TabsContent value="web-leads" className="bg-muted/30 p-6 rounded-lg">
+            <WebLeadsPage webSites={webSites} nonWebSites={sites} isLoading={isWebLoading || isLoading} />
+          </TabsContent>
         </Tabs>
       </div>
     </div>
