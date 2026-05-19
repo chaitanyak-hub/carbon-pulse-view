@@ -353,7 +353,11 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="web-leads" className="bg-muted/30 p-6 rounded-lg">
-            <WebLeadsPage webSites={webSites} nonWebSites={sites} isLoading={isWebLoading || isLoading} />
+            <WebLeadsPage
+              webSites={(wlWebData as SiteData[] | undefined) || []}
+              nonWebSites={(wlNonWebData as SiteData[] | undefined) || []}
+              isLoading={wlWebLoading || wlNonWebLoading}
+            />
           </TabsContent>
         </Tabs>
       </div>
