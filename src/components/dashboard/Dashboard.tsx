@@ -224,6 +224,13 @@ const Dashboard = () => {
               <Globe className="h-4 w-4" />
               Web Leads Weekly
             </TabsTrigger>
+            <TabsTrigger 
+              value="web-leads"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-6 py-2 rounded-md font-medium transition-all flex items-center gap-2"
+            >
+              <Layers className="h-4 w-4" />
+              Web Leads
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="stats" className="bg-muted/30 p-6 rounded-lg">
