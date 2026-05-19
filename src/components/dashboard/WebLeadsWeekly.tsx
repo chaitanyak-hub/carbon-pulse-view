@@ -56,6 +56,17 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
   }
 
   const weeklyLoggedIn: Record<string, number> = {};
+  const weeklyEmailOpened: Record<string, number> = {};
+  const hasEmailOpened = (s: SiteData) => {
+    if ((s.email_open_count ?? 0) > 0) return true;
+    const shared = s.shared_contacts_email_status;
+    if (shared && typeof shared === 'object') {
+      for (const k of Object.keys(shared)) {
+        if ((shared[k]?.email_open_count ?? 0) > 0) return true;
+      }
+    }
+    return false;
+  };
   filtered.forEach((s) => {
     try {
       const d = parseISO(s.onboard_date);
@@ -64,6 +75,7 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
       if (buckets[key]) {
         buckets[key].count++;
         if (s.last_login_time) weeklyLoggedIn[key] = (weeklyLoggedIn[key] || 0) + 1;
+        if (hasEmailOpened(s)) weeklyEmailOpened[key] = (weeklyEmailOpened[key] || 0) + 1;
       }
     } catch {
       /* ignore */
@@ -78,11 +90,13 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
         label: `W/C ${format(b.weekStart, 'dd MMM')}`,
         count: b.count,
         loggedIn: weeklyLoggedIn[key] || 0,
+        emailOpened: weeklyEmailOpened[key] || 0,
       };
     });
 
   const total = filtered.length;
   const totalLoggedIn = filtered.filter((s) => !!s.last_login_time).length;
+  const totalEmailOpened = filtered.filter(hasEmailOpened).length;
 
   if (isLoading) {
     return (
