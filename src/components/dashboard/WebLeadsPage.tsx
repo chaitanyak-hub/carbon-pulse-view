@@ -386,6 +386,92 @@ const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) =
         title="Month on Month — Last 6 Months"
         subtitle="Onboarded, Shared, Appointments and Emails Opened per month"
       />
+
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <h4 className="text-lg font-semibold text-foreground">
+            Site Details — {filteredSites.length} of {activeSites.length} sites
+          </h4>
+          <div className="relative max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by ID, address, name, email, MPAN..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-72"
+            />
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="font-bold whitespace-nowrap">Site ID</TableHead>
+                <TableHead className="font-bold whitespace-nowrap">Onboard Date</TableHead>
+                <TableHead className="font-bold whitespace-nowrap">Site Address</TableHead>
+                <TableHead className="font-bold whitespace-nowrap">Contact Name</TableHead>
+                <TableHead className="font-bold whitespace-nowrap">Contact Email</TableHead>
+                <TableHead className="font-bold whitespace-nowrap">MPAN</TableHead>
+                <TableHead className="font-bold whitespace-nowrap">Shared</TableHead>
+                <TableHead className="font-bold whitespace-nowrap">Appointment</TableHead>
+                <TableHead className="font-bold whitespace-nowrap">Email Opens</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredSites.map((site, idx) => (
+                <TableRow key={idx} className="hover:bg-muted/50 transition-colors">
+                  <TableCell className="font-mono text-xs whitespace-nowrap">{site.siteId}</TableCell>
+                  <TableCell className="text-xs whitespace-nowrap">
+                    {site.onboard_date ? new Date(site.onboard_date).toLocaleDateString() : 'N/A'}
+                  </TableCell>
+                  <TableCell className="max-w-xs truncate whitespace-nowrap" title={site.siteAddress || ''}>
+                    {site.siteAddress || 'N/A'}
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap">
+                    {[site.contact_first_name, site.contact_last_name].filter(Boolean).join(' ') || 'N/A'}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs whitespace-nowrap">{site.contact_email || 'N/A'}</TableCell>
+                  <TableCell className="font-mono text-xs whitespace-nowrap">
+                    {Object.keys(site.elecMeter || {}).join(', ') || 'N/A'}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={site.is_shared === 'YES' || site.is_shared === true ? 'default' : 'secondary'}
+                      className={
+                        site.is_shared === 'YES' || site.is_shared === true
+                          ? 'bg-success text-success-foreground'
+                          : 'bg-muted text-muted-foreground'
+                      }
+                    >
+                      {site.is_shared === 'YES' || site.is_shared === true ? 'YES' : 'NO'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={site.has_appointment === 'YES' || site.has_appointment === true ? 'default' : 'secondary'}
+                      className={
+                        site.has_appointment === 'YES' || site.has_appointment === true
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-muted-foreground'
+                      }
+                    >
+                      {site.has_appointment === 'YES' || site.has_appointment === true ? 'YES' : 'NO'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center">{(site.email_open_count ?? 0) > 0 ? site.email_open_count : '—'}</TableCell>
+                </TableRow>
+              ))}
+              {filteredSites.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                    No sites found matching your search.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </Card>
     </div>
   );
 };
