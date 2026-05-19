@@ -103,6 +103,14 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       icon: Calendar,
       gradient: 'from-teal-500 to-teal-600',
       status: data.appointmentRateWithConsent >= 60 ? 'good' : data.appointmentRateWithConsent >= 45 ? 'warning' : 'poor'
+    },
+    {
+      title: 'Emails Opened (With Consent)',
+      value: data.emailOpenedWithConsent,
+      subtitle: `${data.sitesWithConsentCount > 0 ? ((data.emailOpenedWithConsent / data.sitesWithConsentCount) * 100).toFixed(1) : 0}% of consented`,
+      icon: MailOpen,
+      gradient: 'from-lime-500 to-lime-600',
+      status: 'good'
     }
   ];
 
