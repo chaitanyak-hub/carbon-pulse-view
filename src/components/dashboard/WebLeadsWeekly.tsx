@@ -245,6 +245,9 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
                   <Bar dataKey="loggedIn" fill="hsl(25 95% 53%)" radius={[4, 4, 0, 0]} name="Logged In">
                     <LabelList dataKey="loggedIn" position="top" fill="hsl(25 95% 40%)" fontSize={11} />
                   </Bar>
+                  <Bar dataKey="emailOpened" fill="hsl(142 71% 45%)" radius={[4, 4, 0, 0]} name="Email Opened">
+                    <LabelList dataKey="emailOpened" position="top" fill="hsl(142 71% 30%)" fontSize={11} />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
