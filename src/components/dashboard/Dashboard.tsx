@@ -12,6 +12,7 @@ import DataExport from './DataExport';
 import KeyMetrics from './KeyMetrics';
 import NoEpcSites from './NoEpcSites';
 import WebLeadsWeekly from './WebLeadsWeekly';
+import WebLeadsPage from './WebLeadsPage';
 import { fetchSiteActivity, calculateKPIs, SiteActivityFilters, SiteData } from '@/services/api';
 import dashboardHero from '@/assets/dashboard-hero.jpg';
 
