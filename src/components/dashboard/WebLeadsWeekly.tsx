@@ -227,6 +227,9 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
                   Email opened: <span className="font-semibold text-foreground">{dailyEmailOpened}</span>
                   {dailyTotal > 0 && ` (${Math.round((dailyEmailOpened / dailyTotal) * 100)}%)`}
                 </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Total opens: <span className="font-semibold text-foreground">{dailyOpensSum}</span>
+                </p>
               </div>
             </div>
 
