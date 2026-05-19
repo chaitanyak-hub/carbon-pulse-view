@@ -30,6 +30,10 @@ interface KPIData {
   sitesWithoutConsentCount: number;
   sharedSitesWithConsent: number;
   sharedSitesWithoutConsent: number;
+  emailOpened: number;
+  emailOpenedWithConsent: number;
+  emailOpenedWithoutConsent: number;
+  emailOpenRate: number;
 }
 
 interface KPICardsProps {
