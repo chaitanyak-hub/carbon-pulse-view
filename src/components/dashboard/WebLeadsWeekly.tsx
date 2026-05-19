@@ -290,34 +290,45 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
                     <TableHead>Contact Email</TableHead>
                     <TableHead>Contact Phone</TableHead>
                     <TableHead>Agent</TableHead>
+                    <TableHead>Email Opened</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {tableSites.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                      <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                         No web leads from 6th April 2026 onwards
                       </TableCell>
                     </TableRow>
                   ) : (
-                    tableSites.map((s, i) => (
-                      <TableRow key={`${s.siteId || i}-${i}`}>
-                        <TableCell>
-                          {(() => {
-                            try {
-                              return format(parseISO(s.onboard_date), 'dd MMM yyyy');
-                            } catch {
-                              return s.onboard_date || '-';
-                            }
-                          })()}
-                        </TableCell>
-                        <TableCell>{s.siteAddress || '-'}</TableCell>
-                        <TableCell>{s.contact_name || '-'}</TableCell>
-                        <TableCell>{s.contact_email || '-'}</TableCell>
-                        <TableCell>{s.contact_phone || '-'}</TableCell>
-                        <TableCell>{s.agent_name || '-'}</TableCell>
-                      </TableRow>
-                    ))
+                    tableSites.map((s, i) => {
+                      const opens = (s.email_open_count ?? 0) + Object.values(s.shared_contacts_email_status || {}).reduce((a, v: any) => a + (v?.email_open_count ?? 0), 0);
+                      return (
+                        <TableRow key={`${s.siteId || i}-${i}`}>
+                          <TableCell>
+                            {(() => {
+                              try {
+                                return format(parseISO(s.onboard_date), 'dd MMM yyyy');
+                              } catch {
+                                return s.onboard_date || '-';
+                              }
+                            })()}
+                          </TableCell>
+                          <TableCell>{s.siteAddress || '-'}</TableCell>
+                          <TableCell>{s.contact_name || '-'}</TableCell>
+                          <TableCell>{s.contact_email || '-'}</TableCell>
+                          <TableCell>{s.contact_phone || '-'}</TableCell>
+                          <TableCell>{s.agent_name || '-'}</TableCell>
+                          <TableCell>
+                            {opens > 0 ? (
+                              <span className="font-semibold text-green-600">Yes ({opens})</span>
+                            ) : (
+                              <span className="text-muted-foreground">No</span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
                   )}
                 </TableBody>
               </Table>
