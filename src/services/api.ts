@@ -43,6 +43,10 @@ export interface SiteData {
   deleted_date: string | null;
   last_login_time: string | null;
   login_count: number | null;
+  email_send_count?: number | null;
+  email_delivered?: boolean | null;
+  email_open_count?: number | null;
+  shared_contacts_email_status?: Record<string, { email_send_count?: number; email_delivered?: boolean; email_open_count?: number }> | null;
   // Appointments
   has_appointment: boolean | string | number;
   appointment_date: string | null;
