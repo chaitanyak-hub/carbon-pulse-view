@@ -205,6 +205,7 @@ const PeriodComparisonChart = ({
 const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) => {
   const { toast } = useToast();
   const [source, setSource] = useState<'web' | 'nonweb' | 'all'>('web');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Filter web sites: exclude perse.energy
   const cleanWeb = useMemo(
