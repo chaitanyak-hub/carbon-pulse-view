@@ -97,6 +97,13 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
   const total = filtered.length;
   const totalLoggedIn = filtered.filter((s) => !!s.last_login_time).length;
   const totalEmailOpened = filtered.filter(hasEmailOpened).length;
+  const sumOpens = (s: SiteData) => {
+    const shared = Object.values(s.shared_contacts_email_status || {}).reduce(
+      (a: number, v: any) => a + (v?.email_open_count ?? 0), 0
+    );
+    return (s.email_open_count ?? 0) + shared;
+  };
+  const totalOpensSum = filtered.reduce((a, s) => a + sumOpens(s), 0);
 
   if (isLoading) {
     return (
