@@ -7,7 +7,8 @@ import {
   Calendar,
   TrendingUp,
   TrendingDown,
-  Activity 
+  Activity,
+  MailOpen
 } from 'lucide-react';
 
 interface KPIData {
