@@ -67,6 +67,14 @@ const KPICards = ({ data, isLoading = false }: KPICardsProps) => {
       icon: Calendar,
       gradient: 'from-purple-500 to-purple-600',
       status: data.appointmentRate >= 60 ? 'good' : data.appointmentRate >= 45 ? 'warning' : 'poor'
+    },
+    {
+      title: 'Emails Opened',
+      value: data.emailOpened,
+      subtitle: `${data.emailOpenRate.toFixed(1)}% open rate`,
+      icon: MailOpen,
+      gradient: 'from-amber-500 to-amber-600',
+      status: data.emailOpenRate >= 30 ? 'good' : data.emailOpenRate >= 15 ? 'warning' : 'poor'
     }
   ];
 
