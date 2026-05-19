@@ -188,6 +188,7 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
           const d = subDays(today, i);
           days.push({ date: d, label: format(d, 'EEE dd MMM'), count: 0, loggedIn: 0, emailOpened: 0 });
         }
+        let dailyOpensSum = 0;
         filtered.forEach((s) => {
           try {
             const d = startOfDay(parseISO(s.onboard_date));
@@ -196,6 +197,7 @@ const WebLeadsWeekly = ({ webSites, isLoading = false }: WebLeadsWeeklyProps) =>
               bucket.count++;
               if (s.last_login_time) bucket.loggedIn++;
               if (hasEmailOpened(s)) bucket.emailOpened++;
+              dailyOpensSum += sumOpens(s);
             }
           } catch {
             /* ignore */
