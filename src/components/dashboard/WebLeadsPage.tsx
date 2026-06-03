@@ -459,12 +459,24 @@ const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) =
                       {site.has_appointment === 'YES' || site.has_appointment === true ? 'YES' : 'NO'}
                     </Badge>
                   </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={(site.email_open_count ?? 0) > 0 ? 'default' : 'secondary'}
+                      className={
+                        (site.email_open_count ?? 0) > 0
+                          ? 'bg-success text-success-foreground'
+                          : 'bg-muted text-muted-foreground'
+                      }
+                    >
+                      {(site.email_open_count ?? 0) > 0 ? 'YES' : 'NO'}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="text-center">{(site.email_open_count ?? 0) > 0 ? site.email_open_count : '—'}</TableCell>
                 </TableRow>
               ))}
               {filteredSites.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                     No sites found matching your search.
                   </TableCell>
                 </TableRow>
