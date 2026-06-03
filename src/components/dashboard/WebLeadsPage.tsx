@@ -414,7 +414,8 @@ const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) =
                 <TableHead className="font-bold whitespace-nowrap">MPAN</TableHead>
                 <TableHead className="font-bold whitespace-nowrap">Shared</TableHead>
                 <TableHead className="font-bold whitespace-nowrap">Appointment</TableHead>
-                <TableHead className="font-bold whitespace-nowrap">Email Opens</TableHead>
+                <TableHead className="font-bold whitespace-nowrap">Email Opened</TableHead>
+                <TableHead className="font-bold whitespace-nowrap">Open Count</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -458,12 +459,24 @@ const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) =
                       {site.has_appointment === 'YES' || site.has_appointment === true ? 'YES' : 'NO'}
                     </Badge>
                   </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={(site.email_open_count ?? 0) > 0 ? 'default' : 'secondary'}
+                      className={
+                        (site.email_open_count ?? 0) > 0
+                          ? 'bg-success text-success-foreground'
+                          : 'bg-muted text-muted-foreground'
+                      }
+                    >
+                      {(site.email_open_count ?? 0) > 0 ? 'YES' : 'NO'}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="text-center">{(site.email_open_count ?? 0) > 0 ? site.email_open_count : '—'}</TableCell>
                 </TableRow>
               ))}
               {filteredSites.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                     No sites found matching your search.
                   </TableCell>
                 </TableRow>
