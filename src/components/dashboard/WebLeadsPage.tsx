@@ -104,7 +104,7 @@ const KpiBlock = ({ sites, label }: { sites: SiteData[]; label: string }) => {
   return (
     <div className="space-y-3">
       <h4 className="text-base font-semibold text-foreground">{label} ({sites.length} sites)</h4>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <KpiTile
           title="Total Sites Onboarded"
           value={k.totalSites}
@@ -120,13 +120,6 @@ const KpiBlock = ({ sites, label }: { sites: SiteData[]; label: string }) => {
           gradient="from-blue-500 to-blue-600"
         />
         <KpiTile
-          title="Total Appointments"
-          value={k.sitesWithAppointments}
-          subtitle={`${k.appointmentRate.toFixed(1)}% appointment rate`}
-          icon={Calendar}
-          gradient="from-purple-500 to-purple-600"
-        />
-        <KpiTile
           title="Emails Opened"
           value={k.emailOpened}
           subtitle={`${k.emailOpenRate.toFixed(1)}% open rate`}
@@ -134,6 +127,7 @@ const KpiBlock = ({ sites, label }: { sites: SiteData[]; label: string }) => {
           gradient="from-amber-500 to-amber-600"
         />
       </div>
+
     </div>
   );
 };
@@ -189,9 +183,6 @@ const PeriodComparisonChart = ({
           </Bar>
           <Bar dataKey="shared" fill="hsl(217 91% 60%)" name="Shared" radius={[4, 4, 0, 0]}>
             <LabelList dataKey="shared" position="top" fontSize={10} />
-          </Bar>
-          <Bar dataKey="appointments" fill="hsl(271 81% 56%)" name="Appointments" radius={[4, 4, 0, 0]}>
-            <LabelList dataKey="appointments" position="top" fontSize={10} />
           </Bar>
           <Bar dataKey="emailsOpened" fill="hsl(38 92% 50%)" name="Emails Opened" radius={[4, 4, 0, 0]}>
             <LabelList dataKey="emailsOpened" position="top" fontSize={10} />
@@ -516,7 +507,7 @@ const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) =
                 <TableHead className="font-bold whitespace-nowrap">Contact Email</TableHead>
                 <TableHead className="font-bold whitespace-nowrap">MPAN</TableHead>
                 <TableHead className="font-bold whitespace-nowrap">Shared</TableHead>
-                <TableHead className="font-bold whitespace-nowrap">Appointment</TableHead>
+                
                 <TableHead className="font-bold whitespace-nowrap">Email Opened</TableHead>
                 <TableHead className="font-bold whitespace-nowrap">Open Count</TableHead>
               </TableRow>
@@ -552,18 +543,6 @@ const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) =
                   </TableCell>
                   <TableCell>
                     <Badge
-                      variant={site.has_appointment === 'YES' || site.has_appointment === true ? 'default' : 'secondary'}
-                      className={
-                        site.has_appointment === 'YES' || site.has_appointment === true
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-muted-foreground'
-                      }
-                    >
-                      {site.has_appointment === 'YES' || site.has_appointment === true ? 'YES' : 'NO'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
                       variant={(site.email_open_count ?? 0) > 0 ? 'default' : 'secondary'}
                       className={
                         (site.email_open_count ?? 0) > 0
@@ -579,7 +558,7 @@ const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) =
               ))}
               {filteredSites.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                     No sites found matching your search.
                   </TableCell>
                 </TableRow>
