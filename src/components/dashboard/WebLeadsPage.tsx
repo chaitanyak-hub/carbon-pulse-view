@@ -104,7 +104,7 @@ const KpiBlock = ({ sites, label }: { sites: SiteData[]; label: string }) => {
   return (
     <div className="space-y-3">
       <h4 className="text-base font-semibold text-foreground">{label} ({sites.length} sites)</h4>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <KpiTile
           title="Total Sites Onboarded"
           value={k.totalSites}
@@ -120,13 +120,6 @@ const KpiBlock = ({ sites, label }: { sites: SiteData[]; label: string }) => {
           gradient="from-blue-500 to-blue-600"
         />
         <KpiTile
-          title="Total Appointments"
-          value={k.sitesWithAppointments}
-          subtitle={`${k.appointmentRate.toFixed(1)}% appointment rate`}
-          icon={Calendar}
-          gradient="from-purple-500 to-purple-600"
-        />
-        <KpiTile
           title="Emails Opened"
           value={k.emailOpened}
           subtitle={`${k.emailOpenRate.toFixed(1)}% open rate`}
@@ -134,6 +127,7 @@ const KpiBlock = ({ sites, label }: { sites: SiteData[]; label: string }) => {
           gradient="from-amber-500 to-amber-600"
         />
       </div>
+
     </div>
   );
 };
