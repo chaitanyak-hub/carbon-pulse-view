@@ -507,7 +507,7 @@ const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) =
                 <TableHead className="font-bold whitespace-nowrap">Contact Email</TableHead>
                 <TableHead className="font-bold whitespace-nowrap">MPAN</TableHead>
                 <TableHead className="font-bold whitespace-nowrap">Shared</TableHead>
-                <TableHead className="font-bold whitespace-nowrap">Appointment</TableHead>
+                
                 <TableHead className="font-bold whitespace-nowrap">Email Opened</TableHead>
                 <TableHead className="font-bold whitespace-nowrap">Open Count</TableHead>
               </TableRow>
