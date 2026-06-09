@@ -543,18 +543,6 @@ const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) =
                   </TableCell>
                   <TableCell>
                     <Badge
-                      variant={site.has_appointment === 'YES' || site.has_appointment === true ? 'default' : 'secondary'}
-                      className={
-                        site.has_appointment === 'YES' || site.has_appointment === true
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-muted-foreground'
-                      }
-                    >
-                      {site.has_appointment === 'YES' || site.has_appointment === true ? 'YES' : 'NO'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
                       variant={(site.email_open_count ?? 0) > 0 ? 'default' : 'secondary'}
                       className={
                         (site.email_open_count ?? 0) > 0
