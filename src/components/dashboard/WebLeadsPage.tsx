@@ -375,11 +375,14 @@ const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) =
         <KpiBlock sites={mtdSites} label="Month to Date" />
       </Card>
 
+      <EmailEngagementBreakdown sites={activeSites} />
+
       <PeriodComparisonChart
         data={wowData}
         title="Week on Week — Last 8 Weeks"
         subtitle="Onboarded, Shared, Appointments and Emails Opened per week"
       />
+
 
       <PeriodComparisonChart
         data={momData}
