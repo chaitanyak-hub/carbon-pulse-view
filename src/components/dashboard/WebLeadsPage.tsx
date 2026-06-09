@@ -184,9 +184,6 @@ const PeriodComparisonChart = ({
           <Bar dataKey="shared" fill="hsl(217 91% 60%)" name="Shared" radius={[4, 4, 0, 0]}>
             <LabelList dataKey="shared" position="top" fontSize={10} />
           </Bar>
-          <Bar dataKey="appointments" fill="hsl(271 81% 56%)" name="Appointments" radius={[4, 4, 0, 0]}>
-            <LabelList dataKey="appointments" position="top" fontSize={10} />
-          </Bar>
           <Bar dataKey="emailsOpened" fill="hsl(38 92% 50%)" name="Emails Opened" radius={[4, 4, 0, 0]}>
             <LabelList dataKey="emailsOpened" position="top" fontSize={10} />
           </Bar>
