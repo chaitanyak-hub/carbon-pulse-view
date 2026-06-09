@@ -202,7 +202,107 @@ const PeriodComparisonChart = ({
   </Card>
 );
 
+const MARCH_2026 = new Date(2026, 2, 1);
+
+const buildEngagementBuckets = (
+  sites: SiteData[],
+  granularity: 'month' | 'week'
+) => {
+  const now = new Date();
+  const buckets: { label: string; start: Date; end: Date }[] = [];
+  if (granularity === 'month') {
+    let cur = startOfMonth(MARCH_2026);
+    while (cur <= now) {
+      buckets.push({ label: format(cur, 'MMM yyyy'), start: cur, end: endOfMonth(cur) });
+      cur = addMonths(cur, 1);
+    }
+  } else {
+    let cur = startOfWeek(MARCH_2026, { weekStartsOn: 1 });
+    while (cur <= now) {
+      buckets.push({
+        label: `W/C ${format(cur, 'dd MMM yyyy')}`,
+        start: cur,
+        end: endOfWeek(cur, { weekStartsOn: 1 }),
+      });
+      cur = addWeeks(cur, 1);
+    }
+  }
+  return buckets.map((b) => {
+    const subset = sites.filter((s) => inRange(s, b.start, b.end));
+    const sends = subset.length;
+    const uniqueOpens = subset.filter((s) => (s.email_open_count ?? 0) > 0).length;
+    const openRate = sends > 0 ? (uniqueOpens / sends) * 100 : 0;
+    return { label: b.label, sends, uniqueOpens, openRate };
+  });
+};
+
+const EmailEngagementBreakdown = ({ sites }: { sites: SiteData[] }) => {
+  const monthly = useMemo(() => buildEngagementBuckets(sites, 'month'), [sites]);
+  const weekly = useMemo(() => buildEngagementBuckets(sites, 'week'), [sites]);
+
+  const totalSends = sites.filter((s) => {
+    if (!s.onboard_date) return false;
+    try { return parseISO(s.onboard_date) >= MARCH_2026; } catch { return false; }
+  }).length;
+  const totalOpens = sites.filter((s) => {
+    if (!s.onboard_date) return false;
+    try { return parseISO(s.onboard_date) >= MARCH_2026 && (s.email_open_count ?? 0) > 0; } catch { return false; }
+  }).length;
+  const totalRate = totalSends > 0 ? (totalOpens / totalSends) * 100 : 0;
+
+  const renderTable = (rows: typeof monthly, headerLabel: string) => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="font-bold">{headerLabel}</TableHead>
+          <TableHead className="font-bold text-right">Total Sends (Sites)</TableHead>
+          <TableHead className="font-bold text-right">Total Unique Opens</TableHead>
+          <TableHead className="font-bold text-right">Open Rate</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((r) => (
+          <TableRow key={r.label}>
+            <TableCell className="font-medium">{r.label}</TableCell>
+            <TableCell className="text-right">{r.sends.toLocaleString()}</TableCell>
+            <TableCell className="text-right">{r.uniqueOpens.toLocaleString()}</TableCell>
+            <TableCell className="text-right">{r.openRate.toFixed(2)}%</TableCell>
+          </TableRow>
+        ))}
+        <TableRow className="bg-muted/50 font-semibold">
+          <TableCell>Total</TableCell>
+          <TableCell className="text-right">{totalSends.toLocaleString()}</TableCell>
+          <TableCell className="text-right">{totalOpens.toLocaleString()}</TableCell>
+          <TableCell className="text-right">{totalRate.toFixed(2)}%</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  );
+
+  return (
+    <Card className="p-6 space-y-6">
+      <div>
+        <h4 className="text-lg font-semibold text-foreground">Email Engagement — From March 2026</h4>
+        <p className="text-sm text-muted-foreground">Total Sends, Unique Opens and Open Rate by period</p>
+      </div>
+      <Tabs defaultValue="month">
+        <TabsList>
+          <TabsTrigger value="month">Month by Month</TabsTrigger>
+          <TabsTrigger value="week">Week by Week</TabsTrigger>
+        </TabsList>
+        <TabsContent value="month">
+          <div className="overflow-x-auto">{renderTable(monthly, 'Month')}</div>
+        </TabsContent>
+        <TabsContent value="week">
+          <div className="overflow-x-auto">{renderTable(weekly, 'Week Commencing')}</div>
+        </TabsContent>
+      </Tabs>
+    </Card>
+  );
+};
+
 const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) => {
+
   const { toast } = useToast();
   const [source, setSource] = useState<'web' | 'nonweb' | 'all'>('web');
   const [searchTerm, setSearchTerm] = useState('');
@@ -375,11 +475,14 @@ const WebLeadsPage = ({ webSites, nonWebSites, isLoading }: WebLeadsPageProps) =
         <KpiBlock sites={mtdSites} label="Month to Date" />
       </Card>
 
+      <EmailEngagementBreakdown sites={activeSites} />
+
       <PeriodComparisonChart
         data={wowData}
         title="Week on Week — Last 8 Weeks"
         subtitle="Onboarded, Shared, Appointments and Emails Opened per week"
       />
+
 
       <PeriodComparisonChart
         data={momData}
